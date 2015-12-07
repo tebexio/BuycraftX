@@ -2,6 +2,9 @@ package net.buycraft.plugin.bukkit;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
+import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
+import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
@@ -15,6 +18,10 @@ public class BuycraftPlugin extends JavaPlugin {
     @Getter
     @Setter
     private ApiClient apiClient;
+    @Getter
+    private DuePlayerFetcher duePlayerFetcher;
+    @Getter
+    private final PlaceholderManager placeholderManager = new PlaceholderManager();
     @Getter
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
 
@@ -43,6 +50,9 @@ public class BuycraftPlugin extends JavaPlugin {
         } else {
             apiClient = new ProductionApiClient(configuration.getServerKey());
         }
+
+        // Initialize placeholders.
+        placeholderManager.addPlaceholder(new NamePlaceholder());
 
         // Queueing tasks.
     }
