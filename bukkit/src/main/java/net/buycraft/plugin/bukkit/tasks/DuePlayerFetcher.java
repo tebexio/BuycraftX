@@ -36,6 +36,11 @@ public class DuePlayerFetcher implements Runnable {
             return;
         }
 
+        // Issue immediate task if required.
+        if (information.getMeta().isExecuteOffline()) {
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ImmediateExecutionRunner(plugin));
+        }
+
         lock.lock();
         try {
             due.clear();

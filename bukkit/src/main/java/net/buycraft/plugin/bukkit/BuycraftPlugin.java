@@ -57,7 +57,6 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Queueing tasks.
         getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(this), 20);
-        getServer().getScheduler().runTaskTimerAsynchronously(this, new ImmediateExecutionRunner(this), 20, 3600);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
