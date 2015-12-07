@@ -3,6 +3,7 @@ package net.buycraft.plugin.bukkit;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
+import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
 import net.buycraft.plugin.client.ApiClient;
@@ -55,5 +56,10 @@ public class BuycraftPlugin extends JavaPlugin {
         placeholderManager.addPlaceholder(new NamePlaceholder());
 
         // Queueing tasks.
+        getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(this), 20);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new ImmediateExecutionRunner(this), 20, 3600);
+
+        // Register listener.
+        getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
     }
 }
