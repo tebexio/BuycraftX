@@ -13,6 +13,10 @@ public class BuycraftListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (plugin.getApiClient() == null) {
+            return;
+        }
+
         QueuedPlayer qp = plugin.getDuePlayerFetcher().fetchAndRemoveDuePlayer(event.getPlayer().getName());
         if (qp != null) {
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new PlayerLoginExecution(qp, plugin));
