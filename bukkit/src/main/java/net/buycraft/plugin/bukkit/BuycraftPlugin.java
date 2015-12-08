@@ -7,8 +7,10 @@ import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
 import net.buycraft.plugin.client.ApiClient;
+import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
+import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -25,6 +27,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     @Getter
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
+    @Getter
+    private ServerInformation serverInformation;
 
     @Override
     public void onEnable() {
@@ -49,7 +53,13 @@ public class BuycraftPlugin extends JavaPlugin {
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using /buy secret.");
         } else {
-            apiClient = new ProductionApiClient(configuration.getServerKey());
+            ApiClient client = new ProductionApiClient(configuration.getServerKey());
+            try {
+                updateInformation(client);
+            } catch (IOException | ApiException e) {
+                getLogger().severe(String.format("We can't check your server can connect to Buycraft: %s", e.getMessage()));
+            }
+            apiClient = client;
         }
 
         // Initialize placeholders.
@@ -60,5 +70,9 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
+    }
+
+    public void updateInformation(ApiClient client) throws IOException, ApiException {
+        serverInformation = client.getServerInformation();
     }
 }

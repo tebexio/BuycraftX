@@ -30,6 +30,8 @@ public class ImmediateExecutionRunner implements Runnable {
         QueueInformation information;
 
         do {
+            plugin.getLogger().info("Fetching commands to execute immediately...");
+
             try {
                 information = plugin.getApiClient().retrieveOfflineQueue();
             } catch (IOException | ApiException e) {

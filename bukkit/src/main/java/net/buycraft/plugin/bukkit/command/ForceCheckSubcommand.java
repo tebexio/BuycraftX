@@ -1,0 +1,28 @@
+package net.buycraft.plugin.bukkit.command;
+
+import lombok.RequiredArgsConstructor;
+import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+@RequiredArgsConstructor
+public class ForceCheckSubcommand implements Subcommand {
+    private final BuycraftPlugin plugin;
+
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sender.sendMessage(ChatColor.RED + "I do not need any parameters!");
+            return;
+        }
+
+        if (plugin.getDuePlayerFetcher().getInProgress().get()) {
+            sender.sendMessage(ChatColor.RED + "We're currently checking for new purchases. Sit tight!");
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getDuePlayerFetcher());
+        sender.sendMessage(ChatColor.GREEN + "Successfully queued player check.");
+    }
+}

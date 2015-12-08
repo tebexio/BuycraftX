@@ -27,14 +27,14 @@ public class SecretSubcommand implements Subcommand {
             @Override
             public void run() {
                 ApiClient client = new ProductionApiClient(args[0]);
-                ServerInformation information;
                 try {
-                    information = client.getServerInformation();
+                    plugin.updateInformation(client);
                 } catch (IOException | ApiException e) {
                     sender.sendMessage(ChatColor.RED + "Apologies, but that key didn't seem to work. Try again.");
                     return;
                 }
 
+                ServerInformation information = plugin.getServerInformation();
                 plugin.setApiClient(client);
                 sender.sendMessage(String.format(ChatColor.GREEN + "Looks like you're good to go!" +
                         "This server is now registered as server '%s' for the web store '%s'.",

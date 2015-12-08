@@ -1,5 +1,6 @@
 package net.buycraft.plugin.bukkit.tasks;
 
+import lombok.Getter;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedPlayer;
@@ -9,6 +10,7 @@ import org.bukkit.Bukkit;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -17,6 +19,8 @@ public class DuePlayerFetcher implements Runnable {
     private final BuycraftPlugin plugin;
     private final Map<String, QueuedPlayer> due = new HashMap<>();
     private final Lock lock = new ReentrantLock();
+    @Getter
+    private final AtomicBoolean inProgress = new AtomicBoolean(false);
 
     public DuePlayerFetcher(BuycraftPlugin plugin) {
         this.plugin = plugin;
@@ -28,6 +32,11 @@ public class DuePlayerFetcher implements Runnable {
             return; // no API client
         }
 
+        if (!inProgress.compareAndSet(false, true)) {
+            plugin.getLogger().info("Already fetching due player information!");
+            return;
+        }
+
         DueQueueInformation information;
         try {
             information = plugin.getApiClient().retrieveDueQueue();
@@ -35,6 +44,8 @@ public class DuePlayerFetcher implements Runnable {
             plugin.getLogger().log(Level.SEVERE, "Could not fetch due players queue", e);
             return;
         }
+
+        plugin.getLogger().info(String.format("Fetched due players (%d in queue).", information.getPlayers().size()));
 
         // Issue immediate task if required.
         if (information.getMeta().isExecuteOffline()) {
@@ -50,6 +61,8 @@ public class DuePlayerFetcher implements Runnable {
         } finally {
             lock.unlock();
         }
+
+        inProgress.set(false);
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, 20 * information.getMeta().getNextCheck());
     }
