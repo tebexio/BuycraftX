@@ -32,6 +32,10 @@ public class BuycraftConfiguration {
         }
     }
 
+    public void setServerKey(String key) {
+        properties.setProperty("server-key", key);
+    }
+
     public String getServerKey() {
         return properties.getProperty("server-key", null);
     }

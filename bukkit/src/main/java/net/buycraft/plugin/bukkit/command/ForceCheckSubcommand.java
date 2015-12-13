@@ -25,4 +25,9 @@ public class ForceCheckSubcommand implements Subcommand {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getDuePlayerFetcher());
         sender.sendMessage(ChatColor.GREEN + "Successfully queued player check.");
     }
+
+    @Override
+    public String getDescription() {
+        return "Forces a purchase check.";
+    }
 }

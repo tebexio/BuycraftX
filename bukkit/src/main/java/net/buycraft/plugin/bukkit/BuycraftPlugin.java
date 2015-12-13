@@ -2,6 +2,8 @@ package net.buycraft.plugin.bukkit;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.buycraft.plugin.bukkit.command.ForceCheckSubcommand;
+import net.buycraft.plugin.bukkit.command.SecretSubcommand;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
@@ -70,6 +72,17 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
+
+        // Initialize and register commands.
+        BuycraftCommand command = new BuycraftCommand();
+        command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
+        command.getSubcommandMap().put("secret", new SecretSubcommand(this));
+        getCommand("buycraft").setExecutor(new BuycraftCommand());
+    }
+
+    public void saveConfiguration() throws IOException {
+        Path configPath = getDataFolder().toPath().resolve("config.properties");
+        configuration.save(configPath);
     }
 
     public void updateInformation(ApiClient client) throws IOException, ApiException {
