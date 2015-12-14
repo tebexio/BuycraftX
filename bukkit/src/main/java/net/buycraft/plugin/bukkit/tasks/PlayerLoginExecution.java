@@ -51,16 +51,14 @@ public class PlayerLoginExecution implements Runnable {
             return;
         }
 
-        if (result.getDone().isEmpty()) {
+        if (!result.getDone().isEmpty()) {
             try {
                 List<Integer> ids = new ArrayList<>();
                 for (QueuedCommand command : result.getDone()) {
                     ids.add(command.getId());
                 }
 
-                if (!ids.isEmpty()) {
-                    plugin.getApiClient().deleteCommand(ids);
-                }
+                plugin.getApiClient().deleteCommand(ids);
             } catch (IOException | ApiException e) {
                 plugin.getLogger().log(Level.SEVERE, "Unable to mark commands as finished", e);
                 return;

@@ -1,5 +1,7 @@
 package net.buycraft.plugin.bukkit.tasks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.util.CommandExecutorResult;
@@ -9,9 +11,7 @@ import net.buycraft.plugin.data.responses.QueueInformation;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -19,6 +19,7 @@ import java.util.logging.Level;
 @RequiredArgsConstructor
 public class ImmediateExecutionRunner implements Runnable {
     private final BuycraftPlugin plugin;
+    private final Set<Integer> executingLater = Sets.newConcurrentHashSet();
     private final Random random = new Random();
 
     @Override
@@ -30,39 +31,39 @@ public class ImmediateExecutionRunner implements Runnable {
         QueueInformation information;
 
         do {
-            plugin.getLogger().info("Fetching commands to execute immediately...");
+            plugin.getLogger().info("Fetching commands to execute...");
 
             try {
                 information = plugin.getApiClient().retrieveOfflineQueue();
             } catch (IOException | ApiException e) {
-                plugin.getLogger().log(Level.SEVERE, "Could not fetch command queue for immediate execution", e);
+                plugin.getLogger().log(Level.SEVERE, "Could not fetch command queue", e);
                 return;
             }
 
+            // Filter out commands we're going to execute at a later time.
+            for (Iterator<QueuedCommand> it = information.getCommands().iterator(); it.hasNext(); ) {
+                QueuedCommand command = it.next();
+                if (executingLater.contains(command.getId()))
+                    it.remove();
+            }
+
             // Perform the actual command execution.
-            Future<CommandExecutorResult> initialCheck = Bukkit.getScheduler().callSyncMethod(plugin, new CommandExecutor(
-                    plugin, information.getCommands(), false, false));
             CommandExecutorResult result;
             try {
-                result = initialCheck.get();
-            } catch (InterruptedException | ExecutionException e) {
+                result = new ExecuteAndConfirmCommandExecutor(plugin, information.getCommands()).call();
+            } catch (Exception e) {
                 plugin.getLogger().log(Level.SEVERE, "Unable to execute commands", e);
                 return;
             }
 
-            if (result.getDone().isEmpty()) {
-                try {
-                    List<Integer> ids = new ArrayList<>();
-                    for (QueuedCommand command : result.getDone()) {
-                        ids.add(command.getId());
-                    }
+            if (!result.getQueuedForDelay().isEmpty()) {
+                for (QueuedCommand command : result.getQueuedForDelay().values()) {
+                    executingLater.add(command.getId());
+                }
 
-                    if (!ids.isEmpty()) {
-                        plugin.getApiClient().deleteCommand(ids);
-                    }
-                } catch (IOException | ApiException e) {
-                    plugin.getLogger().log(Level.SEVERE, "Unable to mark commands as finished", e);
-                    return;
+                for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ExecuteAndConfirmCommandExecutor(plugin,
+                            ImmutableList.copyOf(entry.getValue())), entry.getKey() * 20);
                 }
             }
 
