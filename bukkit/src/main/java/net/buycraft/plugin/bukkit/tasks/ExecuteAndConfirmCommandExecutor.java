@@ -16,12 +16,14 @@ import java.util.logging.Level;
 public class ExecuteAndConfirmCommandExecutor implements Callable<CommandExecutorResult>, Runnable {
     private final BuycraftPlugin plugin;
     private final List<QueuedCommand> commandList;
+    private final boolean requireOnline;
+    private final boolean skipDelay;
 
     @Override
     public CommandExecutorResult call() throws Exception {
         // Perform the actual command execution.
         Future<CommandExecutorResult> initialCheck = Bukkit.getScheduler().callSyncMethod(plugin, new CommandExecutor(
-                plugin, commandList, false, false));
+                plugin, commandList, requireOnline, skipDelay));
         CommandExecutorResult result = initialCheck.get();
 
         if (!result.getDone().isEmpty()) {

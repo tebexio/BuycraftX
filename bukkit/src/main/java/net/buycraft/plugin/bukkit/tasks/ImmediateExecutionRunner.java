@@ -50,7 +50,7 @@ public class ImmediateExecutionRunner implements Runnable {
             // Perform the actual command execution.
             CommandExecutorResult result;
             try {
-                result = new ExecuteAndConfirmCommandExecutor(plugin, information.getCommands()).call();
+                result = new ExecuteAndConfirmCommandExecutor(plugin, information.getCommands(), false, false).call();
             } catch (Exception e) {
                 plugin.getLogger().log(Level.SEVERE, "Unable to execute commands", e);
                 return;
@@ -63,7 +63,7 @@ public class ImmediateExecutionRunner implements Runnable {
 
                 for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
                     Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ExecuteAndConfirmCommandExecutor(plugin,
-                            ImmutableList.copyOf(entry.getValue())), entry.getKey() * 20);
+                            ImmutableList.copyOf(entry.getValue()), false, true), entry.getKey() * 20);
                 }
             }
 
