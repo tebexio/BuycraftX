@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Properties;
 
 public class BuycraftConfiguration {
@@ -27,7 +28,8 @@ public class BuycraftConfiguration {
     }
 
     public void save(Path path) throws IOException {
-        try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+        try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
             properties.store(writer, "BuycraftX configuration file");
         }
     }

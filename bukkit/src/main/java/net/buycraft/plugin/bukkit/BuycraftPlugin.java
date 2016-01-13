@@ -35,6 +35,7 @@ public class BuycraftPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Initialize configuration.
+        getDataFolder().mkdir();
         try {
             Path configPath = getDataFolder().toPath().resolve("config.properties");
             if (!configPath.toFile().exists()) {
@@ -77,7 +78,7 @@ public class BuycraftPlugin extends JavaPlugin {
         BuycraftCommand command = new BuycraftCommand();
         command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
-        getCommand("buycraft").setExecutor(new BuycraftCommand());
+        getCommand("buycraft").setExecutor(command);
     }
 
     public void saveConfiguration() throws IOException {

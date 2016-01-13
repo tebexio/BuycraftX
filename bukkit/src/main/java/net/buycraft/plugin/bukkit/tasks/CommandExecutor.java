@@ -56,6 +56,7 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
         // Now we can run the commands.
         for (QueuedCommand command : canRun) {
             String finalCommand = plugin.getPlaceholderManager().doReplace(command);
+            plugin.getLogger().info(String.format("Dispatching command %s for player '%s'.", finalCommand, command.getPlayer().getUsername()));
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
         }
 

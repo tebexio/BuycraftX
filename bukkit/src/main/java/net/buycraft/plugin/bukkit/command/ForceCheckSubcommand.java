@@ -12,8 +12,13 @@ public class ForceCheckSubcommand implements Subcommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (args.length == 0) {
+        if (args.length != 0) {
             sender.sendMessage(ChatColor.RED + "I do not need any parameters!");
+            return;
+        }
+
+        if (plugin.getApiClient() == null) {
+            sender.sendMessage(ChatColor.RED + "Set up a secret key first with /buycraft secret.");
             return;
         }
 
