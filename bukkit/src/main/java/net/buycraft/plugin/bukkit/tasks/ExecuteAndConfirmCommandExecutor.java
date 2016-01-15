@@ -28,8 +28,6 @@ public class ExecuteAndConfirmCommandExecutor implements Callable<CommandExecuto
                 plugin, fallbackPlayer, commandList, requireOnline, skipDelay));
         CommandExecutorResult result = initialCheck.get();
 
-        plugin.getLogger().info(result.toString());
-
         if (!result.getDone().isEmpty()) {
             List<Integer> ids = new ArrayList<>();
             for (QueuedCommand command : result.getDone()) {

@@ -6,15 +6,16 @@ import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.DueQueueInformation;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
+
+import static net.buycraft.plugin.bukkit.tasks.CommandExecutor.mojangUuidToJavaUuid;
 
 public class DuePlayerFetcher implements Runnable {
     private final BuycraftPlugin plugin;
@@ -54,8 +55,6 @@ public class DuePlayerFetcher implements Runnable {
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ImmediateExecutionRunner(plugin));
         }
 
-        //
-
         lock.lock();
         try {
             due.clear();
@@ -68,6 +67,41 @@ public class DuePlayerFetcher implements Runnable {
 
         inProgress.set(false);
 
+        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                // Check for online players and execute their commands.
+                List<QueuedPlayer> processNow = new ArrayList<>();
+
+                lock.lock();
+                try {
+                    for (Iterator<QueuedPlayer> it = due.values().iterator(); it.hasNext(); ) {
+                        QueuedPlayer qp = it.next();
+                        Player player;
+                        if (qp.getUuid() != null) {
+                            player = Bukkit.getPlayer(mojangUuidToJavaUuid(qp.getUuid()));
+                        } else {
+                            player = Bukkit.getPlayer(qp.getName());
+                        }
+                        if (player != null) {
+                            processNow.add(qp);
+                            it.remove();
+                        }
+                    }
+                } finally {
+                    lock.unlock();
+                }
+
+                if (!processNow.isEmpty()) {
+                    plugin.getLogger().info(String.format("Executing commands for %d online players...", processNow.size()));
+                    for (int i = 0; i < processNow.size(); i++) {
+                        QueuedPlayer qp = processNow.get(i);
+                        // 500ms delay between each player to spread server load for many online players
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new PlayerLoginExecution(qp, plugin), 10 * i);
+                    }
+                }
+            }
+        });
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, 20 * information.getMeta().getNextCheck());
     }
 

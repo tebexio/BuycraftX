@@ -88,7 +88,7 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
         return s;
     }
 
-    private UUID mojangUuidToJavaUuid(String id) {
+    protected static UUID mojangUuidToJavaUuid(String id) {
         Preconditions.checkNotNull(id, "id");
         Preconditions.checkArgument(id.matches("^[a-z0-9]{32}"), "Not a valid Mojang UUID.");
 
