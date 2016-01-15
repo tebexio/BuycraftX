@@ -96,8 +96,10 @@ public class DuePlayerFetcher implements Runnable {
                     plugin.getLogger().info(String.format("Executing commands for %d online players...", processNow.size()));
                     for (int i = 0; i < processNow.size(); i++) {
                         QueuedPlayer qp = processNow.get(i);
-                        // 500ms delay between each player to spread server load for many online players
-                        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new PlayerLoginExecution(qp, plugin), 10 * i);
+                        // 500ms delay between each player to spread server load for many online players, up to a
+                        // maximum of 5 seconds (11 players)
+                        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new PlayerLoginExecution(qp, plugin),
+                                Math.min(100, 10 * i));
                     }
                 }
             }
