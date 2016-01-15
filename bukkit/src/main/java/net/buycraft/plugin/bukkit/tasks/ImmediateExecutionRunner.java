@@ -76,6 +76,6 @@ public class ImmediateExecutionRunner implements Runnable {
                 // Shouldn't happen, but in that case just bail out.
                 return;
             }
-        } while (!information.getMeta().isLimited());
+        } while (information.getMeta().isLimited());
     }
 }
