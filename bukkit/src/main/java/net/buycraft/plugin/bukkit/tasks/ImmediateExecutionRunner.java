@@ -31,12 +31,14 @@ public class ImmediateExecutionRunner implements Runnable {
         QueueInformation information;
 
         do {
-            plugin.getLogger().info("Fetching commands to execute...");
-
             try {
                 information = plugin.getApiClient().retrieveOfflineQueue();
             } catch (IOException | ApiException e) {
                 plugin.getLogger().log(Level.SEVERE, "Could not fetch command queue", e);
+                return;
+            }
+
+            if (information.getCommands().isEmpty()) {
                 return;
             }
 
