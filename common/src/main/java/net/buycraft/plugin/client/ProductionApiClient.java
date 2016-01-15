@@ -5,6 +5,7 @@ import com.squareup.okhttp.*;
 import net.buycraft.plugin.data.responses.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,6 +91,21 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public CheckoutUrlResponse getCheckoutUri(String username, int packageId) throws IOException, ApiException {
-        return null;
+        String encodedUsername = URLEncoder.encode(username, "UTF-8");
+        String content = "username=" + encodedUsername + "&package_id=" + packageId;
+
+        Request request = new Request.Builder()
+                .url(API_URL + "/checkout")
+                .addHeader("X-Buycraft-Secret", secret)
+                .post(RequestBody.create(FORMENCODED, content))
+                .build();
+        Response response = httpClient.newCall(request).execute();
+
+        if (!response.isSuccessful()) {
+            BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
+            throw new ApiException(error.getErrorMessage());
+        } else {
+            return gson.fromJson(response.body().charStream(), CheckoutUrlResponse.class);
+        }
     }
 }
