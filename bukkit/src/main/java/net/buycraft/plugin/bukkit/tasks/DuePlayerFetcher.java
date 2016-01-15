@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -49,14 +50,17 @@ public class DuePlayerFetcher implements Runnable {
 
         // Issue immediate task if required.
         if (information.getMeta().isExecuteOffline()) {
+            plugin.getLogger().info("Executing commands that can be completed now...");
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ImmediateExecutionRunner(plugin));
         }
+
+        //
 
         lock.lock();
         try {
             due.clear();
             for (QueuedPlayer player : information.getPlayers()) {
-                due.put(player.getUsername(), player);
+                due.put(player.getName().toLowerCase(Locale.US), player);
             }
         } finally {
             lock.unlock();
@@ -70,7 +74,7 @@ public class DuePlayerFetcher implements Runnable {
     public QueuedPlayer fetchAndRemoveDuePlayer(String name) {
         lock.lock();
         try {
-            return due.remove(name);
+            return due.remove(name.toLowerCase(Locale.US));
         } finally {
             lock.unlock();
         }

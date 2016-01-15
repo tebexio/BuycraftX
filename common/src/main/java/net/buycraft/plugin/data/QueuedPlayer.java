@@ -5,6 +5,6 @@ import lombok.Value;
 @Value
 public class QueuedPlayer {
     private final int id;
-    private final String username;
+    private final String name;
     private final String uuid;
 }

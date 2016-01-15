@@ -1,6 +1,7 @@
 package net.buycraft.plugin.bukkit.util.placeholder;
 
 import net.buycraft.plugin.data.QueuedCommand;
+import net.buycraft.plugin.data.QueuedPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,10 @@ public class PlaceholderManager {
         placeholderList.add(placeholder);
     }
 
-    public String doReplace(QueuedCommand command) {
+    public String doReplace(QueuedPlayer player, QueuedCommand command) {
         String c = command.getCommand();
         for (Placeholder placeholder : placeholderList) {
-            c = placeholder.replace(c, command);
+            c = placeholder.replace(c, player, command);
         }
         return c;
     }

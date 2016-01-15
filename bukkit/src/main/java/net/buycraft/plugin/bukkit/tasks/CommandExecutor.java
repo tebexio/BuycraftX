@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.util.CommandExecutorResult;
 import net.buycraft.plugin.data.QueuedCommand;
+import net.buycraft.plugin.data.QueuedPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -20,26 +21,41 @@ import java.util.concurrent.Callable;
 @RequiredArgsConstructor
 public class CommandExecutor implements Callable<CommandExecutorResult> {
     private final BuycraftPlugin plugin;
+    private final QueuedPlayer fallbackQueuedPlayer;
     private final List<QueuedCommand> commands;
     private final boolean requireOnline;
     private final boolean skipDelay;
 
     @Override
     public CommandExecutorResult call() throws Exception {
-        List<QueuedCommand> canRun = new ArrayList<>();
+        List<QueuedCommand> successfullyRun = new ArrayList<>();
         List<QueuedCommand> queuedForOnline = new ArrayList<>();
         ListMultimap<Integer, QueuedCommand> delayed = ArrayListMultimap.create();
 
         // Determine what we can run.
         for (QueuedCommand command : commands) {
-            Player player = Bukkit.getPlayer(mojangUuidToJavaUuid(command.getPlayer().getUuid()));
+            Player player;
+            QueuedPlayer qp = command.getPlayer();
+
+            if (qp == null) {
+                qp = fallbackQueuedPlayer;
+            }
+
+            if (qp.getUuid() != null) {
+                // Prefer the UUID
+                player = Bukkit.getPlayer(mojangUuidToJavaUuid(qp.getUuid()));
+            } else {
+                // Use the username
+                player = Bukkit.getPlayer(qp.getName());
+            }
+
             if (player == null && requireOnline) {
                 queuedForOnline.add(command);
                 continue;
             }
 
             Integer requiredSlots = command.getConditions().get("slots");
-            if (requiredSlots != null && player != null) {
+            if (requiredSlots != null && requiredSlots > 0 && player != null) {
                 int free = getFreeInventorySlots(player.getInventory());
                 if (free < requiredSlots) {
                     queuedForOnline.add(command);
@@ -48,19 +64,19 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
             }
 
             Integer delay = command.getConditions().get("delay");
-            if (delay != null && !skipDelay) {
+            if (delay != null && delay > 0 && !skipDelay) {
                 delayed.put(delay, command);
+                continue;
             }
-        }
 
-        // Now we can run the commands.
-        for (QueuedCommand command : canRun) {
-            String finalCommand = plugin.getPlaceholderManager().doReplace(command);
-            plugin.getLogger().info(String.format("Dispatching command %s for player '%s'.", finalCommand, command.getPlayer().getUsername()));
+            // Run the command now.
+            String finalCommand = plugin.getPlaceholderManager().doReplace(qp, command);
+            plugin.getLogger().info(String.format("Dispatching command '%s' for player '%s'.", finalCommand, qp.getName()));
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+            successfullyRun.add(command);
         }
 
-        return new CommandExecutorResult(canRun, queuedForOnline, delayed);
+        return new CommandExecutorResult(successfullyRun, queuedForOnline, delayed);
     }
 
     private int getFreeInventorySlots(Inventory inventory) {

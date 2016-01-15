@@ -3,6 +3,7 @@ package net.buycraft.plugin.bukkit;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.bukkit.command.ForceCheckSubcommand;
+import net.buycraft.plugin.bukkit.command.InformationSubcommand;
 import net.buycraft.plugin.bukkit.command.SecretSubcommand;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
@@ -60,7 +61,7 @@ public class BuycraftPlugin extends JavaPlugin {
             try {
                 updateInformation(client);
             } catch (IOException | ApiException e) {
-                getLogger().severe(String.format("We can't check your server can connect to Buycraft: %s", e.getMessage()));
+                getLogger().severe(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;
         }
@@ -78,6 +79,7 @@ public class BuycraftPlugin extends JavaPlugin {
         BuycraftCommand command = new BuycraftCommand();
         command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
+        command.getSubcommandMap().put("info", new InformationSubcommand(this));
         getCommand("buycraft").setExecutor(command);
     }
 

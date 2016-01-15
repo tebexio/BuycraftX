@@ -44,7 +44,7 @@ public class SecretSubcommand implements Subcommand {
                     sender.sendMessage(ChatColor.RED + "Apologies, but we couldn't save the public key to your configuration file.");
                 }
 
-                sender.sendMessage(String.format(ChatColor.GREEN + "Looks like you're good to go!" +
+                sender.sendMessage(String.format(ChatColor.GREEN + "Looks like you're good to go! " +
                         "This server is now registered as server '%s' for the web store '%s'.",
                         information.getServer().getName(), information.getAccount().getName()));
             }

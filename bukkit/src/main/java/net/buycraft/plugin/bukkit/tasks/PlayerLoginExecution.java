@@ -30,10 +30,12 @@ public class PlayerLoginExecution implements Runnable {
             return;
         }
 
+        plugin.getLogger().info(String.format("Fetched %d commands for player '%s'.", information.getCommands().size(), player.getName()));
+
         // Perform the actual command execution.
         CommandExecutorResult result;
         try {
-            result = new ExecuteAndConfirmCommandExecutor(plugin, information.getCommands(), true, false).call();
+            result = new ExecuteAndConfirmCommandExecutor(plugin, player, information.getCommands(), true, false).call();
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Unable to execute commands", e);
             return;
@@ -42,7 +44,7 @@ public class PlayerLoginExecution implements Runnable {
         if (!result.getQueuedForDelay().isEmpty()) {
             for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
                 Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ExecuteAndConfirmCommandExecutor(plugin,
-                        ImmutableList.copyOf(entry.getValue()), true, true), entry.getKey() * 20);
+                        player, ImmutableList.copyOf(entry.getValue()), true, true), entry.getKey() * 20);
             }
         }
     }

@@ -1,7 +1,7 @@
 package net.buycraft.plugin.client;
 
-import com.google.api.client.http.*;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.gson.Gson;
+import com.squareup.okhttp.*;
 import net.buycraft.plugin.data.responses.*;
 
 import java.io.IOException;
@@ -9,29 +9,30 @@ import java.util.List;
 import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
-    private static final String API_URL = "https://plugin.buycraft.net/v1";
+    private static final String API_URL = "https://plugin.buycraft.net";
+    private static final MediaType FORMENCODED = MediaType.parse("application/x-www-form-urlencoded");
 
-    private final HttpRequestFactory requestFactory;
+    private final Gson gson = new Gson();
+    private final OkHttpClient httpClient;
+    private final String secret;
 
-    public ProductionApiClient(final String apiKey) {
-        Objects.requireNonNull(apiKey, "apiKey");
-        requestFactory = new NetHttpTransport.Builder().build().createRequestFactory(new HttpRequestInitializer() {
-            @Override
-            public void initialize(HttpRequest httpRequest) throws IOException {
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("X-Buycraft-Secret", apiKey);
-                httpRequest.setHeaders(headers);
-            }
-        });
+    public ProductionApiClient(final String secret) {
+        this.secret = Objects.requireNonNull(secret, "secret");
+        this.httpClient = new OkHttpClient();
     }
 
     private <T> T get(String endpoint, Class<T> clazz) throws IOException, ApiException {
-        HttpResponse response = requestFactory.buildGetRequest(new GenericUrl(API_URL + endpoint)).execute();
+        Request request = new Request.Builder()
+                .url(API_URL + endpoint)
+                .addHeader("X-Buycraft-Secret", secret)
+                .get()
+                .build();
+        Response response = httpClient.newCall(request).execute();
 
-        if (response.isSuccessStatusCode()) {
-            return response.parseAs(clazz);
+        if (response.isSuccessful()) {
+            return gson.fromJson(response.body().charStream(), clazz);
         } else {
-            BuycraftError error = response.parseAs(BuycraftError.class);
+            BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
             throw new ApiException(error.getErrorMessage());
         }
     }
@@ -65,23 +66,24 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public void deleteCommand(List<Integer> ids) throws IOException, ApiException {
-        StringBuilder urlParameterBuilder = new StringBuilder();
+        StringBuilder content = new StringBuilder();
         for (int i = 0; i < ids.size(); i++) {
-            if (i == 0) {
-                // Start of the parameter list.
-                urlParameterBuilder.append('?');
-            } else {
-                urlParameterBuilder.append('&');
+            if (i > 0) {
+                content.append('&');
             }
-            urlParameterBuilder.append("ids[]=");
-            urlParameterBuilder.append(ids.get(i));
+            content.append("ids[]=");
+            content.append(ids.get(i));
         }
 
-        GenericUrl url = new GenericUrl(API_URL + "/queue" + urlParameterBuilder.toString());
-        HttpResponse response = requestFactory.buildDeleteRequest(url).execute();
+        Request request = new Request.Builder()
+                .url(API_URL + "/queue")
+                .addHeader("X-Buycraft-Secret", secret)
+                .method("DELETE", RequestBody.create(FORMENCODED, content.toString()))
+                .build();
+        Response response = httpClient.newCall(request).execute();
 
-        if (!response.isSuccessStatusCode()) {
-            BuycraftError error = response.parseAs(BuycraftError.class);
+        if (!response.isSuccessful()) {
+            BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
             throw new ApiException(error.getErrorMessage());
         }
     }

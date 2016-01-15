@@ -3,11 +3,12 @@ package net.buycraft.plugin.data.responses;
 import com.google.gson.annotations.SerializedName;
 import lombok.Value;
 
+import java.util.List;
 import java.util.Map;
 
 @Value
 public class ServerInformation {
-    private final Map<String, Platform> plugins;
+    private final Map<String, List<Platform>> plugins;
     private final Account account;
     private final Server server;
 
