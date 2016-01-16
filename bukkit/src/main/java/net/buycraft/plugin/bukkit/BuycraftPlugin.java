@@ -7,6 +7,7 @@ import net.buycraft.plugin.bukkit.command.InformationSubcommand;
 import net.buycraft.plugin.bukkit.command.SecretSubcommand;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
+import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
 import net.buycraft.plugin.client.ApiClient;
@@ -30,6 +31,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     @Getter
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
+    @Getter
+    private ListingUpdateTask listingUpdateTask;
     @Getter
     private ServerInformation serverInformation;
 
@@ -57,6 +60,7 @@ public class BuycraftPlugin extends JavaPlugin {
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using /buy secret.");
         } else {
+            getLogger().info("Validating your server key...");
             ApiClient client = new ProductionApiClient(configuration.getServerKey());
             try {
                 updateInformation(client);
@@ -71,6 +75,13 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Queueing tasks.
         getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(this), 20);
+        listingUpdateTask = new ListingUpdateTask(this);
+        if (apiClient != null) {
+            getLogger().info("Fetching all server packages...");
+            listingUpdateTask.run(); // for a first synchronous run
+            getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask = new ListingUpdateTask(this),
+                    20 * 60 * 10, 20 * 60 * 10);
+        }
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
