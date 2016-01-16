@@ -16,8 +16,12 @@ public class ProductionApiClient implements ApiClient {
     private final String secret;
 
     public ProductionApiClient(final String secret) {
+        this(secret, new OkHttpClient());
+    }
+
+    public ProductionApiClient(final String secret, OkHttpClient client) {
         this.secret = Objects.requireNonNull(secret, "secret");
-        this.httpClient = new OkHttpClient();
+        this.httpClient = Objects.requireNonNull(client, "client");
     }
 
     private <T> T get(String endpoint, Class<T> clazz) throws IOException, ApiException {
