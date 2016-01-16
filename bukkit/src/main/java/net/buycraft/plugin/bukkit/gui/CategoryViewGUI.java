@@ -31,14 +31,11 @@ public class CategoryViewGUI {
 
         private int calculateSize(Category category, int page) {
             int needed = 45; // bottom row
-            boolean showsSubcats = false;
-            int pagesWithSubcats = 0;
             if (!category.getSubcategories().isEmpty()) {
-                pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9);
+                int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9);
                 if (pagesWithSubcats > page) {
                     // more pages exist
                     needed += 9;
-                    showsSubcats = true;
                 }
             }
 
@@ -46,8 +43,15 @@ public class CategoryViewGUI {
             return needed;
         }
 
+        private String trimName(String name) {
+            if (name.length() <= 32)
+                return name;
+
+            return name.substring(0, 29) + "...";
+        }
+
         public GUIImpl(Category category, Integer parentId, int page) {
-            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), "Buycraft: " + category.getName());
+            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), "Buycraft: " + trimName(category.getName()));
             this.parentId = parentId;
             this.page = page;
             update(category);
@@ -103,10 +107,30 @@ public class CategoryViewGUI {
 
             // Determine if we should draw a previous or next button
             int bottomBase = base + 36;
-            if (subcatPartition.size() < page || packagePartition.size() < page) {
+            if (page > 0) {
                 // Definitely draw a previous button
-
+                ItemStack stack = new ItemStack(Material.NETHER_STAR);
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName(ChatColor.AQUA + "Previous Page");
+                stack.setItemMeta(meta);
+                inventory.setItem(bottomBase + 1, stack);
             }
+
+            if (subcatPartition.size() > page || packagePartition.size() > page) {
+                // Definitely draw a next button
+                ItemStack stack = new ItemStack(Material.NETHER_STAR);
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName(ChatColor.AQUA + "Next Page");
+                stack.setItemMeta(meta);
+                inventory.setItem(bottomBase + 7, stack);
+            }
+
+            // Draw a parent or "view all categories" button
+            ItemStack parent = new ItemStack(Material.BOOK_AND_QUILL);
+            ItemMeta meta = parent.getItemMeta();
+            meta.setDisplayName(ChatColor.GRAY + (parentId == null ? "View All Categories" : "Back to Parent"));
+            parent.setItemMeta(meta);
+            inventory.setItem(bottomBase + 4, parent);
         }
     }
 }

@@ -33,9 +33,12 @@ public class ProductionApiClient implements ApiClient {
         Response response = httpClient.newCall(request).execute();
 
         if (response.isSuccessful()) {
-            return gson.fromJson(response.body().charStream(), clazz);
+            T result = gson.fromJson(response.body().charStream(), clazz);
+            response.body().close();
+            return result;
         } else {
             BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
+            response.body().close();
             throw new ApiException(error.getErrorMessage());
         }
     }
@@ -84,6 +87,7 @@ public class ProductionApiClient implements ApiClient {
 
         if (!response.isSuccessful()) {
             BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
+            response.body().close();
             throw new ApiException(error.getErrorMessage());
         }
     }
@@ -104,9 +108,12 @@ public class ProductionApiClient implements ApiClient {
 
         if (!response.isSuccessful()) {
             BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
+            response.body().close();
             throw new ApiException(error.getErrorMessage());
         } else {
-            return gson.fromJson(response.body().charStream(), CheckoutUrlResponse.class);
+            CheckoutUrlResponse urlResponse = gson.fromJson(response.body().charStream(), CheckoutUrlResponse.class);
+            response.body().close();
+            return urlResponse;
         }
     }
 }
