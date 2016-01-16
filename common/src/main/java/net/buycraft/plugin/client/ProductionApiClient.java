@@ -1,17 +1,15 @@
 package net.buycraft.plugin.client;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.*;
 import net.buycraft.plugin.data.responses.*;
+import okhttp3.*;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
-    private static final MediaType FORMENCODED = MediaType.parse("application/x-www-form-urlencoded");
 
     private final Gson gson = new Gson();
     private final OkHttpClient httpClient;
@@ -67,19 +65,16 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public void deleteCommand(List<Integer> ids) throws IOException, ApiException {
-        StringBuilder content = new StringBuilder();
-        for (int i = 0; i < ids.size(); i++) {
-            if (i > 0) {
-                content.append('&');
-            }
-            content.append("ids[]=");
-            content.append(ids.get(i));
+        FormBody.Builder builder = new FormBody.Builder();
+
+        for (Integer id : ids) {
+            builder.add("ids[]", id.toString());
         }
 
         Request request = new Request.Builder()
                 .url(API_URL + "/queue")
                 .addHeader("X-Buycraft-Secret", secret)
-                .method("DELETE", RequestBody.create(FORMENCODED, content.toString()))
+                .method("DELETE", builder.build())
                 .build();
         Response response = httpClient.newCall(request).execute();
 
@@ -91,13 +86,15 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public CheckoutUrlResponse getCheckoutUri(String username, int packageId) throws IOException, ApiException {
-        String encodedUsername = URLEncoder.encode(username, "UTF-8");
-        String content = "username=" + encodedUsername + "&package_id=" + packageId;
+        RequestBody body = new FormBody.Builder()
+                .add("username", username)
+                .add("package_id", Integer.toString(packageId))
+                .build();
 
         Request request = new Request.Builder()
                 .url(API_URL + "/checkout")
                 .addHeader("X-Buycraft-Secret", secret)
-                .post(RequestBody.create(FORMENCODED, content))
+                .post(body)
                 .build();
         Response response = httpClient.newCall(request).execute();
 

@@ -9,6 +9,7 @@ import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
 
@@ -18,6 +19,11 @@ public class SecretSubcommand implements Subcommand {
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {
+        if (!(sender instanceof ConsoleCommandSender)) {
+            sender.sendMessage(ChatColor.RED + "For security reasons, your Buycraft secret key must be set via the console.");
+            return;
+        }
+
         if (args.length != 1) {
             sender.sendMessage(ChatColor.RED + "I need your secret key!");
             return;
@@ -36,7 +42,7 @@ public class SecretSubcommand implements Subcommand {
 
                 ServerInformation information = plugin.getServerInformation();
                 plugin.setApiClient(client);
-
+                plugin.getListingUpdateTask().run();
                 plugin.getConfiguration().setServerKey(args[0]);
                 try {
                     plugin.saveConfiguration();
@@ -47,6 +53,8 @@ public class SecretSubcommand implements Subcommand {
                 sender.sendMessage(String.format(ChatColor.GREEN + "Looks like you're good to go! " +
                         "This server is now registered as server '%s' for the web store '%s'.",
                         information.getServer().getName(), information.getAccount().getName()));
+
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getDuePlayerFetcher());
             }
         });
     }
