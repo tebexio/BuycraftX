@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.buycraft.plugin.bukkit.command.ForceCheckSubcommand;
 import net.buycraft.plugin.bukkit.command.InformationSubcommand;
 import net.buycraft.plugin.bukkit.command.SecretSubcommand;
+import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
@@ -38,6 +39,9 @@ public class BuycraftPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Pre-initialization.
+        GUIUtil.setPlugin(this);
+
         // Initialize configuration.
         getDataFolder().mkdir();
         try {

@@ -1,15 +1,18 @@
 package net.buycraft.plugin.bukkit.gui;
 
-import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,11 +25,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CategoryViewGUI {
     private final BuycraftPlugin plugin;
-    private final Map<Integer, Supplier<GUIImpl>> categoryMenus = new HashMap<>();
+    private final Map<Integer, List<GUIImpl>> categoryMenus = new HashMap<>();
 
     public class GUIImpl implements Listener {
         private final Inventory inventory;
         private final Integer parentId;
+        private Category category;
         private final int page;
 
         private int calculateSize(Category category, int page) {
@@ -51,13 +55,14 @@ public class CategoryViewGUI {
         }
 
         public GUIImpl(Category category, Integer parentId, int page) {
-            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), "Buycraft: " + trimName(category.getName()));
+            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), trimName("Buycraft: " + category.getName()));
             this.parentId = parentId;
             this.page = page;
             update(category);
         }
 
         public void update(Category category) {
+            this.category = category;
             inventory.clear();
 
             List<List<Category>> subcatPartition = Lists.partition(category.getSubcategories(), 9);
@@ -131,6 +136,51 @@ public class CategoryViewGUI {
             meta.setDisplayName(ChatColor.GRAY + (parentId == null ? "View All Categories" : "Back to Parent"));
             parent.setItemMeta(meta);
             inventory.setItem(bottomBase + 4, parent);
+        }
+
+        @EventHandler
+        public void onInventoryClick(InventoryClickEvent event) {
+            if (!(event.getWhoClicked() instanceof Player)) {
+                return;
+            }
+
+            final Player player = (Player) event.getWhoClicked();
+
+            if (event.getClickedInventory() == inventory) {
+                event.setCancelled(true);
+
+                if (category == null)
+                    return;
+
+                ItemStack stack = event.getClickedInventory().getItem(event.getSlot());
+                if (stack == null) {
+                    return;
+                }
+
+                String displayName = stack.getItemMeta().getDisplayName();
+                if (displayName.startsWith(ChatColor.YELLOW.toString())) {
+                    // Subcategory was clicked
+                    for (Category category1 : category.getSubcategories()) {
+                        if (category1.getName().equals(ChatColor.stripColor(displayName))) {
+                            // TODO: Open category
+                            return;
+                        }
+                    }
+                } else if (displayName.startsWith(ChatColor.GREEN.toString())) {
+                    // Package was clicked
+                    for (Package aPackage : category.getPackages()) {
+                        if (aPackage.getName().equals(ChatColor.stripColor(displayName))) {
+                            GUIUtil.closeInventoryLater(player);
+                            Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, aPackage, player));
+                            return;
+                        }
+                    }
+                }
+
+                // TODO: Open category UI
+            } else if (event.getView().getTopInventory() == inventory) {
+                event.setCancelled(true);
+            }
         }
     }
 }
