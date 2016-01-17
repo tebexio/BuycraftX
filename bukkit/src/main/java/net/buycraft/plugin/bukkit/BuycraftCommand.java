@@ -17,6 +17,11 @@ public class BuycraftCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+        if (!sender.hasPermission("buycraft.admin")) {
+            sender.sendMessage(ChatColor.RED + "You don't have permission to use Buycraft administrative commands.");
+            return true;
+        }
+
         if (args.length == 0) {
             showHelp(sender);
             return true;
