@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.buycraft.plugin.bukkit.gui.GUIUtil.withName;
+
 @RequiredArgsConstructor
 public class CategoryViewGUI {
     private final BuycraftPlugin plugin;
@@ -71,12 +73,7 @@ public class CategoryViewGUI {
                     List<Category> subcats = subcatPartition.get(page);
                     for (int i = 0; i < subcats.size(); i++) {
                         Category subcat = subcats.get(i);
-
-                        ItemStack stack = new ItemStack(Material.BOOK);
-                        ItemMeta meta = stack.getItemMeta();
-                        meta.setDisplayName(ChatColor.YELLOW + subcat.getName());
-                        stack.setItemMeta(meta);
-                        inventory.setItem(i, stack);
+                        inventory.setItem(i, withName(Material.BOOK, ChatColor.YELLOW + subcat.getName()));
                     }
                 }
             }
@@ -114,20 +111,12 @@ public class CategoryViewGUI {
             int bottomBase = base + 36;
             if (page > 0) {
                 // Definitely draw a previous button
-                ItemStack stack = new ItemStack(Material.NETHER_STAR);
-                ItemMeta meta = stack.getItemMeta();
-                meta.setDisplayName(ChatColor.AQUA + "Previous Page");
-                stack.setItemMeta(meta);
-                inventory.setItem(bottomBase + 1, stack);
+                inventory.setItem(bottomBase + 1, withName(Material.NETHER_STAR, ChatColor.AQUA + "Previous Page"));
             }
 
             if (subcatPartition.size() > page || packagePartition.size() > page) {
                 // Definitely draw a next button
-                ItemStack stack = new ItemStack(Material.NETHER_STAR);
-                ItemMeta meta = stack.getItemMeta();
-                meta.setDisplayName(ChatColor.AQUA + "Next Page");
-                stack.setItemMeta(meta);
-                inventory.setItem(bottomBase + 7, stack);
+                inventory.setItem(bottomBase + 7, withName(Material.NETHER_STAR, ChatColor.AQUA + "Next Page"));
             }
 
             // Draw a parent or "view all categories" button

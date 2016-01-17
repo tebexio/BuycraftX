@@ -14,6 +14,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import static net.buycraft.plugin.bukkit.gui.GUIUtil.withName;
+
 public class ViewCategoriesGUI implements Listener {
     private final BuycraftPlugin plugin;
     private final Inventory inventory;
@@ -34,11 +36,7 @@ public class ViewCategoriesGUI implements Listener {
         }
 
         for (Category category : listing.getCategories()) {
-            ItemStack stack = new ItemStack(Material.BOOK);
-            ItemMeta meta = stack.getItemMeta();
-            meta.setDisplayName(ChatColor.YELLOW + category.getName());
-            stack.setItemMeta(meta);
-            inventory.addItem(stack);
+            inventory.addItem(withName(Material.BOOK, ChatColor.YELLOW + category.getName()));
         }
     }
 

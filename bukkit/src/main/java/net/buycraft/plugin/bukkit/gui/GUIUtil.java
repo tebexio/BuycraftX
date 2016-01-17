@@ -4,7 +4,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Objects;
 
@@ -24,5 +28,13 @@ public class GUIUtil {
                 player.closeInventory();
             }
         });
+    }
+
+    public static ItemStack withName(Material material, String name) {
+        ItemStack stack = new ItemStack(material);
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(name);
+        stack.setItemMeta(meta);
+        return stack;
     }
 }
