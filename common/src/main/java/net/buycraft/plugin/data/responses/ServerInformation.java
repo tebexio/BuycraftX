@@ -39,6 +39,6 @@ public class ServerInformation {
     public static class AccountCurrency {
         @SerializedName("iso_4217")
         private final String iso4217;
-        private final String prefix;
+        private final String symbol;
     }
 }

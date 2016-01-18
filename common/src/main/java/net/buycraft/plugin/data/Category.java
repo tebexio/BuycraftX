@@ -22,10 +22,12 @@ public class Category implements Comparable<Category> {
 
     public void order() {
         Collections.sort(packages);
-        Collections.sort(subcategories);
+        if (subcategories != null) {
+            Collections.sort(subcategories);
 
-        for (Category category : subcategories) {
-            category.order();
+            for (Category category : subcategories) {
+                category.order();
+            }
         }
     }
 }

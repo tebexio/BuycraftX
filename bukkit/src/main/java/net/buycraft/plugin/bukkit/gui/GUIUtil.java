@@ -17,7 +17,8 @@ public class GUIUtil {
     private static BuycraftPlugin plugin;
 
     public static void setPlugin(BuycraftPlugin plugin) {
-        Objects.requireNonNull(GUIUtil.plugin, "Plugin already set");
+        if (GUIUtil.plugin != null)
+            throw new IllegalStateException("Plugin already set");
         GUIUtil.plugin = Objects.requireNonNull(plugin, "plugin");
     }
 

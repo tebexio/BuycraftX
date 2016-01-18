@@ -2,10 +2,10 @@ package net.buycraft.plugin.bukkit;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.buycraft.plugin.bukkit.command.ForceCheckSubcommand;
-import net.buycraft.plugin.bukkit.command.InformationSubcommand;
-import net.buycraft.plugin.bukkit.command.SecretSubcommand;
+import net.buycraft.plugin.bukkit.command.*;
+import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
+import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
@@ -15,6 +15,7 @@ import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
+import net.buycraft.plugin.data.responses.Listing;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,6 +37,10 @@ public class BuycraftPlugin extends JavaPlugin {
     private ListingUpdateTask listingUpdateTask;
     @Getter
     private ServerInformation serverInformation;
+    @Getter
+    private CategoryViewGUI categoryViewGUI;
+    @Getter
+    private ViewCategoriesGUI viewCategoriesGUI;
 
     @Override
     public void onEnable() {
@@ -83,8 +88,7 @@ public class BuycraftPlugin extends JavaPlugin {
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run(); // for a first synchronous run
-            getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask = new ListingUpdateTask(this),
-                    20 * 60 * 10, 20 * 60 * 10);
+            getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
         }
 
         // Register listener.
@@ -95,7 +99,16 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
+        command.getSubcommandMap().put("refresh", new RefreshSubcommand(this));
+        command.getSubcommandMap().put("gui", new GUISubcommand(this));
         getCommand("buycraft").setExecutor(command);
+
+        // Initialize GUIs.
+        viewCategoriesGUI = new ViewCategoriesGUI(this);
+        viewCategoriesGUI.update();
+
+        categoryViewGUI = new CategoryViewGUI(this);
+        categoryViewGUI.update();
     }
 
     public void saveConfiguration() throws IOException {

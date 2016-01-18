@@ -24,6 +24,11 @@ public class ViewCategoriesGUI implements Listener {
         this.plugin = plugin;
         // TODO: How are we going to handle over-sized categories?
         inventory = Bukkit.createInventory(null, 9, "Buycraft: Categories");
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    public void open(Player player) {
+        player.openInventory(inventory);
     }
 
     public void update() {
@@ -46,9 +51,9 @@ public class ViewCategoriesGUI implements Listener {
             return;
         }
 
-        Player player = (Player) event.getWhoClicked();
+        final Player player = (Player) event.getWhoClicked();
 
-        if (event.getClickedInventory() == inventory) {
+        if (event.getClickedInventory().equals(inventory)) {
             event.setCancelled(true);
 
             Listing listing = plugin.getListingUpdateTask().getListing();
@@ -65,7 +70,17 @@ public class ViewCategoriesGUI implements Listener {
                 return;
             }
 
-            // TODO: Open category UI
+            final CategoryViewGUI.GUIImpl gui = plugin.getCategoryViewGUI().getFirstPage(category);
+            if (gui == null) {
+                return;
+            }
+
+            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    gui.open(player);
+                }
+            });
         } else if (event.getView().getTopInventory() == inventory) {
             event.setCancelled(true);
         }

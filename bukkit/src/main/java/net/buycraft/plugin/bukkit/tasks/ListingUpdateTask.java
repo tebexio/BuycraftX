@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.Listing;
+import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,6 +27,8 @@ public class ListingUpdateTask implements Runnable {
         } catch (IOException | ApiException e) {
             plugin.getLogger().log(Level.SEVERE, "Error whilst retrieving listing", e);
         }
+
+        //Bukkit.getScheduler().runTask(plugin, new GUIUpdateTask(plugin));
     }
 
     public Listing getListing() {
