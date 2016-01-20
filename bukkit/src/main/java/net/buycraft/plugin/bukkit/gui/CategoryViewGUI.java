@@ -130,7 +130,7 @@ public class CategoryViewGUI {
         }
 
         public void closeAll() {
-            for (HumanEntity entity : inventory.getViewers()) {
+            for (HumanEntity entity : ImmutableList.copyOf(inventory.getViewers())) {
                 entity.closeInventory();
             }
         }
