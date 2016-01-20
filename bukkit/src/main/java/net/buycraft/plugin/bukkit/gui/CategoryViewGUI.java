@@ -1,6 +1,7 @@
 package net.buycraft.plugin.bukkit.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
@@ -37,7 +38,7 @@ public class CategoryViewGUI {
         if (!categoryMenus.containsKey(category.getId()))
             return null;
 
-        return categoryMenus.get(category.getId()).get(0);
+        return Iterables.getFirst(categoryMenus.get(category.getId()), null);
     }
 
     public void update() {

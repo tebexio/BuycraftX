@@ -32,7 +32,7 @@ public class SendCheckoutLink implements Runnable {
             return;
         }
 
-        player.sendMessage(ChatColor.STRIKETHROUGH + "                                    ");
+        player.sendMessage(ChatColor.STRIKETHROUGH + "                                          ");
         player.spigot().sendMessage(new ComponentBuilder("To buy your package, click ")
                 .color(net.md_5.bungee.api.ChatColor.GRAY)
                 .append("here")
@@ -40,7 +40,6 @@ public class SendCheckoutLink implements Runnable {
                 .bold(true)
                 .event(new ClickEvent(ClickEvent.Action.OPEN_URL, response.getUrl()))
                 .create());
-        player.sendMessage(ChatColor.GRAY +          "This link expires in 15 minutes.");
-        player.sendMessage(ChatColor.STRIKETHROUGH + "                                    ");
+        player.sendMessage(ChatColor.STRIKETHROUGH + "                                          ");
     }
 }
