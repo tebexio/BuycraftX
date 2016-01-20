@@ -8,7 +8,6 @@ import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
-import net.buycraft.plugin.bukkit.util.CommandInjector;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
 import net.buycraft.plugin.client.ApiClient;
@@ -100,7 +99,6 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
         command.getSubcommandMap().put("refresh", new RefreshSubcommand(this));
         getCommand("buycraft").setExecutor(command);
-        CommandInjector.injectCommand(configuration.getBuyCommandName(), new BuyCommand(this));
 
         // Initialize GUIs.
         viewCategoriesGUI = new ViewCategoriesGUI(this);
