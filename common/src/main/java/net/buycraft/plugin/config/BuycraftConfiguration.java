@@ -42,6 +42,14 @@ public class BuycraftConfiguration {
         return properties.getProperty("server-key", null);
     }
 
+    public void setBuyCommandName(String key) {
+        properties.setProperty("buy-command-name", key);
+    }
+
+    public String getBuyCommandName() {
+        return properties.getProperty("buy-command-name", "buy");
+    }
+
     private boolean getBoolean(String key, boolean val) {
         if (!properties.containsKey(key))
             return val;
@@ -66,5 +74,6 @@ public class BuycraftConfiguration {
         defaultSet("is-bungeecord", "false");
         defaultSet("check-for-updates", "true");
         defaultSet("disable-buy-command", "false");
+        defaultSet("buy-command-name", "buy");
     }
 }

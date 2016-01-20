@@ -7,15 +7,14 @@ import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
-import net.buycraft.plugin.bukkit.tasks.ImmediateExecutionRunner;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
+import net.buycraft.plugin.bukkit.util.CommandInjector;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
-import net.buycraft.plugin.data.responses.Listing;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -100,8 +99,8 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
         command.getSubcommandMap().put("refresh", new RefreshSubcommand(this));
-        command.getSubcommandMap().put("gui", new GUISubcommand(this));
         getCommand("buycraft").setExecutor(command);
+        CommandInjector.injectCommand(configuration.getBuyCommandName(), new BuyCommand(this));
 
         // Initialize GUIs.
         viewCategoriesGUI = new ViewCategoriesGUI(this);
