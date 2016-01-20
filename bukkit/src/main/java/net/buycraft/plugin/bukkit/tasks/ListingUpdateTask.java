@@ -28,7 +28,7 @@ public class ListingUpdateTask implements Runnable {
             plugin.getLogger().log(Level.SEVERE, "Error whilst retrieving listing", e);
         }
 
-        //Bukkit.getScheduler().runTask(plugin, new GUIUpdateTask(plugin));
+        Bukkit.getScheduler().runTask(plugin, new GUIUpdateTask(plugin));
     }
 
     public Listing getListing() {
