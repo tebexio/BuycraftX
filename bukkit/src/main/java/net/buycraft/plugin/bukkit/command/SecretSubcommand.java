@@ -25,7 +25,7 @@ public class SecretSubcommand implements Subcommand {
         }
 
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "I need your secret key!");
+            sender.sendMessage(ChatColor.RED + "You must specify your server key. You can find your key at https://server.buycraft.net/servers.");
             return;
         }
 

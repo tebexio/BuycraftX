@@ -13,7 +13,7 @@ public class RefreshSubcommand implements Subcommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length != 0) {
-            sender.sendMessage(ChatColor.RED + "I do not need any parameters!");
+            sender.sendMessage(ChatColor.RED + "This command does not accept any parameters.");
             return;
         }
 

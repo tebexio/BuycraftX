@@ -11,6 +11,11 @@ public class InformationSubcommand implements Subcommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        if (args.length != 0) {
+            sender.sendMessage(ChatColor.RED + "This command does not accept any parameters.");
+            return;
+        }
+
         if (plugin.getApiClient() == null) {
             sender.sendMessage(ChatColor.RED + "Set up a secret key first with /buycraft secret.");
             return;
