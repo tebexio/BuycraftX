@@ -58,7 +58,7 @@ public class CategoryViewGUI {
         if (pages == null) {
             pages = new ArrayList<>();
             categoryMenus.put(category.getId(), pages);
-            for (int i = 0; i < Math.max(1, calculatePages(category)); i++) {
+            for (int i = 0; i < calculatePages(category); i++) {
                 GUIImpl gui = new GUIImpl(parent != null ? parent.getId() : null, i, category);
                 Bukkit.getPluginManager().registerEvents(gui, plugin);
                 pages.add(gui);
@@ -82,8 +82,17 @@ public class CategoryViewGUI {
                 }
             }
 
-            for (GUIImpl gui : pages) {
-                gui.update(category);
+            for (int i = 0; i < pages.size(); i++) {
+                GUIImpl gui = pages.get(i);
+                if (gui.requiresResize(category)) {
+                    gui.closeAll();
+                    HandlerList.unregisterAll(gui);
+                    gui = new GUIImpl(parent != null ? parent.getId() : null, i, category);
+                    Bukkit.getPluginManager().registerEvents(gui, plugin);
+                    pages.set(i, gui);
+                } else {
+                    gui.update(category);
+                }
             }
         }
 
@@ -111,7 +120,7 @@ public class CategoryViewGUI {
             // TODO: Calculate this amount based on no of packages
             int needed = 45; // bottom row
             if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
-                int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9);
+                int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9D);
                 if (pagesWithSubcats >= page) {
                     // more pages exist
                     needed += 9;
@@ -120,6 +129,10 @@ public class CategoryViewGUI {
 
             // if we show subcategories, we can't show as many pages
             return needed;
+        }
+
+        public boolean requiresResize(Category category) {
+            return calculateSize(category, page) != inventory.getSize();
         }
 
         private String trimName(String name) {
@@ -153,7 +166,7 @@ public class CategoryViewGUI {
             List<List<Category>> subcatPartition;
             if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
                 subcatPartition = Lists.partition(category.getSubcategories(), 9);
-                if (subcatPartition.size() >= page) {
+                if (subcatPartition.size() - 1 >= page) {
                     List<Category> subcats = subcatPartition.get(page);
                     for (int i = 0; i < subcats.size(); i++) {
                         Category subcat = subcats.get(i);
