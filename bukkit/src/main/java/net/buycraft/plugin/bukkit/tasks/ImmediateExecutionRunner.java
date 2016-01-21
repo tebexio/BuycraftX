@@ -38,15 +38,16 @@ public class ImmediateExecutionRunner implements Runnable {
                 return;
             }
 
-            if (information.getCommands().isEmpty()) {
-                return;
-            }
-
             // Filter out commands we're going to execute at a later time.
             for (Iterator<QueuedCommand> it = information.getCommands().iterator(); it.hasNext(); ) {
                 QueuedCommand command = it.next();
                 if (executingLater.contains(command.getId()))
                     it.remove();
+            }
+
+            // Nothing to do? Then let's exit.
+            if (information.getCommands().isEmpty()) {
+                return;
             }
 
             // Perform the actual command execution.
