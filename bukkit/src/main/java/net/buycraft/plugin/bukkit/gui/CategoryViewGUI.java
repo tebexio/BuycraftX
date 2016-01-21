@@ -48,6 +48,26 @@ public class CategoryViewGUI {
             return;
         }
 
+        List<Integer> foundIds = new ArrayList<>();
+        for (Category category : listing.getCategories()) {
+            foundIds.add(category.getId());
+            if (category.getSubcategories() != null) {
+                for (Category category1 : category.getSubcategories()) {
+                    foundIds.add(category1.getId());
+                }
+            }
+        }
+
+        Map<Integer, List<GUIImpl>> prune = new HashMap<>(categoryMenus);
+        prune.keySet().removeAll(foundIds);
+        for (List<GUIImpl> guis : prune.values()) {
+            for (GUIImpl gui : guis) {
+                gui.closeAll();
+                HandlerList.unregisterAll(gui);
+            }
+        }
+        categoryMenus.keySet().retainAll(foundIds);
+
         for (Category category : listing.getCategories()) {
             doUpdate(null, category);
         }
@@ -85,11 +105,14 @@ public class CategoryViewGUI {
             for (int i = 0; i < pages.size(); i++) {
                 GUIImpl gui = pages.get(i);
                 if (gui.requiresResize(category)) {
-                    gui.closeAll();
                     HandlerList.unregisterAll(gui);
-                    gui = new GUIImpl(parent != null ? parent.getId() : null, i, category);
-                    Bukkit.getPluginManager().registerEvents(gui, plugin);
-                    pages.set(i, gui);
+                    GUIImpl tmpGui = new GUIImpl(parent != null ? parent.getId() : null, i, category);
+                    Bukkit.getPluginManager().registerEvents(tmpGui, plugin);
+                    pages.set(i, tmpGui);
+
+                    for (HumanEntity entity : ImmutableList.copyOf(gui.inventory.getViewers())) {
+                        entity.openInventory(tmpGui.inventory);
+                    }
                 } else {
                     gui.update(category);
                 }
