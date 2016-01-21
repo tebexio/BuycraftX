@@ -29,10 +29,12 @@ public class BuycraftListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (StringUtils.equalsIgnoreCase(event.getMessage().substring(1), plugin.getConfiguration().getBuyCommandName()) ||
-                StringUtils.startsWithIgnoreCase(event.getMessage().substring(1), plugin.getConfiguration().getBuyCommandName() + " ")) {
-            plugin.getViewCategoriesGUI().open(event.getPlayer());
-            event.setCancelled(true);
+        if (!plugin.getConfiguration().isDisableBuyCommand()) {
+            if (StringUtils.equalsIgnoreCase(event.getMessage().substring(1), plugin.getConfiguration().getBuyCommandName()) ||
+                    StringUtils.startsWithIgnoreCase(event.getMessage().substring(1), plugin.getConfiguration().getBuyCommandName() + " ")) {
+                plugin.getViewCategoriesGUI().open(event.getPlayer());
+                event.setCancelled(true);
+            }
         }
     }
 }
