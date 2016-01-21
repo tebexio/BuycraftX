@@ -64,8 +64,19 @@ public class ImmediateExecutionRunner implements Runnable {
                 }
 
                 for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ExecuteAndConfirmCommandExecutor(plugin,
-                            null, ImmutableList.copyOf(entry.getValue()), false, true), entry.getKey() * 20);
+                    final List<QueuedCommand> toRun = ImmutableList.copyOf(entry.getValue());
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                new ExecuteAndConfirmCommandExecutor(plugin, null, toRun, false, true).run();
+                            } finally {
+                                for (QueuedCommand command : toRun) {
+                                    executingLater.remove(command.getId());
+                                }
+                            }
+                        }
+                    }, entry.getKey() * 20);
                 }
             }
 
