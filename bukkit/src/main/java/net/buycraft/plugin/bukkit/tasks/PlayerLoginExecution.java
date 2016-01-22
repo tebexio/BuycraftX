@@ -11,7 +11,8 @@ import net.buycraft.plugin.data.responses.QueueInformation;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor

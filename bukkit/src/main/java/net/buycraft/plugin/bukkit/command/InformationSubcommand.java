@@ -28,7 +28,7 @@ public class InformationSubcommand implements Subcommand {
 
         sender.sendMessage(ChatColor.GRAY + "Information on this server:");
         sender.sendMessage(String.format(ChatColor.GRAY + "Server " + ChatColor.GREEN + "%s" + ChatColor.GRAY + " for" +
-                " webstore " + ChatColor.GREEN + "%s", plugin.getServerInformation().getServer().getName(),
+                        " webstore " + ChatColor.GREEN + "%s", plugin.getServerInformation().getServer().getName(),
                 plugin.getServerInformation().getAccount().getName()));
         sender.sendMessage(ChatColor.GRAY + "Server prices are in " + ChatColor.GREEN +
                 plugin.getServerInformation().getAccount().getCurrency().getIso4217());

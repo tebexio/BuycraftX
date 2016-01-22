@@ -51,7 +51,7 @@ public class SecretSubcommand implements Subcommand {
                 }
 
                 sender.sendMessage(String.format(ChatColor.GREEN + "Looks like you're good to go! " +
-                        "This server is now registered as server '%s' for the web store '%s'.",
+                                "This server is now registered as server '%s' for the web store '%s'.",
                         information.getServer().getName(), information.getAccount().getName()));
 
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getDuePlayerFetcher());
