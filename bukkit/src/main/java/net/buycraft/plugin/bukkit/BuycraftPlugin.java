@@ -2,7 +2,6 @@ package net.buycraft.plugin.bukkit;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.keen.client.java.JavaKeenClientBuilder;
 import io.keen.client.java.KeenClient;
 import io.keen.client.java.KeenJsonHandler;
 import io.keen.client.java.KeenProject;
