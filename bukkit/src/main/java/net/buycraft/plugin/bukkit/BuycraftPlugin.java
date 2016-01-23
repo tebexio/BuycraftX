@@ -1,5 +1,11 @@
 package net.buycraft.plugin.bukkit;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import io.keen.client.java.JavaKeenClientBuilder;
+import io.keen.client.java.KeenClient;
+import io.keen.client.java.KeenJsonHandler;
+import io.keen.client.java.KeenProject;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.bukkit.command.ForceCheckSubcommand;
@@ -11,6 +17,7 @@ import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
+import net.buycraft.plugin.bukkit.util.KeenUtils;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
 import net.buycraft.plugin.client.ApiClient;
@@ -21,7 +28,11 @@ import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class BuycraftPlugin extends JavaPlugin {
@@ -42,6 +53,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private CategoryViewGUI categoryViewGUI;
     @Getter
     private ViewCategoriesGUI viewCategoriesGUI;
+    @Getter
+    private KeenClient keenClient;
 
     @Override
     public void onEnable() {
@@ -109,6 +122,38 @@ public class BuycraftPlugin extends JavaPlugin {
 
         categoryViewGUI = new CategoryViewGUI(this);
         categoryViewGUI.update();
+
+        // Send data to Keen IO
+        KeenClient.Builder builder = new KeenClient.Builder() {
+            @Override
+            protected KeenJsonHandler getDefaultJsonHandler() throws Exception {
+                return new KeenJsonHandler() {
+                    private final Gson gson = new Gson();
+
+                    @Override
+                    public Map<String, Object> readJson(Reader reader) throws IOException {
+                        return gson.fromJson(reader, new TypeToken<Map<String, Object>>() {}.getType());
+                    }
+
+                    @Override
+                    public void writeJson(Writer writer, Map<String, ?> map) throws IOException {
+                        gson.toJson(map, writer);
+                    }
+                };
+            }
+        };
+        keenClient = builder.build();
+        KeenProject project = new KeenProject("", "", "");
+        keenClient.setDefaultProject(project);
+
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                if (serverInformation != null) {
+                    KeenUtils.postServerInformation(BuycraftPlugin.this);
+                }
+            }
+        }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
     }
 
     public void saveConfiguration() throws IOException {
