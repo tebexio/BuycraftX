@@ -142,7 +142,9 @@ public class BuycraftPlugin extends JavaPlugin {
             }
         };
         keenClient = builder.build();
-        KeenProject project = new KeenProject("", "", "");
+        KeenProject project = new KeenProject("56a3e86dd2eaaa1975036b45",
+                "cb7e52412a5e1a63fe6219460c2ee6df85f401ae2b9bb2cac3384786cd08795d50a419ef237c147df03873d7dd9588a4598bf7af3832ca581634be12f536f0bf700ab24187683f349c404880eba94191e36b0623b60a2a96fb2e8e0cdcb7d9e2",
+                "");
         keenClient.setDefaultProject(project);
 
         getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
