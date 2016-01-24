@@ -25,10 +25,7 @@ import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -121,20 +118,20 @@ public class BuycraftPlugin extends JavaPlugin {
         categoryViewGUI.update();
 
         // Send data to Keen IO
-        keenClient = new JavaKeenClientBuilder().build();
-        KeenProject project = new KeenProject("56a3e86dd2eaaa1975036b45",
-                "cb7e52412a5e1a63fe6219460c2ee6df85f401ae2b9bb2cac3384786cd08795d50a419ef237c147df03873d7dd9588a4598bf7af3832ca581634be12f536f0bf700ab24187683f349c404880eba94191e36b0623b60a2a96fb2e8e0cdcb7d9e2",
-                "");
-        keenClient.setDefaultProject(project);
+        if (serverInformation != null) {
+            keenClient = new JavaKeenClientBuilder().build();
+            KeenProject project = new KeenProject(serverInformation.getAnalytics().getInternal().getProject(),
+                    serverInformation.getAnalytics().getInternal().getKey(),
+                    null);
+            keenClient.setDefaultProject(project);
 
-        getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                if (serverInformation != null) {
+            getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
+                @Override
+                public void run() {
                     KeenUtils.postServerInformation(BuycraftPlugin.this);
                 }
-            }
-        }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
+            }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
+        }
     }
 
     public void saveConfiguration() throws IOException {

@@ -1,5 +1,6 @@
 package net.buycraft.plugin.client;
 
+import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 
 import java.io.IOException;
@@ -19,4 +20,6 @@ public interface ApiClient {
     void deleteCommand(List<Integer> ids) throws IOException, ApiException;
 
     CheckoutUrlResponse getCheckoutUri(String username, int packageId) throws IOException, ApiException;
+
+    List<RecentPayment> getRecentPayments() throws IOException, ApiException;
 }

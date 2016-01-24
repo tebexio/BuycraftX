@@ -1,17 +1,24 @@
 package net.buycraft.plugin.client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
 
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Calendar.class, new Iso8601CalendarSerializer())
+            .create();
     private final OkHttpClient httpClient;
     private final String secret;
 
@@ -24,7 +31,7 @@ public class ProductionApiClient implements ApiClient {
         this.httpClient = Objects.requireNonNull(client, "client");
     }
 
-    private <T> T get(String endpoint, Class<T> clazz) throws IOException, ApiException {
+    private <T> T get(String endpoint, Type type) throws IOException, ApiException {
         Request request = new Request.Builder()
                 .url(API_URL + endpoint)
                 .addHeader("X-Buycraft-Secret", secret)
@@ -33,7 +40,7 @@ public class ProductionApiClient implements ApiClient {
         Response response = httpClient.newCall(request).execute();
 
         if (response.isSuccessful()) {
-            T result = gson.fromJson(response.body().charStream(), clazz);
+            T result = gson.fromJson(response.body().charStream(), type);
             response.body().close();
             return result;
         } else {
@@ -115,5 +122,10 @@ public class ProductionApiClient implements ApiClient {
             response.body().close();
             return urlResponse;
         }
+    }
+
+    @Override
+    public List<RecentPayment> getRecentPayments() throws IOException, ApiException {
+        return get("/payments", new TypeToken<List<RecentPayment>>() {}.getType());
     }
 }
