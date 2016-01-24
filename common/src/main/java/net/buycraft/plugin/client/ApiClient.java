@@ -21,5 +21,5 @@ public interface ApiClient {
 
     CheckoutUrlResponse getCheckoutUri(String username, int packageId) throws IOException, ApiException;
 
-    List<RecentPayment> getRecentPayments() throws IOException, ApiException;
+    List<RecentPayment> getRecentPayments(int limit) throws IOException, ApiException;
 }

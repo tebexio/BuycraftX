@@ -125,7 +125,7 @@ public class ProductionApiClient implements ApiClient {
     }
 
     @Override
-    public List<RecentPayment> getRecentPayments() throws IOException, ApiException {
-        return get("/payments", new TypeToken<List<RecentPayment>>() {}.getType());
+    public List<RecentPayment> getRecentPayments(int limit) throws IOException, ApiException {
+        return get("/payments?limit=" + limit, new TypeToken<List<RecentPayment>>() {}.getType());
     }
 }

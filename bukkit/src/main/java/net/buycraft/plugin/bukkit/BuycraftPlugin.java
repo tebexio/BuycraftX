@@ -1,7 +1,6 @@
 package net.buycraft.plugin.bukkit;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import io.keen.client.java.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,10 @@ import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -119,7 +121,25 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Send data to Keen IO
         if (serverInformation != null) {
-            keenClient = new JavaKeenClientBuilder().build();
+            keenClient = new KeenClient.Builder() {
+                @Override
+                protected KeenJsonHandler getDefaultJsonHandler() throws Exception {
+                    return new KeenJsonHandler() {
+                        private final Gson gson = new Gson();
+
+                        @Override
+                        public Map<String, Object> readJson(Reader reader) throws IOException {
+                            return gson.fromJson(reader, Map.class);
+                        }
+
+                        @Override
+                        public void writeJson(Writer writer, Map<String, ?> map) throws IOException {
+                            gson.toJson(map, writer);
+                            writer.close();
+                        }
+                    };
+                }
+            }.build();
             KeenProject project = new KeenProject(serverInformation.getAnalytics().getInternal().getProject(),
                     serverInformation.getAnalytics().getInternal().getKey(),
                     null);
