@@ -140,6 +140,7 @@ public class BuycraftPlugin extends JavaPlugin {
                     };
                 }
             }.build();
+            KeenLogging.enableLogging();
             KeenProject project = new KeenProject(serverInformation.getAnalytics().getInternal().getProject(),
                     serverInformation.getAnalytics().getInternal().getKey(),
                     null);
