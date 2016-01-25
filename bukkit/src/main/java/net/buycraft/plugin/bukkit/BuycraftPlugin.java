@@ -16,6 +16,7 @@ import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.util.KeenUtils;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
+import net.buycraft.plugin.bukkit.util.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
@@ -91,6 +92,7 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Initialize placeholders.
         placeholderManager.addPlaceholder(new NamePlaceholder());
+        placeholderManager.addPlaceholder(new UuidPlaceholder());
 
         // Queueing tasks.
         getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(this), 20);
