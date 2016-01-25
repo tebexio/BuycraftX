@@ -23,7 +23,7 @@ public class KeenUtils {
         // Server data
         serverData.put("id", plugin.getServerInformation().getServer().getId());
         serverData.put("platform", "bukkit");
-        serverData.put("platform_version", Bukkit.getVersion());
+        serverData.put("platform_version", getMCVersion(Bukkit.getVersion()));
         serverData.put("online_mode", Bukkit.getOnlineMode());
 
         // Plugin data
