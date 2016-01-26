@@ -1,7 +1,6 @@
 package net.buycraft.plugin.bukkit.signs;
 
 import com.google.gson.Gson;
-import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -14,14 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignStorage {
-    private final List<SerializedBlockLocation> signs = new ArrayList<>();
+    private final List<PurchaseSignPosition> signs = new ArrayList<>();
     private transient final Gson gson = new Gson();
 
-    public void addSign(SerializedBlockLocation location) {
+    public void addSign(PurchaseSignPosition location) {
         signs.add(location);
     }
 
-    public void removeSign(SerializedBlockLocation location) {
+    public void removeSign(PurchaseSignPosition location) {
         signs.add(location);
     }
 
