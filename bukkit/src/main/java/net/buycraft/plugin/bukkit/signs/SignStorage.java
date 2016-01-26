@@ -1,6 +1,9 @@
 package net.buycraft.plugin.bukkit.signs;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
+import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
+import org.bukkit.Location;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -10,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SignStorage {
@@ -20,8 +24,33 @@ public class SignStorage {
         signs.add(location);
     }
 
-    public void removeSign(PurchaseSignPosition location) {
-        signs.add(location);
+    public boolean removeSign(PurchaseSignPosition location) {
+        return signs.remove(location);
+    }
+
+    public boolean removeSign(Location location) {
+        SerializedBlockLocation sbl = SerializedBlockLocation.fromBukkitLocation(location);
+        for (Iterator<PurchaseSignPosition> it = signs.iterator(); it.hasNext(); ) {
+            PurchaseSignPosition psp = it.next();
+            if (psp.getLocation().equals(sbl)) {
+                it.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<PurchaseSignPosition> getSigns() {
+        return ImmutableList.copyOf(signs);
+    }
+
+    public boolean containsLocation(Location location) {
+        SerializedBlockLocation sbl = SerializedBlockLocation.fromBukkitLocation(location);
+        for (PurchaseSignPosition sign : signs) {
+            if (sign.getLocation().equals(sbl))
+                return true;
+        }
+        return false;
     }
 
     public void load(Path path) throws IOException {

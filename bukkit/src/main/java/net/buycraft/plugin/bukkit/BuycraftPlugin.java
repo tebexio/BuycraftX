@@ -11,6 +11,7 @@ import net.buycraft.plugin.bukkit.command.SecretSubcommand;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
+import net.buycraft.plugin.bukkit.signs.SignStorage;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.util.KeenUtils;
@@ -52,6 +53,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private ViewCategoriesGUI viewCategoriesGUI;
     @Getter
     private KeenClient keenClient;
+    @Getter
+    private SignStorage signStorage;
 
     @Override
     public void onEnable() {
