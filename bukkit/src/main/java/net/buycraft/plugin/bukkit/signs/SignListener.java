@@ -30,6 +30,11 @@ public class SignListener implements Listener {
         if (!ourSign)
             return;
 
+        if (!event.getPlayer().hasPermission("buycraft.admin")) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't create Buycraft signs.");
+            return;
+        }
+
         int pos;
         try {
             pos = Integer.parseInt(event.getLine(1));
@@ -38,8 +43,8 @@ public class SignListener implements Listener {
             return;
         }
 
-        if (!event.getPlayer().hasPermission("buycraft.admin")) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You can't create Buycraft signs.");
+        if (pos > 100) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't show more than 100 recent purchases!");
             return;
         }
 
