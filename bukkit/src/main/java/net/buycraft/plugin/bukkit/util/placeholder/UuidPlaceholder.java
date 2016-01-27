@@ -6,7 +6,7 @@ import net.buycraft.plugin.data.QueuedPlayer;
 import java.util.regex.Pattern;
 
 public class UuidPlaceholder implements Placeholder {
-    private static final Pattern REPLACE_UUID = Pattern.compile("[{\\(<\\[](uuid)[}\\)>\\]]", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REPLACE_UUID = Pattern.compile("[{\\(<\\[]uuid[}\\)>\\]]", Pattern.CASE_INSENSITIVE);
 
     @Override
     public String replace(String command, QueuedPlayer player, QueuedCommand queuedCommand) {
