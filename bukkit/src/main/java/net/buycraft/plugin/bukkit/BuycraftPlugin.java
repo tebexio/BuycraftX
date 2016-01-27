@@ -4,16 +4,15 @@ import com.google.gson.Gson;
 import io.keen.client.java.*;
 import lombok.Getter;
 import lombok.Setter;
-import net.buycraft.plugin.bukkit.command.ForceCheckSubcommand;
-import net.buycraft.plugin.bukkit.command.InformationSubcommand;
-import net.buycraft.plugin.bukkit.command.RefreshSubcommand;
-import net.buycraft.plugin.bukkit.command.SecretSubcommand;
+import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
+import net.buycraft.plugin.bukkit.signs.SignListener;
 import net.buycraft.plugin.bukkit.signs.SignStorage;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
+import net.buycraft.plugin.bukkit.tasks.SignUpdater;
 import net.buycraft.plugin.bukkit.util.KeenUtils;
 import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
 import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
@@ -115,6 +114,7 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
         command.getSubcommandMap().put("refresh", new RefreshSubcommand(this));
+        command.getSubcommandMap().put("signupdate", new SignUpdateSubcommand(this));
         getCommand("buycraft").setExecutor(command);
 
         // Initialize GUIs.
@@ -123,6 +123,16 @@ public class BuycraftPlugin extends JavaPlugin {
 
         categoryViewGUI = new CategoryViewGUI(this);
         categoryViewGUI.update();
+
+        // Initialize sign data and listener.
+        signStorage = new SignStorage();
+        try {
+            signStorage.load(getDataFolder().toPath().resolve("signs.json"));
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING, "Can't load signs, continuing anyway", e);
+        }
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new SignUpdater(this), 20, 3600 * 15);
+        getServer().getPluginManager().registerEvents(new SignListener(this), this);
 
         // Send data to Keen IO
         if (serverInformation != null) {
@@ -145,7 +155,6 @@ public class BuycraftPlugin extends JavaPlugin {
                     };
                 }
             }.build();
-            KeenLogging.enableLogging();
             KeenProject project = new KeenProject(serverInformation.getAnalytics().getInternal().getProject(),
                     serverInformation.getAnalytics().getInternal().getKey(),
                     null);
@@ -157,6 +166,15 @@ public class BuycraftPlugin extends JavaPlugin {
                     KeenUtils.postServerInformation(BuycraftPlugin.this);
                 }
             }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        try {
+            signStorage.save(getDataFolder().toPath().resolve("signs.json"));
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Can't save signs, continuing anyway");
         }
     }
 

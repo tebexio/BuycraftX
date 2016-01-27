@@ -29,10 +29,9 @@ public class SignStorage {
     }
 
     public boolean removeSign(Location location) {
-        SerializedBlockLocation sbl = SerializedBlockLocation.fromBukkitLocation(location);
         for (Iterator<PurchaseSignPosition> it = signs.iterator(); it.hasNext(); ) {
             PurchaseSignPosition psp = it.next();
-            if (psp.getLocation().equals(sbl)) {
+            if (psp.getLocation().toBukkitLocation().equals(location)) {
                 it.remove();
                 return true;
             }
@@ -45,9 +44,8 @@ public class SignStorage {
     }
 
     public boolean containsLocation(Location location) {
-        SerializedBlockLocation sbl = SerializedBlockLocation.fromBukkitLocation(location);
         for (PurchaseSignPosition sign : signs) {
-            if (sign.getLocation().equals(sbl))
+            if (sign.getLocation().toBukkitLocation().equals(location))
                 return true;
         }
         return false;
@@ -63,7 +61,8 @@ public class SignStorage {
     }
 
     public void save(Path path) throws IOException {
-        try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE)) {
+        try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
             gson.toJson(this, writer);
         }
     }

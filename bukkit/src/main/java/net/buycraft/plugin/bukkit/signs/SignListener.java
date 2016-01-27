@@ -2,9 +2,13 @@ package net.buycraft.plugin.bukkit.signs;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.bukkit.tasks.SignUpdateApplication;
+import net.buycraft.plugin.bukkit.tasks.SignUpdater;
 import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -42,15 +46,30 @@ public class SignListener implements Listener {
         plugin.getSignStorage().addSign(new PurchaseSignPosition(SerializedBlockLocation.fromBukkitLocation(
                 event.getBlock().getLocation()), pos));
         event.getPlayer().sendMessage(ChatColor.GREEN + "Added new recent purchase sign!");
+
+        for (int i = 0; i < 4; i++) {
+            event.setLine(i, "");
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getBlock().getType() != Material.WALL_SIGN || event.getBlock().getType() != Material.SIGN_POST)
+        if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
+            if (plugin.getSignStorage().removeSign(event.getBlock().getLocation())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
+            }
             return;
+        }
 
-        if (plugin.getSignStorage().removeSign(event.getBlock().getLocation())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
+        for (BlockFace face : SignUpdateApplication.FACES) {
+            if (plugin.getSignStorage().removeSign(event.getBlock().getRelative(face).getLocation())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
+                return;
+            }
         }
     }
 }

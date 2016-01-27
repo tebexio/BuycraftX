@@ -16,11 +16,12 @@ import java.util.logging.Level;
 @RequiredArgsConstructor
 public class SignUpdater implements Runnable {
     private final BuycraftPlugin plugin;
-    private final List<PurchaseSignPosition> signs;
 
     @Override
     public void run() {
         // Figure out how many signs we should get
+        List<PurchaseSignPosition> signs = plugin.getSignStorage().getSigns();
+
         int max = 0;
         for (PurchaseSignPosition sign : signs) {
             if (sign.getPosition() > max) {
@@ -46,8 +47,9 @@ public class SignUpdater implements Runnable {
 
         Map<PurchaseSignPosition, RecentPayment> signToPurchases = new HashMap<>();
         for (PurchaseSignPosition sign : signs) {
-            if (sign.getPosition() > payments.size())
-                continue;
+            if (sign.getPosition() > payments.size()) {
+                signToPurchases.put(sign, null);
+            }
 
             signToPurchases.put(sign, payments.get(sign.getPosition() - 1));
         }

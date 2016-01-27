@@ -17,7 +17,7 @@ public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
 
     private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Calendar.class, new Iso8601CalendarSerializer())
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .create();
     private final OkHttpClient httpClient;
     private final String secret;
