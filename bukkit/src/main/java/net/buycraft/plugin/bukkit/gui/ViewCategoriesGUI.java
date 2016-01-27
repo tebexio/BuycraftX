@@ -6,6 +6,7 @@ import net.buycraft.plugin.data.responses.Listing;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +17,7 @@ import static net.buycraft.plugin.bukkit.gui.GUIUtil.withName;
 
 public class ViewCategoriesGUI implements Listener {
     private final BuycraftPlugin plugin;
-    private final Inventory inventory;
+    private Inventory inventory;
 
     public ViewCategoriesGUI(BuycraftPlugin plugin) {
         this.plugin = plugin;
@@ -29,6 +30,10 @@ public class ViewCategoriesGUI implements Listener {
         player.openInventory(inventory);
     }
 
+    private int roundNine(int s) {
+        return s - (s % 9) + 9;
+    }
+
     public void update() {
         inventory.clear();
 
@@ -36,6 +41,14 @@ public class ViewCategoriesGUI implements Listener {
         if (listing == null) {
             plugin.getLogger().warning("No listing found, so can't update categories.");
             return;
+        }
+
+        if (listing.getCategories().size() >= inventory.getSize()) {
+            Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()), "Buycraft: Categories");
+            for (HumanEntity entity : inventory.getViewers()) {
+                entity.openInventory(work);
+            }
+            inventory = work;
         }
 
         for (Category category : listing.getCategories()) {
