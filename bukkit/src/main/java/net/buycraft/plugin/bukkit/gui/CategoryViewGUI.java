@@ -219,7 +219,7 @@ public class CategoryViewGUI {
                             ChatColor.DARK_GREEN +
                             ChatColor.BOLD +
                             plugin.getServerInformation().getAccount().getCurrency().getSymbol() +
-                            p.getPrice().toPlainString() + " " +
+                            p.getEffectivePrice().toPlainString() + " " +
                             plugin.getServerInformation().getAccount().getCurrency().getIso4217();
                     lore.add(price);
                     meta.setLore(lore);
