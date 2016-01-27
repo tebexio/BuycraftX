@@ -1,5 +1,6 @@
 package net.buycraft.plugin.bukkit.gui;
 
+import com.google.common.collect.ImmutableList;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.responses.Listing;
@@ -31,7 +32,8 @@ public class ViewCategoriesGUI implements Listener {
     }
 
     private int roundNine(int s) {
-        return s - (s % 9) + 9;
+        int sz = s - 1;
+        return Math.max(9, sz - (sz % 9) + 9);
     }
 
     public void update() {
@@ -43,9 +45,9 @@ public class ViewCategoriesGUI implements Listener {
             return;
         }
 
-        if (listing.getCategories().size() >= inventory.getSize()) {
+        if (roundNine(listing.getCategories().size()) != inventory.getSize()) {
             Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()), "Buycraft: Categories");
-            for (HumanEntity entity : inventory.getViewers()) {
+            for (HumanEntity entity : ImmutableList.copyOf(inventory.getViewers())) {
                 entity.openInventory(work);
             }
             inventory = work;
