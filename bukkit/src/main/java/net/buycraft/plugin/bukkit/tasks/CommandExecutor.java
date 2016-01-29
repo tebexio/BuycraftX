@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class CommandExecutor implements Callable<CommandExecutorResult> {
@@ -72,8 +73,12 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
             // Run the command now.
             String finalCommand = plugin.getPlaceholderManager().doReplace(qp, command);
             plugin.getLogger().info(String.format("Dispatching command '%s' for player '%s'.", finalCommand, qp.getName()));
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
-            successfullyRun.add(command);
+            try {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+                successfullyRun.add(command);
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'", finalCommand, qp.getName()), e);
+            }
         }
 
         return new CommandExecutorResult(successfullyRun, queuedForOnline, delayed);
