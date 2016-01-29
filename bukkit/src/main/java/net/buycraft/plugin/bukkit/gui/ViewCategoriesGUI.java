@@ -22,7 +22,6 @@ public class ViewCategoriesGUI implements Listener {
 
     public ViewCategoriesGUI(BuycraftPlugin plugin) {
         this.plugin = plugin;
-        // TODO: How are we going to handle over-sized categories?
         inventory = Bukkit.createInventory(null, 9, "Buycraft: Categories");
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
