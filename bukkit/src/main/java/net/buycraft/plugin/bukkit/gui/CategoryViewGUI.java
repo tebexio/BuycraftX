@@ -22,10 +22,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.NumberFormat;
+import java.util.*;
 
 import static net.buycraft.plugin.bukkit.gui.GUIUtil.withName;
 
@@ -214,14 +212,20 @@ public class CategoryViewGUI {
 
                     List<String> lore = new ArrayList<>();
                     // Price
+                    NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
+                    format.setCurrency(Currency.getInstance(plugin.getServerInformation().getAccount().getCurrency().getIso4217()));
+
                     String price = String.valueOf(ChatColor.GRAY) +
                             "Price: " +
                             ChatColor.DARK_GREEN +
                             ChatColor.BOLD +
-                            plugin.getServerInformation().getAccount().getCurrency().getSymbol() +
-                            p.getEffectivePrice().toPlainString() + " " +
-                            plugin.getServerInformation().getAccount().getCurrency().getIso4217();
+                            format.format(p.getEffectivePrice());
                     lore.add(price);
+
+                    if (p.getSale() != null && p.getSale().isActive()) {
+                        lore.add(ChatColor.RED + "(-" + format.format(p.getSale().getDiscount()) + " off!)");
+                    }
+
                     meta.setLore(lore);
 
                     stack.setItemMeta(meta);
