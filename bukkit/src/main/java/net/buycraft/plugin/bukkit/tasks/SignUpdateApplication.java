@@ -2,7 +2,7 @@ package net.buycraft.plugin.bukkit.tasks;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.signs.PurchaseSignPosition;
+import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignPosition;
 import net.buycraft.plugin.data.RecentPayment;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
@@ -22,7 +22,7 @@ public class SignUpdateApplication implements Runnable {
     public static final BlockFace[] FACES = {BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
 
     private final BuycraftPlugin plugin;
-    private final Map<PurchaseSignPosition, RecentPayment> signToPurchases;
+    private final Map<RecentPurchaseSignPosition, RecentPayment> signToPurchases;
 
     private static Block findSkullBlock(Block origin) {
         Block at = origin.getRelative(BlockFace.UP);
@@ -36,7 +36,7 @@ public class SignUpdateApplication implements Runnable {
 
     @Override
     public void run() {
-        for (Map.Entry<PurchaseSignPosition, RecentPayment> entry : signToPurchases.entrySet()) {
+        for (Map.Entry<RecentPurchaseSignPosition, RecentPayment> entry : signToPurchases.entrySet()) {
             Block block = entry.getKey().getLocation().toBukkitLocation().getBlock();
             if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN) {
                 Sign sign = (Sign) block.getState();

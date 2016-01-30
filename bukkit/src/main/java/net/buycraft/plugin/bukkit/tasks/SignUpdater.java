@@ -2,7 +2,7 @@ package net.buycraft.plugin.bukkit.tasks;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.signs.PurchaseSignPosition;
+import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignPosition;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.RecentPayment;
 import org.bukkit.Bukkit;
@@ -20,10 +20,10 @@ public class SignUpdater implements Runnable {
     @Override
     public void run() {
         // Figure out how many signs we should get
-        List<PurchaseSignPosition> signs = plugin.getSignStorage().getSigns();
+        List<RecentPurchaseSignPosition> signs = plugin.getRecentPurchaseSignStorage().getSigns();
 
         int max = 0;
-        for (PurchaseSignPosition sign : signs) {
+        for (RecentPurchaseSignPosition sign : signs) {
             if (sign.getPosition() > max) {
                 max = sign.getPosition();
             }
@@ -45,8 +45,8 @@ public class SignUpdater implements Runnable {
             return;
         }
 
-        Map<PurchaseSignPosition, RecentPayment> signToPurchases = new HashMap<>();
-        for (PurchaseSignPosition sign : signs) {
+        Map<RecentPurchaseSignPosition, RecentPayment> signToPurchases = new HashMap<>();
+        for (RecentPurchaseSignPosition sign : signs) {
             if (sign.getPosition() > payments.size()) {
                 signToPurchases.put(sign, null);
             }

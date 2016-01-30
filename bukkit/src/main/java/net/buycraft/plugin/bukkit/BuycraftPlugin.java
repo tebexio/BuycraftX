@@ -8,8 +8,8 @@ import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
-import net.buycraft.plugin.bukkit.signs.SignListener;
-import net.buycraft.plugin.bukkit.signs.SignStorage;
+import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
+import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.SignUpdater;
@@ -53,7 +53,7 @@ public class BuycraftPlugin extends JavaPlugin {
     @Getter
     private KeenClient keenClient;
     @Getter
-    private SignStorage signStorage;
+    private RecentPurchaseSignStorage recentPurchaseSignStorage;
 
     @Override
     public void onEnable() {
@@ -125,14 +125,14 @@ public class BuycraftPlugin extends JavaPlugin {
         categoryViewGUI.update();
 
         // Initialize sign data and listener.
-        signStorage = new SignStorage();
+        recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
-            signStorage.load(getDataFolder().toPath().resolve("signs.json"));
+            recentPurchaseSignStorage.load(getDataFolder().toPath().resolve("signs.json"));
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Can't load signs, continuing anyway", e);
         }
         getServer().getScheduler().runTaskTimerAsynchronously(this, new SignUpdater(this), 20, 3600 * 15);
-        getServer().getPluginManager().registerEvents(new SignListener(this), this);
+        getServer().getPluginManager().registerEvents(new RecentPurchaseSignListener(this), this);
 
         // Send data to Keen IO
         if (serverInformation != null) {
@@ -172,7 +172,7 @@ public class BuycraftPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         try {
-            signStorage.save(getDataFolder().toPath().resolve("signs.json"));
+            recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("signs.json"));
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Can't save signs, continuing anyway");
         }
