@@ -43,6 +43,11 @@ public class RecentPurchaseSignListener implements Listener {
             return;
         }
 
+        if (pos <= 0) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't show negative or zero purchases!");
+            return;
+        }
+
         if (pos > 100) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't show more than 100 recent purchases!");
             return;
