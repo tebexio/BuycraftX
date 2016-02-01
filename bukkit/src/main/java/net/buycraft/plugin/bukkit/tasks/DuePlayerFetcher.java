@@ -1,5 +1,6 @@
 package net.buycraft.plugin.bukkit.tasks;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
@@ -124,6 +125,15 @@ public class DuePlayerFetcher implements Runnable {
             }
         });
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, 20 * information.getMeta().getNextCheck());
+    }
+
+    public Collection<QueuedPlayer> getDuePlayers() {
+        lock.lock();
+        try {
+            return ImmutableList.copyOf(due.values());
+        } finally {
+            lock.unlock();
+        }
     }
 
     public QueuedPlayer fetchAndRemoveDuePlayer(String name) {

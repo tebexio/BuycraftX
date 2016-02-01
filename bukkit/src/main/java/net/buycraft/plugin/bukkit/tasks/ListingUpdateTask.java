@@ -7,6 +7,7 @@ import net.buycraft.plugin.data.responses.Listing;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -14,6 +15,7 @@ import java.util.logging.Level;
 public class ListingUpdateTask implements Runnable {
     private final BuycraftPlugin plugin;
     private final AtomicReference<Listing> listing = new AtomicReference<>();
+    private final AtomicReference<Date> lastUpdate = new AtomicReference<>();
 
     @Override
     public void run() {
@@ -28,10 +30,16 @@ public class ListingUpdateTask implements Runnable {
             plugin.getLogger().log(Level.SEVERE, "Error whilst retrieving listing", e);
         }
 
+        lastUpdate.set(new Date());
+
         Bukkit.getScheduler().runTask(plugin, new GUIUpdateTask(plugin));
     }
 
     public Listing getListing() {
         return listing.get();
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate.get();
     }
 }
