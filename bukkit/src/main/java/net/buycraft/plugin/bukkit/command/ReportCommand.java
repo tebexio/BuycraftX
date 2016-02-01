@@ -56,6 +56,7 @@ public class ReportCommand implements Subcommand {
         writer.println("Connected to Buycraft? " + (plugin.getApiClient() != null));
         writer.println("Web store information found? " + (plugin.getServerInformation() != null));
         if (plugin.getServerInformation() != null) {
+            writer.println("Web store ID: " + plugin.getServerInformation().getAccount().getId());
             writer.println("Web store URL: " + plugin.getServerInformation().getAccount().getDomain());
             writer.println("Web store name: " + plugin.getServerInformation().getAccount().getName());
             writer.println("Web store currency: " + plugin.getServerInformation().getAccount().getCurrency().getIso4217());
