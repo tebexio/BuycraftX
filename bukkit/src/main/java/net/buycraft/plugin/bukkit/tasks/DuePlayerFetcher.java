@@ -48,7 +48,7 @@ public class DuePlayerFetcher implements Runnable {
         int page = 0;
         do {
             try {
-                information = plugin.getApiClient().retrieveDueQueue(500, page);
+                information = plugin.getApiClient().retrieveDueQueue(250, page);
             } catch (IOException | ApiException e) {
                 plugin.getLogger().log(Level.SEVERE, "Could not fetch due players queue", e);
                 return;
