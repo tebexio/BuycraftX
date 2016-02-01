@@ -32,7 +32,7 @@ public class SecretSubcommand implements Subcommand {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                ApiClient client = new ProductionApiClient(args[0]);
+                ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
                 try {
                     plugin.updateInformation(client);
                 } catch (IOException | ApiException e) {

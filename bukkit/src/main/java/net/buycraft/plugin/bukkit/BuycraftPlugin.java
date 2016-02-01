@@ -22,6 +22,7 @@ import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
 import net.buycraft.plugin.data.responses.ServerInformation;
+import okhttp3.OkHttpClient;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -54,6 +55,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private KeenClient keenClient;
     @Getter
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
+    @Getter
+    private OkHttpClient httpClient;
 
     @Override
     public void onEnable() {
@@ -78,12 +81,13 @@ public class BuycraftPlugin extends JavaPlugin {
         }
 
         // Initialize API client.
+        httpClient = new OkHttpClient();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
-            getLogger().info("Looks like this is a fresh setup. Get started by using /buy secret.");
+            getLogger().info("Looks like this is a fresh setup. Get started by using /buycraft secret.");
         } else {
             getLogger().info("Validating your server key...");
-            ApiClient client = new ProductionApiClient(configuration.getServerKey());
+            ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
             } catch (IOException | ApiException e) {
@@ -115,6 +119,7 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
         command.getSubcommandMap().put("refresh", new RefreshSubcommand(this));
         command.getSubcommandMap().put("signupdate", new SignUpdateSubcommand(this));
+        command.getSubcommandMap().put("report", new ReportCommand(this));
         getCommand("buycraft").setExecutor(command);
 
         // Initialize GUIs.
