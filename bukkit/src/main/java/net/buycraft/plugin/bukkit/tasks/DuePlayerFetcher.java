@@ -25,6 +25,8 @@ public class DuePlayerFetcher implements Runnable {
     private final AtomicBoolean inProgress = new AtomicBoolean(false);
     private final Random random = new Random();
 
+    private static final int LIMIT = 250;
+
     public DuePlayerFetcher(BuycraftPlugin plugin) {
         this.plugin = plugin;
     }
@@ -45,10 +47,14 @@ public class DuePlayerFetcher implements Runnable {
         Map<String, QueuedPlayer> allDue = new HashMap<>();
 
         DueQueueInformation information;
-        int page = 0;
+        Integer page = null;
         do {
             try {
-                information = plugin.getApiClient().retrieveDueQueue(500, page);
+                if (page == null) {
+                    information = plugin.getApiClient().retrieveDueQueue(LIMIT);
+                } else {
+                    information = plugin.getApiClient().retrieveDueQueue(LIMIT, page);
+                }
             } catch (IOException | ApiException e) {
                 plugin.getLogger().log(Level.SEVERE, "Could not fetch due players queue", e);
                 return;
@@ -65,8 +71,8 @@ public class DuePlayerFetcher implements Runnable {
                 return;
             }
 
-            page++;
-        } while (information.getMeta().isMore());
+            page = information.getMeta().getPage();
+        } while (page != null);
 
         plugin.getLogger().info(String.format("Fetched due players (%d found).", allDue.size()));
 
