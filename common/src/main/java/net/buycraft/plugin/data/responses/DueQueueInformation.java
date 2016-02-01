@@ -17,6 +17,6 @@ public class DueQueueInformation {
         private final boolean executeOffline;
         @SerializedName("next_check")
         private final int nextCheck;
-        private final Integer page;
+        private final boolean more;
     }
 }

@@ -68,11 +68,6 @@ public class ProductionApiClient implements ApiClient {
     }
 
     @Override
-    public DueQueueInformation retrieveDueQueue(int limit) throws IOException, ApiException {
-        return get("/queue?limit=" + limit, DueQueueInformation.class);
-    }
-
-    @Override
     public DueQueueInformation retrieveDueQueue(int limit, int page) throws IOException, ApiException {
         return get("/queue?limit=" + limit + "&page=" + page, DueQueueInformation.class);
     }
