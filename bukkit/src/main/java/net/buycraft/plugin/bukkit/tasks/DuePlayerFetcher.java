@@ -45,7 +45,7 @@ public class DuePlayerFetcher implements Runnable {
         Map<String, QueuedPlayer> allDue = new HashMap<>();
 
         DueQueueInformation information;
-        int page = 0;
+        int page = 1;
         do {
             try {
                 information = plugin.getApiClient().retrieveDueQueue(250, page);
