@@ -261,7 +261,7 @@ public class CategoryViewGUI {
 
             final Player player = (Player) event.getWhoClicked();
 
-            if (event.getClickedInventory().equals(inventory)) {
+            if (Objects.equals(inventory, event.getClickedInventory())) {
                 event.setCancelled(true);
 
                 if (category == null)

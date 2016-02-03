@@ -14,6 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
+import java.util.Objects;
+
 import static net.buycraft.plugin.bukkit.gui.GUIUtil.withName;
 
 public class ViewCategoriesGUI implements Listener {
@@ -65,7 +67,7 @@ public class ViewCategoriesGUI implements Listener {
 
         final Player player = (Player) event.getWhoClicked();
 
-        if (event.getClickedInventory().equals(inventory)) {
+        if (Objects.equals(inventory, event.getClickedInventory())) {
             event.setCancelled(true);
 
             Listing listing = plugin.getListingUpdateTask().getListing();
