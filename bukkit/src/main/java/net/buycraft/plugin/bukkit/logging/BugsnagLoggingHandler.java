@@ -2,7 +2,6 @@ package net.buycraft.plugin.bukkit.logging;
 
 import com.bugsnag.Client;
 import com.bugsnag.MetaData;
-import com.bugsnag.http.NetworkException;
 import com.google.common.base.Preconditions;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import org.bukkit.Bukkit;
@@ -23,11 +22,6 @@ public class BugsnagLoggingHandler extends Handler {
     @Override
     public void publish(final LogRecord record) {
         if (record.getThrown() == null) {
-            return;
-        }
-
-        if (record.getThrown() instanceof NetworkException) {
-            // Trying to send a Bugsnag error. Ignore it.
             return;
         }
 

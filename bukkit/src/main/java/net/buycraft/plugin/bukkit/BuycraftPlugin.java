@@ -11,6 +11,7 @@ import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.bukkit.logging.BugsnagGlobalLoggingHandler;
 import net.buycraft.plugin.bukkit.logging.BugsnagLoggingHandler;
+import net.buycraft.plugin.bukkit.logging.BugsnagNilLogger;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
@@ -177,8 +178,8 @@ public class BuycraftPlugin extends JavaPlugin {
             }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
         }
 
-        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594");
-        bugsnagClient.setAutoNotify(false);
+        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnagClient.setLogger(new BugsnagNilLogger());
         Bukkit.getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));
         getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
     }
