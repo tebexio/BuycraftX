@@ -7,6 +7,7 @@ import com.google.common.base.Preconditions;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import org.apache.commons.lang.UnhandledException;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandException;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -19,6 +20,7 @@ public class BugsnagGlobalLoggingHandler extends Handler {
 
     private static final Pattern LISTENER = Pattern.compile("Could not pass event (.*) to plugin BuycraftX");
     private static final Pattern TASK = Pattern.compile("Plugin BuycraftX (.*) generated an exception while executing task (\\d.*)");
+    private static final Pattern COMMAND = Pattern.compile("Unhandled exception executing command '(.*)' in plugin BuycraftX");
 
     public BugsnagGlobalLoggingHandler(Client client, BuycraftPlugin plugin) {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin");
@@ -36,6 +38,8 @@ public class BugsnagGlobalLoggingHandler extends Handler {
             return;
         }
 
+        // Otherwise, see if this error is caused by the Buycraft plugin.
+        // THIS DETECTION IS NOT PERFECT, but should catch most cases.
         if (record.getThrown() instanceof UnhandledException) {
             if (record.getThrown().getMessage() != null && TASK.matcher(record.getThrown().getMessage()).find()) {
                 send(record);
@@ -43,8 +47,13 @@ public class BugsnagGlobalLoggingHandler extends Handler {
             }
         }
 
-        // Otherwise, see if this error is caused by the Buycraft plugin.
-        // THIS DETECTION IS NOT PERFECT
+        if (record.getThrown() instanceof CommandException) {
+            if (record.getThrown().getMessage() != null && COMMAND.matcher(record.getThrown().getMessage()).find()) {
+                send(record);
+                return;
+            }
+        }
+
         if (record.getMessage() != null && LISTENER.matcher(record.getMessage()).find()) {
             send(record);
             return;
