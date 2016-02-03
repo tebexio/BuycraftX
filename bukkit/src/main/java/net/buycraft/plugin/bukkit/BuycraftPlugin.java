@@ -1,5 +1,6 @@
 package net.buycraft.plugin.bukkit;
 
+import com.bugsnag.Client;
 import com.google.gson.Gson;
 import io.keen.client.java.*;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
+import net.buycraft.plugin.bukkit.logging.BugsnagGlobalLoggingHandler;
+import net.buycraft.plugin.bukkit.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
@@ -23,6 +26,7 @@ import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import okhttp3.OkHttpClient;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -172,6 +176,10 @@ public class BuycraftPlugin extends JavaPlugin {
                 }
             }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
         }
+
+        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594");
+        Bukkit.getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));
+        getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
     }
 
     @Override
