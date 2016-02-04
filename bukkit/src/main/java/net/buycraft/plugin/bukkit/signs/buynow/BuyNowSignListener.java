@@ -27,6 +27,7 @@ public class BuyNowSignListener implements Listener {
     @Getter
     private final Map<UUID, SerializedBlockLocation> settingUpSigns = new HashMap<>();
     private final BuycraftPlugin plugin;
+    private boolean signLimited = false;
 
     public BuyNowSignListener(BuycraftPlugin plugin) {
         this.plugin = plugin;
@@ -74,8 +75,20 @@ public class BuyNowSignListener implements Listener {
                 return;
             }
 
+            // Signs are rate limited in order to limit API calls issued.
+            if (signLimited) {
+                return;
+            }
+            signLimited = true;
+
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, Integer.parseInt(sign.getLine(2)),
                     event.getPlayer()));
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    signLimited = false;
+                }
+            }, 4);
         }
     }
 
@@ -91,7 +104,7 @@ public class BuyNowSignListener implements Listener {
                         event.getPlayer().sendMessage(ChatColor.RED + "Buy sign set up cancelled.");
                     }
                 }
-            }, 5);
+            }, 3);
         }
     }
 
