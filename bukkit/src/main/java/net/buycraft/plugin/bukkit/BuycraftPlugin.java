@@ -12,6 +12,7 @@ import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.bukkit.logging.BugsnagGlobalLoggingHandler;
 import net.buycraft.plugin.bukkit.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bukkit.logging.BugsnagNilLogger;
+import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
@@ -62,6 +63,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
     @Getter
     private OkHttpClient httpClient;
+    @Getter
+    private BuyNowSignListener buyNowSignListener;
 
     @Override
     public void onEnable() {
@@ -148,6 +151,10 @@ public class BuycraftPlugin extends JavaPlugin {
         getServer().getScheduler().runTaskTimerAsynchronously(this, new SignUpdater(this), 20, 3600 * 15);
         getServer().getPluginManager().registerEvents(new RecentPurchaseSignListener(this), this);
 
+        // Initialize purchase signs.
+        buyNowSignListener = new BuyNowSignListener(this);
+        getServer().getPluginManager().registerEvents(buyNowSignListener, this);
+
         // Send data to Keen IO
         if (serverInformation != null) {
             keenClient = new KeenClient.Builder() {
@@ -182,6 +189,7 @@ public class BuycraftPlugin extends JavaPlugin {
             }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
         }
 
+        // Set up Bugsnag.
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
         bugsnagClient.setLogger(new BugsnagNilLogger());
         Bukkit.getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));

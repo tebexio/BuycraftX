@@ -4,7 +4,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -18,7 +17,7 @@ public class SendCheckoutLink implements Runnable {
     @NonNull
     private final BuycraftPlugin plugin;
     @NonNull
-    private final Package aPackage;
+    private final int pkgId;
     @NonNull
     private final Player player;
 
@@ -26,7 +25,7 @@ public class SendCheckoutLink implements Runnable {
     public void run() {
         CheckoutUrlResponse response;
         try {
-            response = plugin.getApiClient().getCheckoutUri(player.getName(), aPackage.getId());
+            response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId);
         } catch (IOException | ApiException e) {
             player.sendMessage(ChatColor.RED + "Whoops! We weren't able to get a link for you to check out this package.");
             return;

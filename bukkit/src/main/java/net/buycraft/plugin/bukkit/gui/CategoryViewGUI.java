@@ -291,7 +291,11 @@ public class CategoryViewGUI {
                     for (Package aPackage : category.getPackages()) {
                         if (aPackage.getName().equals(ChatColor.stripColor(displayName))) {
                             GUIUtil.closeInventoryLater(player);
-                            Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, aPackage, player));
+                            if (plugin.getBuyNowSignListener().getSettingUpSigns().containsKey(player.getUniqueId())) {
+                                plugin.getBuyNowSignListener().doSignSetup(player, aPackage);
+                            } else {
+                                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, aPackage.getId(), player));
+                            }
                             return;
                         }
                     }
