@@ -2,22 +2,22 @@ package net.buycraft.plugin.bukkit.signs.buynow;
 
 import lombok.Getter;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.bukkit.tasks.BuyNowSignUpdater;
 import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
+import net.buycraft.plugin.bukkit.tasks.SignUpdateApplication;
 import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
 import net.buycraft.plugin.data.Package;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -37,16 +37,18 @@ public class BuyNowSignListener implements Listener {
     public void onSignChange(SignChangeEvent event) {
         boolean relevant;
         try {
-            String t = event.getLine(0);
-            if (t.equals(ChatColor.BLUE + "[Buycraft]"))
-                event.setLine(0, "[Buycraft]");
-            relevant = t.equalsIgnoreCase("[buycraft_buy]");
+            relevant = event.getLine(0).equalsIgnoreCase("[buycraft_buy]");
         } catch (IndexOutOfBoundsException e) {
             return;
         }
 
         if (!relevant)
             return;
+
+        if (!event.getPlayer().hasPermission("buycraft.admin")) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to create this sign.");
+            return;
+        }
 
         for (int i = 0; i < 4; i++) {
             event.setLine(i, "");
@@ -66,29 +68,28 @@ public class BuyNowSignListener implements Listener {
             if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
                 return;
 
-            Sign sign = (Sign) b.getState();
+            SerializedBlockLocation sbl = SerializedBlockLocation.fromBukkitLocation(event.getClickedBlock().getLocation());
 
-            try {
-                if (!sign.getLine(0).equals(ChatColor.BLUE + "[Buycraft]"))
+            for (SavedBuyNowSign s : plugin.getBuyNowSignStorage().getSigns()) {
+                if (s.getLocation().equals(sbl)) {
+                    // Signs are rate limited in order to limit API calls issued.
+                    if (signLimited) {
+                        return;
+                    }
+                    signLimited = true;
+
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, s.getPackageId(),
+                            event.getPlayer()));
+                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            signLimited = false;
+                        }
+                    }, 4);
+
                     return;
-            } catch (IndexOutOfBoundsException e) {
-                return;
-            }
-
-            // Signs are rate limited in order to limit API calls issued.
-            if (signLimited) {
-                return;
-            }
-            signLimited = true;
-
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, Integer.parseInt(sign.getLine(2)),
-                    event.getPlayer()));
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    signLimited = false;
                 }
-            }, 4);
+            }
         }
     }
 
@@ -108,6 +109,28 @@ public class BuyNowSignListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (!event.getPlayer().hasPermission("buycraft.admin")) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
+            return;
+        }
+
+        if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
+            if (plugin.getBuyNowSignStorage().removeSign(event.getBlock().getLocation())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
+            }
+            return;
+        }
+
+        for (BlockFace face : SignUpdateApplication.FACES) {
+            if (plugin.getBuyNowSignStorage().removeSign(event.getBlock().getRelative(face).getLocation())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
+                return;
+            }
+        }
+    }
+
     public void doSignSetup(Player player, Package p) {
         SerializedBlockLocation sbl = settingUpSigns.remove(player.getUniqueId());
         if (sbl == null)
@@ -118,11 +141,7 @@ public class BuyNowSignListener implements Listener {
         if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
             return;
 
-        Sign sign = (Sign) b.getState();
-        sign.setLine(0, ChatColor.BLUE + "[Buycraft]");
-        sign.setLine(1, StringUtils.abbreviate(p.getName(), 16));
-        sign.setLine(2, Integer.toString(p.getId()));
-        sign.setLine(3, "");
-        sign.update();
+        plugin.getBuyNowSignStorage().addSign(new SavedBuyNowSign(sbl, p.getId()));
+        Bukkit.getScheduler().runTask(plugin, new BuyNowSignUpdater(plugin));
     }
 }

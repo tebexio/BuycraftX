@@ -66,6 +66,11 @@ public class RecentPurchaseSignListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (!event.getPlayer().hasPermission("buycraft.admin")) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
+            return;
+        }
+
         if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
             if (plugin.getRecentPurchaseSignStorage().removeSign(event.getBlock().getLocation())) {
                 event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");

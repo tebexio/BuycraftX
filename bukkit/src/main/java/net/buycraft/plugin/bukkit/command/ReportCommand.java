@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import okhttp3.Request;
+import okhttp3.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -79,19 +80,10 @@ public class ReportCommand implements Subcommand {
                 writer.println();
                 writer.println("### Service status ###");
 
-                // Try fetching a test URL with okhttp
-                Request request = new Request.Builder()
-                        .get()
-                        .url("https://plugin.buycraft.net/")
-                        .build();
-
-                try {
-                    plugin.getHttpClient().newCall(request).execute();
-                    writer.println("Can access plugin API (https://plugin.buycraft.net)");
-                } catch (IOException e) {
-                    writer.println("Can't access plugin API:");
-                    e.printStackTrace(writer);
-                }
+                // Try fetching test URLs
+                tryGet("Buycraft plugin API", "https://plugin.buycraft.net", writer);
+                tryGet("Google over HTTPS", "https://encrypted.google.com", writer);
+                tryGet("Google over HTTP", "http://www.google.com", writer);
 
                 SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
                 String filename = "report-" + f.format(new Date()) + ".txt";
@@ -106,6 +98,24 @@ public class ReportCommand implements Subcommand {
                 }
             }
         });
+    }
+
+    private void tryGet(String type, String url, PrintWriter writer) {
+        Request request = new Request.Builder()
+                .get()
+                .url(url)
+                .build();
+
+        try {
+            Response response = plugin.getHttpClient().newCall(request).execute();
+            writer.println("Can access " + type + " (" + url + ")");
+
+            // close the body!
+            response.body().close();
+        } catch (IOException e) {
+            writer.println("Can't access " + type + " (" + url + "):");
+            e.printStackTrace(writer);
+        }
     }
 
     @Override

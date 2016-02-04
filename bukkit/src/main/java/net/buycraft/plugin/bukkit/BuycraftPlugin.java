@@ -13,6 +13,7 @@ import net.buycraft.plugin.bukkit.logging.BugsnagGlobalLoggingHandler;
 import net.buycraft.plugin.bukkit.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bukkit.logging.BugsnagNilLogger;
 import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignListener;
+import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
@@ -63,6 +64,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
     @Getter
     private OkHttpClient httpClient;
+    @Getter
+    private BuyNowSignStorage buyNowSignStorage;
     @Getter
     private BuyNowSignListener buyNowSignListener;
 
@@ -144,14 +147,20 @@ public class BuycraftPlugin extends JavaPlugin {
         // Initialize sign data and listener.
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
-            recentPurchaseSignStorage.load(getDataFolder().toPath().resolve("signs.json"));
+            recentPurchaseSignStorage.load(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Can't load signs, continuing anyway", e);
+            getLogger().log(Level.WARNING, "Can't load purchase igns, continuing anyway", e);
         }
         getServer().getScheduler().runTaskTimerAsynchronously(this, new SignUpdater(this), 20, 3600 * 15);
         getServer().getPluginManager().registerEvents(new RecentPurchaseSignListener(this), this);
 
         // Initialize purchase signs.
+        buyNowSignStorage = new BuyNowSignStorage();
+        try {
+            buyNowSignStorage.load(getDataFolder().toPath().resolve("buy_now_signs.json"));
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING, "Can't load buy now signs, continuing anyway", e);
+        }
         buyNowSignListener = new BuyNowSignListener(this);
         getServer().getPluginManager().registerEvents(buyNowSignListener, this);
 
@@ -199,9 +208,14 @@ public class BuycraftPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         try {
-            recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("signs.json"));
+            recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Can't save signs, continuing anyway");
+            getLogger().log(Level.SEVERE, "Can't save purchase signs, continuing anyway");
+        }
+        try {
+            buyNowSignStorage.save(getDataFolder().toPath().resolve("buy_now_signs.json"));
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING, "Can't save buy now signs, continuing anyway", e);
         }
     }
 

@@ -3,6 +3,8 @@ package net.buycraft.plugin.bukkit.tasks;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
+import net.buycraft.plugin.data.Category;
+import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.data.responses.Listing;
 import org.bukkit.Bukkit;
 
@@ -33,6 +35,7 @@ public class ListingUpdateTask implements Runnable {
         lastUpdate.set(new Date());
 
         Bukkit.getScheduler().runTask(plugin, new GUIUpdateTask(plugin));
+        Bukkit.getScheduler().runTask(plugin, new BuyNowSignUpdater(plugin));
     }
 
     public Listing getListing() {
@@ -41,5 +44,30 @@ public class ListingUpdateTask implements Runnable {
 
     public Date getLastUpdate() {
         return lastUpdate.get();
+    }
+
+    public Package getPackageById(int id) {
+        for (Category category : getListing().getCategories()) {
+            Package p = doSearch(id, category);
+            if (p != null)
+                return p;
+        }
+
+        return null;
+    }
+
+    private Package doSearch(int id, Category category) {
+        for (Package aPackage : category.getPackages()) {
+            if (aPackage.getId() == id)
+                return aPackage;
+        }
+
+        for (Category sub : category.getSubcategories()) {
+            Package p = doSearch(id, sub);
+            if (p != null)
+                return p;
+        }
+
+        return null;
     }
 }
