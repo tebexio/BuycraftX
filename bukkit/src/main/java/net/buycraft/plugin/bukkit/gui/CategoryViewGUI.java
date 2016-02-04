@@ -277,10 +277,15 @@ public class CategoryViewGUI {
                     // Subcategory was clicked
                     for (final Category category1 : category.getSubcategories()) {
                         if (category1.getName().equals(ChatColor.stripColor(displayName))) {
+                            final GUIImpl gui = getFirstPage(category1);
+                            if (gui == null) {
+                                player.sendMessage(ChatColor.RED + "There's nothing here!");
+                                return;
+                            }
                             Bukkit.getScheduler().runTask(plugin, new Runnable() {
                                 @Override
                                 public void run() {
-                                    categoryMenus.get(category1.getId()).get(0).open(player);
+                                    gui.open(player);
                                 }
                             });
                             return;
