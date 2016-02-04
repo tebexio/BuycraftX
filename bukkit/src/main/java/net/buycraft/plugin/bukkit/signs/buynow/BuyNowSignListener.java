@@ -15,6 +15,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -31,17 +33,46 @@ public class BuyNowSignListener implements Listener {
     }
 
     @EventHandler
+    public void onSignChange(SignChangeEvent event) {
+        boolean relevant;
+        try {
+            String t = event.getLine(0);
+            if (t.equals(ChatColor.BLUE + "[Buycraft]"))
+                event.setLine(0, "[Buycraft]");
+            relevant = t.equalsIgnoreCase("[buycraft_buy]");
+        } catch (IndexOutOfBoundsException e) {
+            return;
+        }
+
+        if (!relevant)
+            return;
+
+        for (int i = 0; i < 4; i++) {
+            event.setLine(i, "");
+        }
+
+        settingUpSigns.put(event.getPlayer().getUniqueId(), SerializedBlockLocation.fromBukkitLocation(event.getBlock().getLocation()));
+        event.getPlayer().sendMessage(ChatColor.GREEN + "Navigate to the item you want to set this sign for.");
+
+        plugin.getViewCategoriesGUI().open(event.getPlayer());
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null) {
             Block b = event.getClickedBlock();
 
-            if (b.getType() != Material.WALL_SIGN || b.getType() != Material.SIGN_POST)
+            if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
                 return;
 
             Sign sign = (Sign) b.getState();
 
-            if (!sign.getLine(0).equals(ChatColor.BLUE + "[Buycraft]"))
+            try {
+                if (!sign.getLine(0).equals(ChatColor.BLUE + "[Buycraft]"))
+                    return;
+            } catch (IndexOutOfBoundsException e) {
                 return;
+            }
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, Integer.parseInt(sign.getLine(2)),
                     event.getPlayer()));
@@ -49,9 +80,18 @@ public class BuyNowSignListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (settingUpSigns.remove(event.getPlayer().getUniqueId()) != null) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Buy sign set up cancelled.");
+    public void onInventoryClose(final InventoryCloseEvent event) {
+        if (settingUpSigns.containsKey(event.getPlayer().getUniqueId())) {
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    if ((event.getPlayer().getOpenInventory().getTopInventory() == null ||
+                            !event.getPlayer().getOpenInventory().getTopInventory().getTitle().startsWith("Buycraft: ")) &&
+                            settingUpSigns.remove(event.getPlayer().getUniqueId()) != null) {
+                        event.getPlayer().sendMessage(ChatColor.RED + "Buy sign set up cancelled.");
+                    }
+                }
+            }, 5);
         }
     }
 
@@ -62,7 +102,7 @@ public class BuyNowSignListener implements Listener {
 
         Block b = sbl.toBukkitLocation().getBlock();
 
-        if (b.getType() != Material.WALL_SIGN || b.getType() != Material.SIGN_POST)
+        if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
             return;
 
         Sign sign = (Sign) b.getState();
