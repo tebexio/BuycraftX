@@ -17,8 +17,8 @@ public class BuycraftConfiguration {
     }
 
     private void defaultSet(String key, String value) {
-        if (!properties.containsKey(key))
-            properties.put(key, value);
+        if (properties.getProperty(key) == null)
+            properties.setProperty(key, value);
     }
 
     public void load(Path path) throws IOException {
