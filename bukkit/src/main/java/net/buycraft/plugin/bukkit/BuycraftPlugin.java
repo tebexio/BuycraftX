@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import io.keen.client.java.*;
 import lombok.Getter;
 import lombok.Setter;
+import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
@@ -16,18 +17,18 @@ import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
-import net.buycraft.plugin.bukkit.tasks.DuePlayerFetcher;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.SignUpdater;
 import net.buycraft.plugin.bukkit.util.KeenUtils;
-import net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder;
-import net.buycraft.plugin.bukkit.util.placeholder.PlaceholderManager;
-import net.buycraft.plugin.bukkit.util.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
 import net.buycraft.plugin.data.responses.ServerInformation;
+import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
+import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
+import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import okhttp3.OkHttpClient;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -68,11 +69,14 @@ public class BuycraftPlugin extends JavaPlugin {
     private BuyNowSignStorage buyNowSignStorage;
     @Getter
     private BuyNowSignListener buyNowSignListener;
+    @Getter
+    private IBuycraftPlatform platform;
 
     @Override
     public void onEnable() {
         // Pre-initialization.
         GUIUtil.setPlugin(this);
+        platform = new BukkitBuycraftPlatform(this);
 
         // Initialize configuration.
         getDataFolder().mkdir();
@@ -116,7 +120,7 @@ public class BuycraftPlugin extends JavaPlugin {
         placeholderManager.addPlaceholder(new UuidPlaceholder());
 
         // Queueing tasks.
-        getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(this), 20);
+        getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform), 20);
         listingUpdateTask = new ListingUpdateTask(this);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");

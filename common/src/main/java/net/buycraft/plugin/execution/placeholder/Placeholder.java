@@ -1,4 +1,4 @@
-package net.buycraft.plugin.bukkit.util.placeholder;
+package net.buycraft.plugin.execution.placeholder;
 
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
