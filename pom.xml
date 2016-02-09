@@ -12,12 +12,17 @@
         <module>common</module>
         <module>bukkit</module>
         <module>sponge</module>
+        <module>bungeecord</module>
     </modules>
 
     <repositories>
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>oss-sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
