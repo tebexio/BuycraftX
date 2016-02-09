@@ -1,51 +1,50 @@
-package net.buycraft.plugin.bukkit.tasks;
+package net.buycraft.plugin.execution;
 
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
-import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.util.CommandExecutorResult;
+import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.QueueInformation;
-import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class PlayerLoginExecution implements Runnable {
     private final QueuedPlayer player;
-    private final BuycraftPlugin plugin;
+    private final IBuycraftPlatform platform;
 
     @Override
     public void run() {
         QueueInformation information;
         try {
-            information = plugin.getApiClient().getPlayerQueue(player.getId());
+            information = platform.getApiClient().getPlayerQueue(player.getId());
         } catch (IOException | ApiException e) {
             // TODO: Implement retry logic.
-            plugin.getLogger().log(Level.SEVERE, "Could not fetch command queue for player", e);
+            platform.log(Level.SEVERE, "Could not fetch command queue for player", e);
             return;
         }
 
-        plugin.getLogger().info(String.format("Fetched %d commands for player '%s'.", information.getCommands().size(), player.getName()));
+        platform.log(Level.INFO, String.format("Fetched %d commands for player '%s'.", information.getCommands().size(), player.getName()));
 
         // Perform the actual command execution.
         CommandExecutorResult result;
         try {
-            result = new ExecuteAndConfirmCommandExecutor(plugin, player, information.getCommands(), true, false).call();
+            result = new ExecuteAndConfirmCommandExecutor(platform, player, information.getCommands(), true, false).call();
         } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Unable to execute commands", e);
+            platform.log(Level.SEVERE, "Unable to execute commands", e);
             return;
         }
 
         if (!result.getQueuedForDelay().isEmpty()) {
             for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new ExecuteAndConfirmCommandExecutor(plugin,
-                        player, ImmutableList.copyOf(entry.getValue()), true, true), entry.getKey() * 20);
+                platform.executeAsyncLater(new ExecuteAndConfirmCommandExecutor(platform, player, ImmutableList.copyOf(entry.getValue()), true, true),
+                        entry.getKey(), TimeUnit.SECONDS);
             }
         }
     }

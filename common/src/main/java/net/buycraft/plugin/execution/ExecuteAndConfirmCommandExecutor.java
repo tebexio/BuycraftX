@@ -1,21 +1,19 @@
-package net.buycraft.plugin.bukkit.tasks;
+package net.buycraft.plugin.execution;
 
 import lombok.RequiredArgsConstructor;
-import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.util.CommandExecutorResult;
+import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class ExecuteAndConfirmCommandExecutor implements Callable<CommandExecutorResult>, Runnable {
-    private final BuycraftPlugin plugin;
+    private final IBuycraftPlatform platform;
     private final QueuedPlayer fallbackPlayer;
     private final List<QueuedCommand> commandList;
     private final boolean requireOnline;
@@ -24,8 +22,10 @@ public class ExecuteAndConfirmCommandExecutor implements Callable<CommandExecuto
     @Override
     public CommandExecutorResult call() throws Exception {
         // Perform the actual command execution.
-        Future<CommandExecutorResult> initialCheck = Bukkit.getScheduler().callSyncMethod(plugin, new CommandExecutor(
-                plugin, fallbackPlayer, commandList, requireOnline, skipDelay));
+
+        FutureTask<CommandExecutorResult> initialCheck = new FutureTask<>(new CommandExecutor(
+                platform, fallbackPlayer, commandList, requireOnline, skipDelay));
+        platform.executeBlocking(initialCheck);
         CommandExecutorResult result = initialCheck.get();
 
         if (!result.getDone().isEmpty()) {
@@ -34,7 +34,7 @@ public class ExecuteAndConfirmCommandExecutor implements Callable<CommandExecuto
                 ids.add(command.getId());
             }
 
-            plugin.getApiClient().deleteCommand(ids);
+            platform.getApiClient().deleteCommand(ids);
         }
 
         return result;
@@ -45,7 +45,7 @@ public class ExecuteAndConfirmCommandExecutor implements Callable<CommandExecuto
         try {
             call();
         } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "Unable to execute commands", e);
+            platform.log(Level.SEVERE, "Unable to execute commands", e);
         }
     }
 }

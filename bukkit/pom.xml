@@ -35,6 +35,7 @@
                     <artifactSet>
                         <excludes>
                             <exclude>com.google.code.gson</exclude>
+                            <exclude>com.google.guava</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>

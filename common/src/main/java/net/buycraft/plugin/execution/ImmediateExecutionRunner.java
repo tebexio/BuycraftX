@@ -1,28 +1,27 @@
-package net.buycraft.plugin.bukkit.tasks;
+package net.buycraft.plugin.execution;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.util.CommandExecutorResult;
+import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.responses.QueueInformation;
-import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class ImmediateExecutionRunner implements Runnable {
-    private final BuycraftPlugin plugin;
+    private final IBuycraftPlatform platform;
     private final Set<Integer> executingLater = Sets.newConcurrentHashSet();
     private final Random random = new Random();
 
     @Override
     public void run() {
-        if (plugin.getApiClient() == null) {
+        if (platform.getApiClient() == null) {
             return; // no API client
         }
 
@@ -30,9 +29,9 @@ public class ImmediateExecutionRunner implements Runnable {
 
         do {
             try {
-                information = plugin.getApiClient().retrieveOfflineQueue();
+                information = platform.getApiClient().retrieveOfflineQueue();
             } catch (IOException | ApiException e) {
-                plugin.getLogger().log(Level.SEVERE, "Could not fetch command queue", e);
+                platform.log(Level.SEVERE, "Could not fetch command queue", e);
                 return;
             }
 
@@ -51,9 +50,9 @@ public class ImmediateExecutionRunner implements Runnable {
             // Perform the actual command execution.
             CommandExecutorResult result;
             try {
-                result = new ExecuteAndConfirmCommandExecutor(plugin, null, information.getCommands(), false, false).call();
+                result = new ExecuteAndConfirmCommandExecutor(platform, null, information.getCommands(), false, false).call();
             } catch (Exception e) {
-                plugin.getLogger().log(Level.SEVERE, "Unable to execute commands", e);
+                platform.log(Level.SEVERE, "Unable to execute commands", e);
                 return;
             }
 
@@ -64,18 +63,18 @@ public class ImmediateExecutionRunner implements Runnable {
 
                 for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
                     final List<QueuedCommand> toRun = ImmutableList.copyOf(entry.getValue());
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+                    platform.executeAsyncLater(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                new ExecuteAndConfirmCommandExecutor(plugin, null, toRun, false, true).run();
+                                new ExecuteAndConfirmCommandExecutor(platform, null, toRun, false, true).run();
                             } finally {
                                 for (QueuedCommand command : toRun) {
                                     executingLater.remove(command.getId());
                                 }
                             }
                         }
-                    }, entry.getKey() * 20);
+                    }, entry.getKey(), TimeUnit.SECONDS);
                 }
             }
 

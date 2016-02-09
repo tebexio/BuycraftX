@@ -1,4 +1,4 @@
-package net.buycraft.plugin.bukkit.util;
+package net.buycraft.plugin.execution;
 
 import com.google.common.collect.ListMultimap;
 import lombok.Value;
