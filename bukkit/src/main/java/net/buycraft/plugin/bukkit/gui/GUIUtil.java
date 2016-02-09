@@ -6,6 +6,9 @@ import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -28,6 +31,19 @@ public class GUIUtil {
                 player.closeInventory();
             }
         });
+    }
+
+    public static Inventory getClickedInventory(InventoryClickEvent event) {
+        if (event.getSlot() < 0)
+            return null;
+
+        InventoryView view = event.getView();
+
+        if (view.getTopInventory() != null && event.getSlot() < view.getTopInventory().getSize()) {
+            return view.getTopInventory();
+        } else {
+            return view.getBottomInventory();
+        }
     }
 
     public static ItemStack withName(Material material, String name) {

@@ -260,14 +260,15 @@ public class CategoryViewGUI {
             }
 
             final Player player = (Player) event.getWhoClicked();
+            Inventory clickedInventory = GUIUtil.getClickedInventory(event);
 
-            if (Objects.equals(inventory, event.getClickedInventory())) {
+            if (clickedInventory != null && Objects.equals(inventory, clickedInventory)) {
                 event.setCancelled(true);
 
                 if (category == null)
                     return;
 
-                ItemStack stack = event.getClickedInventory().getItem(event.getSlot());
+                ItemStack stack = clickedInventory.getItem(event.getSlot());
                 if (stack == null) {
                     return;
                 }

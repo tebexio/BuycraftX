@@ -66,8 +66,9 @@ public class ViewCategoriesGUI implements Listener {
         }
 
         final Player player = (Player) event.getWhoClicked();
+        Inventory clickedInventory = GUIUtil.getClickedInventory(event);
 
-        if (Objects.equals(inventory, event.getClickedInventory())) {
+        if (clickedInventory != null && Objects.equals(inventory, clickedInventory)) {
             event.setCancelled(true);
 
             Listing listing = plugin.getListingUpdateTask().getListing();
