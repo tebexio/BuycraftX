@@ -9,10 +9,14 @@ import org.bukkit.Bukkit;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.regex.Pattern;
 
 public class BugsnagLoggingHandler extends Handler {
     private final Client client;
     private final BuycraftPlugin plugin;
+
+    private static final Pattern PLUGIN_ERROR = Pattern.compile("Could not dispatch command '(.*)' for player '(.*)'\\. " +
+            "This is typically a plugin error, not an issue with BuycraftX\\.");
 
     public BugsnagLoggingHandler(Client client, BuycraftPlugin plugin) {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin");
@@ -22,6 +26,10 @@ public class BugsnagLoggingHandler extends Handler {
     @Override
     public void publish(final LogRecord record) {
         if (record.getThrown() == null) {
+            return;
+        }
+
+        if (PLUGIN_ERROR.matcher(record.getMessage()).find()) {
             return;
         }
 

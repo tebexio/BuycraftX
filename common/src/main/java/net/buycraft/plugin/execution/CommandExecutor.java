@@ -65,7 +65,8 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
                 platform.dispatchCommand(finalCommand);
                 successfullyRun.add(command);
             } catch (Exception e) {
-                platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'", finalCommand, qp.getName()), e);
+                platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'. " +
+                        "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, qp.getName()), e);
             }
         }
 
