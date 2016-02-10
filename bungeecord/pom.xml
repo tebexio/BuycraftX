@@ -42,11 +42,11 @@
                     <relocations>
                         <relocation>
                             <pattern>io.keen</pattern>
-                            <shadedPattern>net.buycraft.plugin.bukkit.internal.keenio</shadedPattern>
+                            <shadedPattern>net.buycraft.plugin.bungeecord.internal.keenio</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.bugsnag</pattern>
-                            <shadedPattern>net.buycraft.plugin.bukkit.internal.bugsnag</shadedPattern>
+                            <shadedPattern>net.buycraft.plugin.bungeecord.internal.bugsnag</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okhttp3</pattern>

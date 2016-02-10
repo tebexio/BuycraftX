@@ -1,13 +1,10 @@
-package net.buycraft.plugin.bukkit.command;
+package net.buycraft.plugin.bungeecord.command;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.bungeecord.BuycraftPlugin;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -37,9 +34,7 @@ public class ReportCommand implements Subcommand {
         String date = new Date().toString();
         final String os = System.getProperty("os.name") + " | " + System.getProperty("os.version") + " | " + System.getProperty("os.arch");
         String javaVersion = System.getProperty("java.version") + " | " + System.getProperty("java.vendor");
-        String serverVersion = Bukkit.getBukkitVersion();
-        String serverIP = Bukkit.getIp();
-        int serverPort = Bukkit.getPort();
+        String serverVersion = plugin.getProxy().getVersion();
         String buycraftVersion = plugin.getDescription().getVersion();
 
         writer.println("### Server Information ###");
@@ -49,12 +44,11 @@ public class ReportCommand implements Subcommand {
         writer.println("Operating system: " + os);
         writer.println("Java version: " + javaVersion);
         writer.println("Server version: " + serverVersion);
-        writer.println("Server IP and port: " + serverIP + " / " + serverPort);
         writer.println();
 
         writer.println("### Plugin Information ###");
         writer.println("Plugin version: " + buycraftVersion);
-        writer.println("Platform: Bukkit");
+        writer.println("Platform: BungeeCord");
         writer.println("Connected to Buycraft? " + (plugin.getApiClient() != null));
         writer.println("Web store information found? " + (plugin.getServerInformation() != null));
         if (plugin.getServerInformation() != null) {
@@ -68,13 +62,8 @@ public class ReportCommand implements Subcommand {
         }
 
         writer.println("Players in queue: " + plugin.getDuePlayerFetcher().getDuePlayers());
-        writer.println("Listing update last completed: " + plugin.getListingUpdateTask().getLastUpdate());
-        writer.println("Listing: ");
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        gson.toJson(plugin.getListingUpdateTask().getListing(), writer);
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
                 writer.println();
