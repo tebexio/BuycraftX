@@ -89,7 +89,7 @@ public class BuycraftPlugin extends Plugin {
         } else {
             getLogger().info("Validating your server key...");
             final ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
-            // Hack because md_5 is short-sighted.
+            // Hack due to SecurityManager shenanigans.
             FutureTask<Void> hackTask = new FutureTask<>(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
