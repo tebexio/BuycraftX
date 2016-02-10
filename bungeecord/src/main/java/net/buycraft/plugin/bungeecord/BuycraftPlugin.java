@@ -23,6 +23,7 @@ import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.md_5.bungee.api.plugin.Plugin;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
 import java.io.IOException;
@@ -30,6 +31,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -77,16 +81,26 @@ public class BuycraftPlugin extends Plugin {
                 .connectTimeout(500, TimeUnit.MILLISECONDS)
                 .writeTimeout(1, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
+                .dispatcher(new Dispatcher(getExecutorService()))
                 .build();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using /buycraft secret.");
         } else {
             getLogger().info("Validating your server key...");
-            ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            final ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            // Hack because md_5 is short-sighted.
+            FutureTask<Void> hackTask = new FutureTask<>(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    updateInformation(client);
+                    return null;
+                }
+            });
+            getProxy().getScheduler().runAsync(this, hackTask);
             try {
-                updateInformation(client);
-            } catch (IOException | ApiException e) {
+                hackTask.get();
+            } catch (InterruptedException | ExecutionException e) {
                 getLogger().severe(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;
