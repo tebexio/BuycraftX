@@ -50,7 +50,7 @@ public class ImmediateExecutionRunner implements Runnable {
             // Perform the actual command execution.
             CommandExecutorResult result;
             try {
-                result = new ExecuteAndConfirmCommandExecutor(platform, null, information.getCommands(), false, false).call();
+                result = new CommandExecutor(platform, null, information.getCommands(), false, false).call();
             } catch (Exception e) {
                 platform.log(Level.SEVERE, "Unable to execute commands", e);
                 return;
@@ -67,7 +67,7 @@ public class ImmediateExecutionRunner implements Runnable {
                         @Override
                         public void run() {
                             try {
-                                new ExecuteAndConfirmCommandExecutor(platform, null, toRun, false, true).run();
+                                new CommandExecutor(platform, null, toRun, false, true).run();
                             } finally {
                                 for (QueuedCommand command : toRun) {
                                     executingLater.remove(command.getId());

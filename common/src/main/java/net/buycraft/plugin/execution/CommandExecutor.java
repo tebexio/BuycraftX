@@ -5,9 +5,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
+import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +17,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
-public class CommandExecutor implements Callable<CommandExecutorResult> {
+public class CommandExecutor implements Callable<CommandExecutorResult>, Runnable {
     private final IBuycraftPlatform platform;
     private final QueuedPlayer fallbackQueuedPlayer;
     private final List<QueuedCommand> commands;
@@ -24,8 +26,7 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
 
     @Override
     public CommandExecutorResult call() throws Exception {
-        List<QueuedCommand> successfullyRun = new ArrayList<>();
-        List<QueuedCommand> queuedForOnline = new ArrayList<>();
+        final List<QueuedCommand> successfullyRun = new ArrayList<>();
         ListMultimap<Integer, QueuedCommand> delayed = ArrayListMultimap.create();
 
         // Determine what we can run.
@@ -39,7 +40,6 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
             boolean playerOnline = platform.isPlayerOnline(qp);
 
             if (!playerOnline && requireOnline) {
-                queuedForOnline.add(command);
                 continue;
             }
 
@@ -47,7 +47,6 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
             if (requiredSlots != null && requiredSlots > 0 && playerOnline) {
                 int free = platform.getFreeSlots(qp);
                 if (free < requiredSlots) {
-                    queuedForOnline.add(command);
                     continue;
                 }
             }
@@ -70,7 +69,23 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
             }
         }
 
-        return new CommandExecutorResult(successfullyRun, queuedForOnline, delayed);
+        platform.executeAsync(new Runnable() {
+            @Override
+            public void run() {
+                List<Integer> ids = new ArrayList<>();
+                for (QueuedCommand command : successfullyRun) {
+                    ids.add(command.getId());
+                }
+
+                try {
+                    platform.getApiClient().deleteCommand(ids);
+                } catch (IOException | ApiException e) {
+                    platform.log(Level.SEVERE, "Unable to mark commands as completed", e);
+                }
+            }
+        });
+
+        return new CommandExecutorResult(successfullyRun, delayed);
     }
 
 
@@ -80,5 +95,14 @@ public class CommandExecutor implements Callable<CommandExecutorResult> {
 
         return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" +
                 id.substring(16, 20) + "-" + id.substring(20, 32));
+    }
+
+    @Override
+    public void run() {
+        try {
+            call();
+        } catch (Exception e) {
+            platform.log(Level.SEVERE, "Unable to execute commands", e);
+        }
     }
 }

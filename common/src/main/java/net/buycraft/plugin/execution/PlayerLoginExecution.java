@@ -35,7 +35,7 @@ public class PlayerLoginExecution implements Runnable {
         // Perform the actual command execution.
         CommandExecutorResult result;
         try {
-            result = new ExecuteAndConfirmCommandExecutor(platform, player, information.getCommands(), true, false).call();
+            result = new CommandExecutor(platform, player, information.getCommands(), true, false).call();
         } catch (Exception e) {
             platform.log(Level.SEVERE, "Unable to execute commands", e);
             return;
@@ -43,7 +43,7 @@ public class PlayerLoginExecution implements Runnable {
 
         if (!result.getQueuedForDelay().isEmpty()) {
             for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
-                platform.executeAsyncLater(new ExecuteAndConfirmCommandExecutor(platform, player, ImmutableList.copyOf(entry.getValue()), true, true),
+                platform.executeAsyncLater(new CommandExecutor(platform, player, ImmutableList.copyOf(entry.getValue()), true, true),
                         entry.getKey(), TimeUnit.SECONDS);
             }
         }
