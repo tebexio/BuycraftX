@@ -29,6 +29,8 @@ import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
+import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import okhttp3.OkHttpClient;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -71,6 +73,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private BuyNowSignListener buyNowSignListener;
     @Getter
     private IBuycraftPlatform platform;
+    @Getter
+    private CommandExecutor commandExecutor;
 
     @Override
     public void onEnable() {
@@ -121,6 +125,8 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Queueing tasks.
         getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform), 20);
+        commandExecutor = new QueuedCommandExecutor(platform);
+        getServer().getScheduler().runTaskTimer(this, (Runnable) commandExecutor, 1, 1);
         listingUpdateTask = new ListingUpdateTask(this);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");

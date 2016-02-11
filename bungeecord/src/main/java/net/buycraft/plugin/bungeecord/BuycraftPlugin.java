@@ -22,6 +22,8 @@ import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
+import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -55,6 +57,8 @@ public class BuycraftPlugin extends Plugin {
     private OkHttpClient httpClient;
     @Getter
     private IBuycraftPlatform platform;
+    @Getter
+    private CommandExecutor commandExecutor;
 
     @Override
     public void onEnable() {
@@ -112,6 +116,8 @@ public class BuycraftPlugin extends Plugin {
 
         // Queueing tasks.
         getProxy().getScheduler().schedule(this, duePlayerFetcher = new DuePlayerFetcher(platform), 1, TimeUnit.SECONDS);
+        commandExecutor = new QueuedCommandExecutor(platform);
+        getProxy().getScheduler().schedule(this, (Runnable) commandExecutor, 50, 50, TimeUnit.MILLISECONDS);
 
         // Register listener.
         getProxy().getPluginManager().registerListener(this, new BuycraftListener(this));

@@ -1,17 +1,15 @@
 package net.buycraft.plugin.execution;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.responses.QueueInformation;
+import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
@@ -48,37 +46,9 @@ public class ImmediateExecutionRunner implements Runnable {
                 return;
             }
 
-            // Perform the actual command execution.
-            CommandExecutorResult result;
-            try {
-                FutureTask<CommandExecutorResult> f = new FutureTask<>(new CommandExecutor(platform, null, information.getCommands(), false, false));
-                platform.executeBlocking(f);
-                result = f.get();
-            } catch (Exception e) {
-                platform.log(Level.SEVERE, "Unable to execute commands", e);
-                return;
-            }
-
-            if (!result.getQueuedForDelay().isEmpty()) {
-                for (QueuedCommand command : result.getQueuedForDelay().values()) {
-                    executingLater.add(command.getId());
-                }
-
-                for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
-                    final List<QueuedCommand> toRun = ImmutableList.copyOf(entry.getValue());
-                    platform.executeBlockingLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                new CommandExecutor(platform, null, toRun, false, true).run();
-                            } finally {
-                                for (QueuedCommand command : toRun) {
-                                    executingLater.remove(command.getId());
-                                }
-                            }
-                        }
-                    }, entry.getKey(), TimeUnit.SECONDS);
-                }
+            // Queue commands for later.
+            for (QueuedCommand command : information.getCommands()) {
+                platform.getExecutor().queue(new ToRunQueuedCommand(command.getPlayer(), command, false));
             }
 
             // Sleep for between 0.5-1.5 seconds to help spread load.

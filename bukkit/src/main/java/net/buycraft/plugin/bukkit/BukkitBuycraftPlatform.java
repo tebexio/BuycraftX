@@ -2,10 +2,11 @@ package net.buycraft.plugin.bukkit;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
+import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
-import net.buycraft.plugin.execution.CommandExecutor;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
+import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -59,7 +60,7 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
 
     private Player getPlayer(QueuedPlayer player) {
         if (player.getUuid() != null) {
-            return Bukkit.getPlayer(CommandExecutor.mojangUuidToJavaUuid(player.getUuid()));
+            return Bukkit.getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
         }
         return Bukkit.getPlayer(player.getName());
     }
@@ -91,5 +92,10 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
     @Override
     public void log(Level level, String message, Throwable throwable) {
         plugin.getLogger().log(level, message, throwable);
+    }
+
+    @Override
+    public CommandExecutor getExecutor() {
+        return plugin.getCommandExecutor();
     }
 }
