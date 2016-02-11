@@ -10,6 +10,7 @@ import net.buycraft.plugin.data.responses.QueueInformation;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -50,7 +51,9 @@ public class ImmediateExecutionRunner implements Runnable {
             // Perform the actual command execution.
             CommandExecutorResult result;
             try {
-                result = new CommandExecutor(platform, null, information.getCommands(), false, false).call();
+                FutureTask<CommandExecutorResult> f = new FutureTask<>(new CommandExecutor(platform, null, information.getCommands(), false, false));
+                platform.executeBlocking(f);
+                result = f.get();
             } catch (Exception e) {
                 platform.log(Level.SEVERE, "Unable to execute commands", e);
                 return;
@@ -63,7 +66,7 @@ public class ImmediateExecutionRunner implements Runnable {
 
                 for (Map.Entry<Integer, Collection<QueuedCommand>> entry : result.getQueuedForDelay().asMap().entrySet()) {
                     final List<QueuedCommand> toRun = ImmutableList.copyOf(entry.getValue());
-                    platform.executeAsyncLater(new Runnable() {
+                    platform.executeBlockingLater(new Runnable() {
                         @Override
                         public void run() {
                             try {

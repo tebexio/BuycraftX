@@ -11,6 +11,7 @@ import net.buycraft.plugin.data.responses.QueueInformation;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -35,7 +36,9 @@ public class PlayerLoginExecution implements Runnable {
         // Perform the actual command execution.
         CommandExecutorResult result;
         try {
-            result = new CommandExecutor(platform, player, information.getCommands(), true, false).call();
+            FutureTask<CommandExecutorResult> f = new FutureTask<>(new CommandExecutor(platform, null, information.getCommands(), true, false));
+            platform.executeBlocking(f);
+            result = f.get();
         } catch (Exception e) {
             platform.log(Level.SEVERE, "Unable to execute commands", e);
             return;
