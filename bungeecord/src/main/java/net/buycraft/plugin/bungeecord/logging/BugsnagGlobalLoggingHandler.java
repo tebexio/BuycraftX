@@ -32,7 +32,7 @@ public class BugsnagGlobalLoggingHandler extends Handler {
         // THIS DETECTION IS NOT PERFECT, but should catch most cases.
         if (record.getMessage() != null && record.getMessage().equals("Error in dispatching command")) {
             for (StackTraceElement element : record.getThrown().getStackTrace()) {
-                if (element.getClassName().startsWith("net.buycraft.plugin")) {
+                if (element.getClassName().equals("net.buycraft.plugin.bungeecord.BuycraftCommand")) {
                     send(record);
                     return;
                 }
