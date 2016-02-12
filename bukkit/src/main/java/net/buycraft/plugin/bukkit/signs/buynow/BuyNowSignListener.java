@@ -9,6 +9,7 @@ import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
 import net.buycraft.plugin.data.Package;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -111,22 +112,34 @@ public class BuyNowSignListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!event.getPlayer().hasPermission("buycraft.admin")) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
-            return;
-        }
-
         if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
-            if (plugin.getBuyNowSignStorage().removeSign(event.getBlock().getLocation())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
+            if (plugin.getBuyNowSignStorage().containsLocation(event.getBlock().getLocation())) {
+                if (!event.getPlayer().hasPermission("buycraft.admin")) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if (plugin.getBuyNowSignStorage().removeSign(event.getBlock().getLocation())) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
+                }
             }
             return;
         }
 
         for (BlockFace face : SignUpdateApplication.FACES) {
-            if (plugin.getBuyNowSignStorage().removeSign(event.getBlock().getRelative(face).getLocation())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
-                return;
+            Location onFace = event.getBlock().getRelative(face).getLocation();
+
+            if (plugin.getBuyNowSignStorage().containsLocation(onFace)) {
+                if (!event.getPlayer().hasPermission("buycraft.admin")) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if (plugin.getBuyNowSignStorage().removeSign(onFace)) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
+                }
             }
         }
     }

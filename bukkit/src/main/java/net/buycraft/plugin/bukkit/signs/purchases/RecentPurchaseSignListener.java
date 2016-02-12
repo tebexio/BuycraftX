@@ -7,6 +7,7 @@ import net.buycraft.plugin.bukkit.tasks.SignUpdater;
 import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -66,24 +67,33 @@ public class RecentPurchaseSignListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!event.getPlayer().hasPermission("buycraft.admin")) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
-            return;
-        }
-
         if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
-            if (plugin.getRecentPurchaseSignStorage().removeSign(event.getBlock().getLocation())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
+            if (plugin.getRecentPurchaseSignStorage().containsLocation(event.getBlock().getLocation())) {
+                if (!event.getPlayer().hasPermission("buycraft.admin")) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
+                    event.setCancelled(true);
+                    return;
+                }
+                if (plugin.getRecentPurchaseSignStorage().removeSign(event.getBlock().getLocation())) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
+                }
             }
             return;
         }
 
         for (BlockFace face : SignUpdateApplication.FACES) {
-            if (plugin.getRecentPurchaseSignStorage().removeSign(event.getBlock().getRelative(face).getLocation())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
-                return;
+            Location onFace = event.getBlock().getRelative(face).getLocation();
+            if (plugin.getRecentPurchaseSignStorage().containsLocation(onFace)) {
+                if (!event.getPlayer().hasPermission("buycraft.admin")) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
+                    event.setCancelled(true);
+                    return;
+                }
+                if (plugin.getRecentPurchaseSignStorage().removeSign(onFace)) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
+                }
             }
         }
     }
