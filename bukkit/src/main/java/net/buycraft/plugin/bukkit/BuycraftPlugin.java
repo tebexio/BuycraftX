@@ -103,7 +103,7 @@ public class BuycraftPlugin extends JavaPlugin {
                 .build();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
-            getLogger().info("Looks like this is a fresh setup. Get started by using /buycraft secret.");
+            getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
             ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
