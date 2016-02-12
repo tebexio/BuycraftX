@@ -5,6 +5,8 @@ import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -42,6 +44,15 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                             "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, command.getPlayer().getName()), e);
                 }
             }
+        }
+
+        long fullTime = System.nanoTime() - start;
+        // +1ms to account for timing
+        if (fullTime > MAXIMUM_EXECUTION_TIME + TimeUnit.MILLISECONDS.toNanos(1)) {
+            // Make the time much nicer.
+            BigDecimal timeMs = new BigDecimal(fullTime).divide(new BigDecimal("1000000"), 2, BigDecimal.ROUND_CEILING);
+            platform.log(Level.SEVERE, "Command execution took " + timeMs.toPlainString() + "ms to complete. " +
+                    "This indicates an issue with one of your server's plugins, which can cause lag.");
         }
 
         if (!couldRun.isEmpty()) {
