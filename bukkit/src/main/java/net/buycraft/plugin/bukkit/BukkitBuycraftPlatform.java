@@ -45,7 +45,7 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, unit.toSeconds(time) * 20);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, unit.toMillis(time) / 50);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void executeBlockingLater(Runnable runnable, long time, TimeUnit unit) {
-        Bukkit.getScheduler().runTaskLater(plugin, runnable, unit.toSeconds(time) * 20);
+        Bukkit.getScheduler().runTaskLater(plugin, runnable, unit.toMillis(time) / 50);
     }
 
     private Player getPlayer(QueuedPlayer player) {
