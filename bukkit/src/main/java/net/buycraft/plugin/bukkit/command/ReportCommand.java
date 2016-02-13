@@ -50,11 +50,13 @@ public class ReportCommand implements Subcommand {
         writer.println("Java version: " + javaVersion);
         writer.println("Server version: " + serverVersion);
         writer.println("Server IP and port: " + serverIP + " / " + serverPort);
+        writer.println("Online mode: " + Bukkit.getOnlineMode());
         writer.println();
 
         writer.println("### Plugin Information ###");
         writer.println("Plugin version: " + buycraftVersion);
         writer.println("Platform: Bukkit");
+        writer.println();
         writer.println("Connected to Buycraft? " + (plugin.getApiClient() != null));
         writer.println("Web store information found? " + (plugin.getServerInformation() != null));
         if (plugin.getServerInformation() != null) {
@@ -62,6 +64,7 @@ public class ReportCommand implements Subcommand {
             writer.println("Web store URL: " + plugin.getServerInformation().getAccount().getDomain());
             writer.println("Web store name: " + plugin.getServerInformation().getAccount().getName());
             writer.println("Web store currency: " + plugin.getServerInformation().getAccount().getCurrency().getIso4217());
+            writer.println("Web store in online mode? " + plugin.getServerInformation().getAccount().isOnlineMode());
 
             writer.println("Server name: " + plugin.getServerInformation().getServer().getName());
             writer.println("Server ID: " + plugin.getServerInformation().getServer().getId());

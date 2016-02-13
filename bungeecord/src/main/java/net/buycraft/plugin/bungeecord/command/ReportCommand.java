@@ -44,6 +44,7 @@ public class ReportCommand implements Subcommand {
         writer.println("Operating system: " + os);
         writer.println("Java version: " + javaVersion);
         writer.println("Server version: " + serverVersion);
+        writer.println("Online mode: " + plugin.getProxy().getConfig().isOnlineMode());
         writer.println();
 
         writer.println("### Plugin Information ###");
@@ -56,6 +57,7 @@ public class ReportCommand implements Subcommand {
             writer.println("Web store URL: " + plugin.getServerInformation().getAccount().getDomain());
             writer.println("Web store name: " + plugin.getServerInformation().getAccount().getName());
             writer.println("Web store currency: " + plugin.getServerInformation().getAccount().getCurrency().getIso4217());
+            writer.println("Web store in online mode? " + plugin.getServerInformation().getAccount().isOnlineMode());
 
             writer.println("Server name: " + plugin.getServerInformation().getServer().getName());
             writer.println("Server ID: " + plugin.getServerInformation().getServer().getId());
