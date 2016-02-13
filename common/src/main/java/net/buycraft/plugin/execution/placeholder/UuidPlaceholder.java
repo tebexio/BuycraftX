@@ -1,5 +1,6 @@
 package net.buycraft.plugin.execution.placeholder;
 
+import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 
@@ -13,6 +14,6 @@ public class UuidPlaceholder implements Placeholder {
         if (player.getUuid() == null) {
             return command; // can't replace UUID for offline mode
         }
-        return REPLACE_UUID.matcher(command).replaceAll(player.getUuid());
+        return REPLACE_UUID.matcher(command).replaceAll(UuidUtil.mojangUuidToJavaUuid(player.getUuid()).toString());
     }
 }
