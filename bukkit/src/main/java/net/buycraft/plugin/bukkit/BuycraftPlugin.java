@@ -241,5 +241,13 @@ public class BuycraftPlugin extends JavaPlugin {
 
     public void updateInformation(ApiClient client) throws IOException, ApiException {
         serverInformation = client.getServerInformation();
+
+        if (!configuration.isBungeeCord() && getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
+            getLogger().log(Level.WARNING, "Your server and webstore online mode settings are mismatched. Unless you are using" +
+                    " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
+                    " you may experience issues with packages not applying.");
+            getLogger().log(Level.WARNING, "If you are sure you have understood and verified that this has been set up, set " +
+                    "is-bungeecord=true in your BuycraftX config.properties.");
+        }
     }
 }
