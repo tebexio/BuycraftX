@@ -15,6 +15,7 @@ public class CategoryViewGUI {
      */
 
     private final BuycraftPlugin plugin;
+
     //    private final Map<Integer, List<GUIImpl>> categoryMenus = new HashMap<>();
 
     //    public GUIImpl getFirstPage(Category category) {

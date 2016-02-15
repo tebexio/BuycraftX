@@ -46,7 +46,9 @@ public class ReportCmd implements CommandExecutor {
         String date = new Date().toString();
         final String os = System.getProperty("os.name") + " | " + System.getProperty("os.version") + " | " + System.getProperty("os.arch");
         String javaVersion = System.getProperty("java.version") + " | " + System.getProperty("java.vendor");
-        String serverVersion = Sponge.getPlatform().getImplementation().getName();
+        String serverPlatform = Sponge.getPlatform().getImplementation().getName();
+
+        String serverVersion = Sponge.getPlatform().getImplementation().getVersion();
         String serverIP = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getHostName() : "?";
         int serverPort = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getPort() : -1;
         String buycraftVersion = "Unknown.";
@@ -70,7 +72,7 @@ public class ReportCmd implements CommandExecutor {
 
         writer.println("### Plugin Information ###");
         writer.println("Plugin version: " + buycraftVersion);
-        writer.println("Platform: SpongeAPI");
+        writer.println("Platform: " + serverPlatform);
         writer.println();
         writer.println("Connected to Buycraft? " + (plugin.getApiClient() != null));
         writer.println("Web store information found? " + (plugin.getServerInformation() != null));
