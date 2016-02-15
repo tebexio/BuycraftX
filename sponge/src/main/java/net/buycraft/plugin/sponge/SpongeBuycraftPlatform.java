@@ -32,7 +32,7 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
     }
 
     @Override public PlaceholderManager getPlaceholderManager() {
-        return null;
+        return plugin.getPlaceholderManager();
     }
 
     @Override public void dispatchCommand(String command) {
@@ -56,7 +56,9 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
     }
 
     @Override public boolean isPlayerOnline(QueuedPlayer player) {
-        return Sponge.getServer().getPlayer(UUID.fromString(player.getUuid())).isPresent();
+        String uuidwd = player.getUuid().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+                "$1-$2-$3-$4-$5");
+        return Sponge.getServer().getPlayer(UUID.fromString(uuidwd)).isPresent();
     }
 
     @Override public int getFreeSlots(QueuedPlayer player) {

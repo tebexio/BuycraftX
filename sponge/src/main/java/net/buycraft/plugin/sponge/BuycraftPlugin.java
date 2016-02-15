@@ -18,6 +18,7 @@ import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.sponge.command.ListPackagesCmd;
 import net.buycraft.plugin.sponge.command.ReportCmd;
+import net.buycraft.plugin.sponge.command.SecretCmd;
 import net.buycraft.plugin.sponge.gui.CategoryViewGUI;
 import net.buycraft.plugin.sponge.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
@@ -27,6 +28,7 @@ import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
@@ -145,6 +147,13 @@ public class BuycraftPlugin {
     }
 
     private CommandSpec buildCommands() {
+        CommandSpec secret =
+                CommandSpec.builder()
+                        .description(Text.of("Sets the secret key to use for this server."))
+                        .permission("buycraft.admin")
+                        .arguments(GenericArguments.string(Text.of("secret")))
+                        .executor(new SecretCmd(this))
+                        .build();
         CommandSpec report =
                 CommandSpec.builder()
                         .description(Text.of("Generates a report with debugging information you can send to support."))
@@ -160,6 +169,7 @@ public class BuycraftPlugin {
                 .description(Text.of("Main command for the Buycraft plugin."))
                 .child(report, "report")
                 .child(list, "list", "packages")
+                .child(secret, "secret")
                 .build();
     }
 
