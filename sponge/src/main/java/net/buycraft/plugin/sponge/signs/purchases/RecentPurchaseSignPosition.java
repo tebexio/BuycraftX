@@ -1,10 +1,16 @@
 package net.buycraft.plugin.sponge.signs.purchases;
 
+import lombok.AllArgsConstructor;
 import lombok.Value;
-import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 @Value
+@AllArgsConstructor
 public class RecentPurchaseSignPosition {
-    private final SerializedBlockLocation location;
+
+    private final Location<World> location;
     private final int position;
+
+
 }

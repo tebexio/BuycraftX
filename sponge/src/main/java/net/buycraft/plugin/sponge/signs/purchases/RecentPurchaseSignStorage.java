@@ -2,7 +2,8 @@ package net.buycraft.plugin.sponge.signs.purchases;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
-import org.bukkit.Location;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -16,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class RecentPurchaseSignStorage {
+
     private final List<RecentPurchaseSignPosition> signs = new ArrayList<>();
     private transient final Gson gson = new Gson();
 
@@ -27,10 +29,10 @@ public class RecentPurchaseSignStorage {
         return signs.remove(location);
     }
 
-    public boolean removeSign(Location location) {
+    public boolean removeSign(Location<World> location) {
         for (Iterator<RecentPurchaseSignPosition> it = signs.iterator(); it.hasNext(); ) {
             RecentPurchaseSignPosition psp = it.next();
-            if (psp.getLocation().toBukkitLocation().equals(location)) {
+            if (psp.getLocation().equals(location)) {
                 it.remove();
                 return true;
             }
@@ -42,10 +44,11 @@ public class RecentPurchaseSignStorage {
         return ImmutableList.copyOf(signs);
     }
 
-    public boolean containsLocation(Location location) {
+    public boolean containsLocation(Location<World> location) {
         for (RecentPurchaseSignPosition sign : signs) {
-            if (sign.getLocation().toBukkitLocation().equals(location))
+            if (sign.getLocation().equals(location)) {
                 return true;
+            }
         }
         return false;
     }

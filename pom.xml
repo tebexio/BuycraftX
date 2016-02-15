@@ -24,6 +24,10 @@
             <id>oss-sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>sponge-repo</id>
+            <url>http://repo.spongepowered.org/maven/</url>
+        </repository>
     </repositories>
 
     <dependencies>

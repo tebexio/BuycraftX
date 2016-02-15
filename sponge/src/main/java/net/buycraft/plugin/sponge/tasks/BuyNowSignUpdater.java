@@ -1,8 +1,17 @@
 package net.buycraft.plugin.sponge.tasks;
 
+import lombok.AllArgsConstructor;
+import net.buycraft.plugin.sponge.BuycraftPlugin;
+
 /**
  * Created by meyerzinn on 2/14/16.
  */
-public class BuyNowSignUpdater {
+@AllArgsConstructor
+public class BuyNowSignUpdater implements Runnable{
 
+    private final BuycraftPlugin plugin;
+
+    @Override public void run() {
+
+    }
 }
