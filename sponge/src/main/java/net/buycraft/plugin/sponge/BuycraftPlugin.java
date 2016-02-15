@@ -19,8 +19,6 @@ import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.sponge.command.ListPackagesCmd;
 import net.buycraft.plugin.sponge.command.ReportCmd;
 import net.buycraft.plugin.sponge.command.SecretCmd;
-import net.buycraft.plugin.sponge.gui.CategoryViewGUI;
-import net.buycraft.plugin.sponge.gui.ViewCategoriesGUI;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
@@ -39,7 +37,6 @@ import org.spongepowered.api.text.Text;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 /**
  * Created by meyerzinn on 2/14/16.
@@ -60,10 +57,6 @@ public class BuycraftPlugin {
     private ListingUpdateTask listingUpdateTask;
     @Getter
     private ServerInformation serverInformation;
-    @Getter
-    private CategoryViewGUI categoryViewGUI;
-    @Getter
-    private ViewCategoriesGUI viewCategoriesGUI;
     @Getter
     private KeenClient keenClient;
     @Getter
@@ -163,7 +156,6 @@ public class BuycraftPlugin {
         CommandSpec list = CommandSpec.builder()
                 .description(Text.of("Lists all Buycraft packages and their prices."))
                 .executor(new ListPackagesCmd(this))
-                .permission("buycraft.list")
                 .build();
         return CommandSpec.builder()
                 .description(Text.of("Main command for the Buycraft plugin."))
