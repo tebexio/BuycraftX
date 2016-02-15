@@ -30,9 +30,7 @@ public class ListingUpdateTask implements Runnable {
         } catch (IOException | ApiException e) {
             plugin.getLogger().error("Error whilst retrieving listing", e);
         }
-
         lastUpdate.set(new Date());
-
         plugin.getPlatform().executeBlocking(new GUIUpdateTask(plugin));
         plugin.getPlatform().executeBlocking(new BuyNowSignUpdater(plugin));
     }
@@ -54,6 +52,35 @@ public class ListingUpdateTask implements Runnable {
         }
         return null;
     }
+
+    public Category findCategory(Category root, int id) {
+        for (Category a : root.getSubcategories()) {
+            if (a.getId() == id) {
+                return a;
+            }
+            if (a.getSubcategories() != null && !a.getSubcategories().isEmpty()) {
+                Category b = findCategory(a, id);
+                if (b != null) {
+                    return b;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Category findCategory(int id) {
+        for (Category a : getListing().getCategories()) {
+            if (a.getId() == id) {
+                return a;
+            }
+            Category b = findCategory(a, id);
+            if (b != null) {
+                return b;
+            }
+        }
+        return null;
+    }
+
 
     private Package doSearch(int id, Category category) {
         for (Package aPackage : category.getPackages()) {
