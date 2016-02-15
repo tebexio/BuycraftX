@@ -1,4 +1,4 @@
-# BuycraftX
+# BuycraftX [![Build Status](https://travis-ci.org/20zinnm/BuycraftX.svg?branch=master)](https://travis-ci.org/20zinnm/BuycraftX)
 
 BuycraftX is an entirely new plugin for use with the [Buycraft.net service](https://www.buycraft.net).
 
