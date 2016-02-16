@@ -106,7 +106,7 @@ public class ReportCmd implements CommandExecutor {
 
                 SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
                 String filename = "report-" + f.format(new Date()) + ".txt";
-                Path p = plugin.getConfigDir().resolve(filename);
+                Path p = plugin.getConfig().getParent().resolve(filename);
 
                 try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
                     w.write(out.toString());

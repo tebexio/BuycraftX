@@ -46,9 +46,7 @@ public class SecretCmd implements CommandExecutor {
                         } catch (IOException e) {
                             src.sendMessage(Text.builder("Apologies, but that key didn't seem to work. Try again.").color(TextColors.RED).build());
                         }
-                        src.sendMessage(Text.builder(String.format("Looks like you're good to go! " +
-                                        "This server is now registered as server '%s' for the web store '%s'.", information.getServer().getName(),
-                                information.getAccount().getName())).color(TextColors.GREEN).build());
+                        src.sendMessage(Text.builder(String.format("Looks like you're good to go!")).color(TextColors.GREEN).build());
                         plugin.getPlatform().executeAsync(plugin.getDuePlayerFetcher());
                     }
                 });

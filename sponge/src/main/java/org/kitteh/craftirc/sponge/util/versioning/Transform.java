@@ -31,7 +31,7 @@ import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
-import org.kitteh.craftirc.sponge.SpongeIRC;
+import net.buycraft.plugin.sponge.BuycraftPlugin;
 
 import java.util.Properties;
 
@@ -39,12 +39,13 @@ import java.util.Properties;
  * Used purely to set the version value on the Plugin. Don't bother touching.
  */
 public class Transform extends ClassTransformer {
+
     private String version;
 
     @Override
     protected boolean shouldTransform(final CtClass clazz) throws NotFoundException {
-        CtClass spongeIRC = ClassPool.getDefault().get(SpongeIRC.class.getName());
-        return !clazz.equals(spongeIRC) && clazz.subtypeOf(spongeIRC);
+        CtClass buycraftPlugin = ClassPool.getDefault().get(BuycraftPlugin.class.getName());
+        return !clazz.equals(buycraftPlugin) && clazz.subtypeOf(buycraftPlugin);
     }
 
     @Override

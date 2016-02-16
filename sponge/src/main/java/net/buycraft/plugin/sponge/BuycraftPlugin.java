@@ -17,6 +17,7 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.sponge.command.ListPackagesCmd;
+import net.buycraft.plugin.sponge.command.RefreshCmd;
 import net.buycraft.plugin.sponge.command.ReportCmd;
 import net.buycraft.plugin.sponge.command.SecretCmd;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
@@ -41,8 +42,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by meyerzinn on 2/14/16.
  */
-@Plugin(id = "buycraft", name = "Buycraft", version = "0.0.1-ALPHA")
+@Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
 public class BuycraftPlugin {
+
+    static final String MAGIC_VERSION = "SET_BY_MAGIC";
 
     @Getter
     @Setter
@@ -79,19 +82,17 @@ public class BuycraftPlugin {
     @Getter
     @Inject
     @DefaultConfig(sharedRoot = false)
-    private Path configDir;
+    private Path config;
 
     @Listener
     public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
         platform = new SpongeBuycraftPlatform(this);
-        getConfigDir().toFile().mkdir();
         try {
-            Path configPath = getConfigDir().resolve("config.properties");
-            if (!configPath.toFile().exists()) {
+            if (!getConfig().toFile().exists()) {
                 configuration.fillDefaults();
-                configuration.save(configPath);
+                configuration.save(getConfig());
             } else {
-                configuration.load(getConfigDir().resolve("config.properties"));
+                configuration.load(getConfig());
                 configuration.fillDefaults();
             }
         } catch (IOException e) {
@@ -140,6 +141,12 @@ public class BuycraftPlugin {
     }
 
     private CommandSpec buildCommands() {
+        CommandSpec refresh =
+                CommandSpec.builder()
+                        .description(Text.of("Refreshes the package listing."))
+                        .permission("buycraft.admin")
+                        .executor(new RefreshCmd(this))
+                        .build();
         CommandSpec secret =
                 CommandSpec.builder()
                         .description(Text.of("Sets the secret key to use for this server."))
@@ -162,12 +169,12 @@ public class BuycraftPlugin {
                 .child(report, "report")
                 .child(list, "list", "packages")
                 .child(secret, "secret")
+                .child(refresh, "refresh")
                 .build();
     }
 
     public void saveConfiguration() throws IOException {
-        Path configPath = getConfigDir().resolve("config.properties");
-        configuration.save(configPath);
+        configuration.save(getConfig());
     }
 
     public void updateInformation(ApiClient client) throws IOException, ApiException {

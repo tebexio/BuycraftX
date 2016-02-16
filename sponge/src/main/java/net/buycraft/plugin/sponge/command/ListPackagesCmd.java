@@ -35,6 +35,17 @@ public class ListPackagesCmd implements CommandExecutor {
     private final BuycraftPlugin plugin;
 
     @Override public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+
+        if (plugin.getApiClient() == null) {
+            src.sendMessage(Text.builder("Set up a secret key first with /buycraft secret.").color(TextColors.RED).build());
+            return CommandResult.success();
+        }
+
+        if (plugin.getListingUpdateTask().getListing() == null) {
+            src.sendMessage(Text.builder("We're currently retrieving the listing. Sit tight!").color(TextColors.RED).build());
+            return CommandResult.success();
+        }
+
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         PaginationBuilder builder = paginationService.builder();
 
