@@ -62,12 +62,10 @@ public class ListingUpdateTask implements Runnable {
                 return aPackage;
         }
 
-        if (category.getSubcategories() != null) {
-            for (Category sub : category.getSubcategories()) {
-                Package p = doSearch(id, sub);
-                if (p != null)
-                    return p;
-            }
+        for (Category sub : category.getSubcategories()) {
+            Package p = doSearch(id, sub);
+            if (p != null)
+                return p;
         }
 
         return null;

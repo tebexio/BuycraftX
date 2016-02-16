@@ -1,5 +1,6 @@
 package net.buycraft.plugin.data;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Value;
 
 import java.util.Collections;
@@ -18,6 +19,10 @@ public class Category implements Comparable<Category> {
     public int compareTo(Category o) {
         Objects.requireNonNull(o, "category");
         return Integer.compare(order, o.getOrder());
+    }
+
+    public List<Category> getSubcategories() {
+        return subcategories == null ? ImmutableList.<Category>of() : subcategories;
     }
 
     public void order() {

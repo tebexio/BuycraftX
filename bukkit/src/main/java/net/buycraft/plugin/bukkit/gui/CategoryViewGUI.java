@@ -49,10 +49,8 @@ public class CategoryViewGUI {
         List<Integer> foundIds = new ArrayList<>();
         for (Category category : listing.getCategories()) {
             foundIds.add(category.getId());
-            if (category.getSubcategories() != null) {
-                for (Category category1 : category.getSubcategories()) {
-                    foundIds.add(category1.getId());
-                }
+            for (Category category1 : category.getSubcategories()) {
+                foundIds.add(category1.getId());
             }
         }
 
@@ -117,16 +115,13 @@ public class CategoryViewGUI {
             }
         }
 
-        if (category.getSubcategories() != null) {
-            for (Category category1 : category.getSubcategories()) {
-                doUpdate(category, category1);
-            }
+        for (Category category1 : category.getSubcategories()) {
+            doUpdate(category, category1);
         }
     }
 
     private static int calculatePages(Category category) {
-        int pagesWithSubcats = category.getSubcategories() == null ? 0 :
-                (int) Math.ceil(category.getSubcategories().size() / 9D);
+        int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9D);
         int pagesWithPackages = (int) Math.ceil(category.getPackages().size() / 36D);
         return Math.max(pagesWithSubcats, pagesWithPackages);
     }
@@ -140,7 +135,7 @@ public class CategoryViewGUI {
         private int calculateSize(Category category, int page) {
             // TODO: Calculate this amount based on no of packages
             int needed = 45; // bottom row
-            if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
+            if (!category.getSubcategories().isEmpty()) {
                 int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9D);
                 if (pagesWithSubcats >= page) {
                     // more pages exist
@@ -185,7 +180,7 @@ public class CategoryViewGUI {
             inventory.clear();
 
             List<List<Category>> subcatPartition;
-            if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
+            if (!category.getSubcategories().isEmpty()) {
                 subcatPartition = Lists.partition(category.getSubcategories(), 9);
                 if (subcatPartition.size() - 1 >= page) {
                     List<Category> subcats = subcatPartition.get(page);
