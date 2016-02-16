@@ -1,21 +1,28 @@
 language: java
-# We want to cache the Maven directories so that we can speed up future
-# builds by not redownloading all dependencies.
 cache:
   directories:
   - .autoconf
   - $HOME/.m2
-# Because Sponge is only compatible with Java 8 (due to the use of Optionals),
-# we can only test build against Java 8. The source will remain at 7 for the other
-# modules, so they will compile and run fine.
 jdk:
-  - oraclejdk8
+- oraclejdk8
+install: true
+script: mvn clean package
+deploy:
+  provider: releases
+  api_key:
+    secure: Bcq17xIyTF6w6WkXhXRCBSImZDSV5qnOkMlDxvs/kousK7qVWhf1beU7tn0MU0EXALnKZKWpB0J5gW7DiV9e0buB14DtkBFba5/kb7dX1lTLfiHC9RaNwUtLvfwQu4dW8zM6EWOCp3cS5KkZHe2wGjVtAjDEFkoxRKZQbLVdbMEktX8q81Ovmm3EzaJUKb+WmpbvJO6c3nUfsaVHcIiJeC0a6I45hUioIPcyh/3BEe6YUrcMvqXQb9BrMQEJFdkPV8lxGw8Hfr7LsUg8N9lb3xPHbbhpnukbWcsEMIILk0LcRxECs4kEaK296wp245V2d1MYhJQDV/W+a1hJo4gH/dxsF+KoFMuklNHXpKjrg6rtOCzPrwQ0/LCf1qGtOZeacem6hNednTVeMtBJYsei6KV48ZvLWlHEz0/SWl9Noooe4d1BWuqzyyqEvfZ3WU52BBcfsMEGKxmUpBmWkU4IHm7aQMvGnwJsZgsbEJtXJ6etUyP4YS/a9FVv2dnOTgxOepkWGiRFRX8Lgba2gegW5vfbDudj5U9N/SRfsca470J9pCxGp+A2M1S776wVwcG1FPYjFzfRT7loHcAk28wVtAvRGKPeF9cNF5wBiDZOOnQvZRjY5+/NRyTHH0WHnkbDrYc4tHpqODQV0ahtIHiw76WMNotEvJq8go7mKMy4BKc=
+  file:
+  - "bukkit/target/buycraftx-*.jar"
+  - "sponge/target/buycraftx-*.jar"
+  - "bungeecord/target/buycraftx-*.jar"
+  on:
+    repo: 20zinnm/BuycraftX
 notifications:
   irc:
     channels:
-      - "irc.esper.net#anidev"
+    - irc.esper.net#anidev
     on_success: change
     on_failure: always
     template:
-      - "%{repository} (%{branch}:%{commit} by %{author}): %{message} (%{build_url})"
+    - '%{repository} (%{branch}:%{commit} by %{author}): %{message} (%{build_url})'
     skip_join: true
