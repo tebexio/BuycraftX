@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by meyerzinn on 2/14/16.
  */
-@Plugin(id = "buycraft-sponge", name = "Buycraft", version = "0.0.1-ALPHA")
+@Plugin(id = "buycraft", name = "Buycraft", version = "0.0.1-ALPHA")
 public class BuycraftPlugin {
 
     @Getter
