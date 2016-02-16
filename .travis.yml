@@ -1,10 +1,16 @@
 language: java
+# We want to cache the Maven directories so that we can speed up future
+# builds by not redownloading all dependencies.
 cache:
   directories:
   - .autoconf
   - $HOME/.m2
+# Because this server is hosted by Travis and it's extremely efficient,
+# we can test this against openjdk7, oraclejdk7, and oraclejdk8 without
+# wasting build time.
 jdk:
-  - openjdk8
+  - openjdk7
+  - oraclejdk7
   - oraclejdk8
 notifications:
   irc:
