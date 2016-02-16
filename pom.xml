@@ -8,7 +8,7 @@
     <artifactId>BuycraftX</artifactId>
     <packaging>pom</packaging>
     <version>0.1.1-SNAPSHOT</version>
-    
+
     <modules>
         <module>common</module>
         <module>bukkit</module>
