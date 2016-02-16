@@ -58,8 +58,7 @@ public class CategoryViewGUI {
         prune.keySet().removeAll(foundIds);
         for (List<GUIImpl> guis : prune.values()) {
             for (GUIImpl gui : guis) {
-                gui.closeAll();
-                HandlerList.unregisterAll(gui);
+                gui.destroy();
             }
         }
         categoryMenus.keySet().retainAll(foundIds);
@@ -85,8 +84,7 @@ public class CategoryViewGUI {
             if (toRemove > 0) {
                 List<GUIImpl> prune = pages.subList(pages.size() - toRemove, pages.size());
                 for (GUIImpl gui : prune) {
-                    gui.closeAll();
-                    HandlerList.unregisterAll(gui);
+                    gui.destroy();
                 }
                 prune.clear();
             } else if (toRemove < 0) {
@@ -106,9 +104,7 @@ public class CategoryViewGUI {
                     Bukkit.getPluginManager().registerEvents(tmpGui, plugin);
                     pages.set(i, tmpGui);
 
-                    for (HumanEntity entity : ImmutableList.copyOf(gui.inventory.getViewers())) {
-                        entity.openInventory(tmpGui.inventory);
-                    }
+                    GUIUtil.replaceInventory(gui.inventory, tmpGui.inventory);
                 } else {
                     gui.update(category);
                 }
@@ -149,6 +145,11 @@ public class CategoryViewGUI {
 
         public boolean requiresResize(Category category) {
             return calculateSize(category, page) != inventory.getSize();
+        }
+
+        public void destroy() {
+            HandlerList.unregisterAll(this);
+            closeAll();
         }
 
         private String trimName(String name) {

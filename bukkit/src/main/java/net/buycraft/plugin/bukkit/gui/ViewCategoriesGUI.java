@@ -48,9 +48,7 @@ public class ViewCategoriesGUI implements Listener {
 
         if (roundNine(listing.getCategories().size()) != inventory.getSize()) {
             Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()), "Buycraft: Categories");
-            for (HumanEntity entity : ImmutableList.copyOf(inventory.getViewers())) {
-                entity.openInventory(work);
-            }
+            GUIUtil.replaceInventory(inventory, work);
             inventory = work;
         }
 
