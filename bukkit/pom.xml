@@ -7,6 +7,7 @@
         <groupId>net.buycraft</groupId>
         <version>${buycraftx-version}</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>buycraftx-bukkit</artifactId>
@@ -70,6 +71,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <finalName>buycraftx-bukkit</finalName>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
