@@ -3,6 +3,9 @@ cache:
   directories:
   - .autoconf
   - $HOME/.m2
+jdk:
+  - openjdk8
+  - oraclejdk8
 notifications:
   irc:
     channels:
