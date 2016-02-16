@@ -5,12 +5,10 @@ cache:
   directories:
   - .autoconf
   - $HOME/.m2
-# Because this server is hosted by Travis and it's extremely efficient,
-# we can test this against openjdk7, oraclejdk7, and oraclejdk8 without
-# wasting build time.
+# Because Sponge is only compatible with Java 8 (due to the use of Optionals),
+# we can only test build against Java 8. The source will remain at 7 for the other
+# modules, so they will compile and run fine.
 jdk:
-  - openjdk7
-  - oraclejdk7
   - oraclejdk8
 notifications:
   irc:
