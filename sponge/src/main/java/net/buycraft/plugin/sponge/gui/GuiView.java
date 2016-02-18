@@ -79,7 +79,7 @@ public class GuiView {
             }
             if (inventory.getSlot(new SlotIndex(i)).isPresent()) {
                 inventory.getSlot(new SlotIndex(i)).get().set(c);
-                iconHandlers.put(inventory.getSlot(new SlotIndex(i)).get(), new CategoryIcon())
+                iconHandlers.put(inventory.getSlot(new SlotIndex(i)).get(), new CategoryIcon(node.getChild(category)));
             }
         }
         for (int i = 0; i < node.getPackages().size(); i++) {

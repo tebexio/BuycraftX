@@ -46,6 +46,4 @@ public class Node {
         return new Node(subcategory.getSubcategories(), subcategory.getPackages(), subcategory.getName(), Optional.of(this));
     }
 
-
-
 }
