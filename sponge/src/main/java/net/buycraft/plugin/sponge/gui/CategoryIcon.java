@@ -15,14 +15,7 @@ import org.spongepowered.api.text.Text;
 @AllArgsConstructor
 public class CategoryIcon implements GuiIcon {
 
-    private final Category category;
-
-    @Override public ItemStack item() {
-        ItemStack is = Sponge.getGame().getRegistry().createBuilder(ItemStack.Builder.class).itemType(ItemTypes.BOOK).quantity(1).build();
-        is.offer(Keys.DISPLAY_NAME, Text.of((category.getName().length() <= 32)
-                ? category.getName() : category.getName().substring(0, 29) + "..."));
-        return is;
-    }
+    private final Node node;
 
     @Override public void onClick(Player clicker) {
 

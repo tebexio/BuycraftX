@@ -8,8 +8,6 @@ import org.spongepowered.api.item.inventory.ItemStack;
  */
 public interface GuiIcon {
 
-    ItemStack item();
-
     void onClick(Player clicker);
 
 }
