@@ -1,8 +1,48 @@
 package net.buycraft.plugin.sponge.command;
 
+import com.google.common.base.Optional;
+import lombok.AllArgsConstructor;
+import net.buycraft.plugin.gui.Node;
+import net.buycraft.plugin.sponge.BuycraftPlugin;
+import net.buycraft.plugin.sponge.gui.GuiView;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+
+import java.util.ArrayList;
+
 /**
  * Created by meyerzinn on 2/19/16.
  */
-public class GuiCmd {
+@AllArgsConstructor
+public class GuiCmd implements CommandExecutor {
 
+    private final BuycraftPlugin plugin;
+
+    @Override public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        if (plugin.getApiClient() == null) {
+            src.sendMessage(Text.builder("Set up a secret key first with /buycraft secret.").color(TextColors.RED).build());
+            return CommandResult.success();
+        }
+
+        if (plugin.getListingUpdateTask().getListing() == null) {
+            src.sendMessage(Text.builder("We're currently retrieving the listing. Sit tight!").color(TextColors.RED).build());
+            return CommandResult.success();
+        }
+
+        if (src instanceof Player) {
+            GuiView view = new GuiView(plugin,
+                    new Node(plugin.getListingUpdateTask().getListing().getCategories(), new ArrayList<>(), "Categories", Optional.absent()),
+                    (Player) src);
+            view.open();
+        } else {
+            src.sendMessage(Text.builder("Only players can use this command!").color(TextColors.RED).build());
+        }
+        return CommandResult.success();
+    }
 }

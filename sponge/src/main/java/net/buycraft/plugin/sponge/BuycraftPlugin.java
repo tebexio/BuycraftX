@@ -16,6 +16,7 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.sponge.command.GuiCmd;
 import net.buycraft.plugin.sponge.command.ListPackagesCmd;
 import net.buycraft.plugin.sponge.command.RefreshCmd;
 import net.buycraft.plugin.sponge.command.ReportCmd;
@@ -170,6 +171,7 @@ public class BuycraftPlugin {
                 .child(list, "list", "packages")
                 .child(secret, "secret")
                 .child(refresh, "refresh")
+                .executor(new GuiCmd(this))
                 .build();
     }
 
