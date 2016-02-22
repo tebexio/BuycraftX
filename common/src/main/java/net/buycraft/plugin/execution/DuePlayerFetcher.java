@@ -31,10 +31,7 @@ public class DuePlayerFetcher implements Runnable {
             return; // no API client
         }
 
-        if (!inProgress.compareAndSet(false, true)) {
-            platform.log(Level.INFO, "Already fetching due player information!");
-            return;
-        }
+        inProgress.set(true);
 
         try {
             platform.log(Level.INFO, "Fetching all due players...");
