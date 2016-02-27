@@ -23,6 +23,8 @@ public class StandaloneBuycraftRunner {
     private final IBuycraftPlatform platform;
     @Getter
     private ServerInformation serverInformation;
+    @Getter
+    private DuePlayerFetcher playerFetcher;
 
     StandaloneBuycraftRunner(CommandDispatcher dispatcher, PlayerDeterminer determiner, String apiKey, Logger logger, ScheduledExecutorService executorService) {
         this.dispatcher = dispatcher;
@@ -63,6 +65,6 @@ public class StandaloneBuycraftRunner {
         } catch (IOException | ApiException e) {
             throw new RuntimeException("Can't fetch account information", e);
         }
-        executorService.schedule(new DuePlayerFetcher(platform), 1, TimeUnit.SECONDS);
+        executorService.schedule(playerFetcher = new DuePlayerFetcher(platform), 1, TimeUnit.SECONDS);
     }
 }
