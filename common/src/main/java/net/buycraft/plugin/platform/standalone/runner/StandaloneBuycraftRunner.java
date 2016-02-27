@@ -2,12 +2,14 @@ package net.buycraft.plugin.platform.standalone.runner;
 
 import lombok.Getter;
 import net.buycraft.plugin.IBuycraftPlatform;
+import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.platform.standalone.StandaloneBuycraftPlatform;
+import okhttp3.OkHttpClient;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,6 +20,7 @@ import java.util.logging.Logger;
 public class StandaloneBuycraftRunner {
     private final CommandDispatcher dispatcher;
     private final PlayerDeterminer determiner;
+    private final String apiKey;
     private final Logger logger;
     private final ScheduledExecutorService executorService;
     private final IBuycraftPlatform platform;
@@ -29,34 +32,45 @@ public class StandaloneBuycraftRunner {
     StandaloneBuycraftRunner(CommandDispatcher dispatcher, PlayerDeterminer determiner, String apiKey, Logger logger, ScheduledExecutorService executorService) {
         this.dispatcher = dispatcher;
         this.determiner = determiner;
+        this.apiKey = apiKey;
         this.logger = logger;
         this.executorService = executorService;
-        this.platform = new StandaloneBuycraftPlatform(new ProductionApiClient(apiKey), executorService) {
-            @Override
-            public void dispatchCommand(String command) {
-                StandaloneBuycraftRunner.this.dispatcher.dispatchCommand(command);
-            }
+        this.platform = new Platform();
+    }
 
-            @Override
-            public boolean isPlayerOnline(QueuedPlayer player) {
-                return StandaloneBuycraftRunner.this.determiner.isPlayerOnline(player);
-            }
+    private class Platform extends StandaloneBuycraftPlatform {
+        Platform() {
+            super(new ProductionApiClient(apiKey, new OkHttpClient.Builder()
+                    .connectTimeout(500, TimeUnit.MILLISECONDS)
+                    .writeTimeout(1, TimeUnit.SECONDS)
+                    .readTimeout(3, TimeUnit.SECONDS)
+                    .build()), executorService);
+        }
 
-            @Override
-            public int getFreeSlots(QueuedPlayer player) {
-                return StandaloneBuycraftRunner.this.determiner.getFreeSlots(player);
-            }
+        @Override
+        public void dispatchCommand(String command) {
+            dispatcher.dispatchCommand(command);
+        }
 
-            @Override
-            public void log(Level level, String message) {
-                StandaloneBuycraftRunner.this.logger.log(level, message);
-            }
+        @Override
+        public boolean isPlayerOnline(QueuedPlayer player) {
+            return determiner.isPlayerOnline(player);
+        }
 
-            @Override
-            public void log(Level level, String message, Throwable throwable) {
-                StandaloneBuycraftRunner.this.logger.log(level, message, throwable);
-            }
-        };
+        @Override
+        public int getFreeSlots(QueuedPlayer player) {
+            return determiner.getFreeSlots(player);
+        }
+
+        @Override
+        public void log(Level level, String message) {
+            logger.log(level, message);
+        }
+
+        @Override
+        public void log(Level level, String message, Throwable throwable) {
+            logger.log(level, message, throwable);
+        }
     }
 
     public void initializeTasks() {
