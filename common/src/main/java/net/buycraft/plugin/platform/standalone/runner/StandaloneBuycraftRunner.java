@@ -2,12 +2,12 @@ package net.buycraft.plugin.platform.standalone.runner;
 
 import lombok.Getter;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.platform.NoBlocking;
 import net.buycraft.plugin.platform.standalone.StandaloneBuycraftPlatform;
 import okhttp3.OkHttpClient;
 
@@ -38,6 +38,7 @@ public class StandaloneBuycraftRunner {
         this.platform = new Platform();
     }
 
+    @NoBlocking
     private class Platform extends StandaloneBuycraftPlatform {
         Platform() {
             super(new ProductionApiClient(apiKey, new OkHttpClient.Builder()

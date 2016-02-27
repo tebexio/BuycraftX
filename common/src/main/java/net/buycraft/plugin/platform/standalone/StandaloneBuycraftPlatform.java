@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * You are required to handle logging, command checks, and command dispatching yourself.
  * <p/>
- * Most applications will find {@code StandaloneBuycraftRunner} easier to use.
+ * Most applications will find {@code StandaloneBuycraftRunner} and {@code StandaloneBuycraftRunnerBuild} easier to use.
  */
 public abstract class StandaloneBuycraftPlatform implements IBuycraftPlatform {
     private final ApiClient client;
