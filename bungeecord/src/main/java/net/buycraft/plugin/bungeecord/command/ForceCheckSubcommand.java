@@ -26,7 +26,12 @@ public class ForceCheckSubcommand implements Subcommand {
             return;
         }
 
-        plugin.getProxy().getScheduler().runAsync(plugin, plugin.getDuePlayerFetcher());
+        plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
+            @Override
+            public void run() {
+                plugin.getDuePlayerFetcher().run(false);
+            }
+        });
         sender.sendMessage(ChatColor.GREEN + "Successfully queued player check.");
     }
 

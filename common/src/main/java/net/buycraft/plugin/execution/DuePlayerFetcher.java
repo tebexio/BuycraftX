@@ -27,6 +27,10 @@ public class DuePlayerFetcher implements Runnable {
 
     @Override
     public void run() {
+        run(true);
+    }
+
+    public void run(boolean scheduleAgain) {
         if (platform.getApiClient() == null) {
             return; // no API client
         }
@@ -112,7 +116,8 @@ public class DuePlayerFetcher implements Runnable {
                 }
             });
 
-            platform.executeAsyncLater(this, information.getMeta().getNextCheck(), TimeUnit.SECONDS);
+            if (scheduleAgain)
+                platform.executeAsyncLater(this, information.getMeta().getNextCheck(), TimeUnit.SECONDS);
         } finally {
             inProgress.set(false);
         }
