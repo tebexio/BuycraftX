@@ -8,11 +8,6 @@ import java.util.Map;
 
 @UtilityClass
 public class KeenUtils {
-    private static String getMCVersion(String version) {
-        int start = version.indexOf("(MC:");
-        return version.substring(start + 5, version.length() - 1);
-    }
-
     public static void postServerInformation(BuycraftPlugin plugin) {
         // account id, server id, plugin version, server version, online/offline mode, platform
         Map<String, Object> serverData = new LinkedHashMap<>();
