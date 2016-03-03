@@ -132,8 +132,8 @@ public class BuycraftPlugin {
 
         Sponge.getScheduler().createTaskBuilder()
                 .execute((Runnable) commandExecutor)
-                .delay(1, TimeUnit.MILLISECONDS)
-                .interval(1, TimeUnit.MILLISECONDS)
+                .intervalTicks(1)
+                .delayTicks(1)
                 .submit(this);
 
         listingUpdateTask = new ListingUpdateTask(this);
@@ -143,8 +143,8 @@ public class BuycraftPlugin {
 
             Sponge.getScheduler().createTaskBuilder()
                     .execute(listingUpdateTask)
-                    .delay(12, TimeUnit.SECONDS)
-                    .interval(12, TimeUnit.SECONDS)
+                    .delay(10, TimeUnit.SECONDS)
+                    .interval(10, TimeUnit.SECONDS)
                     .async()
                     .submit(this);
         }

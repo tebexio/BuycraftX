@@ -58,7 +58,7 @@ public class ReportSubCommand implements CommandExecutor {
 
         writer.println("### Plugin Information ###");
         writer.println("Plugin version: " + buycraftVersion);
-        writer.println("Platform: Bukkit");
+        writer.println("Platform: Sponge");
         writer.println();
         writer.println("Connected to Buycraft? " + (plugin.getApiClient() != null));
         writer.println("Web store information found? " + (plugin.getServerInformation() != null));

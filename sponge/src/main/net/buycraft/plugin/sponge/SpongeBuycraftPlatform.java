@@ -12,7 +12,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.EmptyInventory;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -45,38 +44,34 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void executeAsync(Runnable runnable) {
-        executeAsyncLater(
-                runnable,
-                0,
-                TimeUnit.MILLISECONDS
-        );
+        Sponge.getScheduler().createTaskBuilder()
+                .execute(runnable)
+                .async()
+                .submit(plugin);
     }
 
     @Override
     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
-        Sponge.getScheduler().createAsyncExecutor(plugin).schedule(
-                runnable,
-                time,
-                unit
-        ).run();
+        Sponge.getScheduler().createTaskBuilder()
+                .execute(runnable)
+                .delay(time, unit)
+                .async()
+                .submit(plugin);
     }
 
     @Override
     public void executeBlocking(Runnable runnable) {
-        executeBlockingLater(
-                runnable,
-                0,
-                TimeUnit.MILLISECONDS
-        );
+        Sponge.getScheduler().createTaskBuilder()
+                .execute(runnable)
+                .submit(plugin);
     }
 
     @Override
     public void executeBlockingLater(Runnable runnable, long time, TimeUnit unit) {
-        Sponge.getScheduler().createSyncExecutor(plugin).schedule(
-                runnable,
-                time,
-                unit
-        ).run();
+        Sponge.getScheduler().createTaskBuilder()
+                .execute(runnable)
+                .delay(time, unit)
+                .submit(plugin);
     }
 
     @Override
@@ -118,6 +113,12 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
                         throwable
                 );
                 break;
+            case "SEVERE":
+                plugin.getLogger().error(
+                        message,
+                        throwable
+                );
+                break;
             default:
                 plugin.getLogger().info(
                         message,
@@ -133,10 +134,6 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
     }
 
     private Optional<Player> convert(QueuedPlayer player) {
-        return Sponge.getServer().getPlayer(
-                UUID.fromString(
-                        player.getUuid()
-                )
-        );
+        return Sponge.getServer().getPlayer(player.getName());
     }
 }
