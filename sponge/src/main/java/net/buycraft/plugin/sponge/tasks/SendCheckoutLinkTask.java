@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by meyerzinn on 2/14/16.
- */
 @RequiredArgsConstructor
 public class SendCheckoutLinkTask implements Runnable {
 
@@ -27,7 +24,8 @@ public class SendCheckoutLinkTask implements Runnable {
     @NonNull
     private final Player player;
 
-    @Override public void run() {
+    @Override
+    public void run() {
         CheckoutUrlResponse response;
         try {
             response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId);

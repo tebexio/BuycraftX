@@ -17,11 +17,7 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
-import net.buycraft.plugin.sponge.command.GuiCmd;
-import net.buycraft.plugin.sponge.command.ListPackagesCmd;
-import net.buycraft.plugin.sponge.command.RefreshCmd;
-import net.buycraft.plugin.sponge.command.ReportCmd;
-import net.buycraft.plugin.sponge.command.SecretCmd;
+import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.logging.BugsnagNilLogger;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
@@ -143,28 +139,34 @@ public class BuycraftPlugin {
     }
 
     private CommandSpec buildCommands() {
-        CommandSpec refresh =
-                CommandSpec.builder()
-                        .description(Text.of("Refreshes the package listing."))
-                        .permission("buycraft.admin")
-                        .executor(new RefreshCmd(this))
-                        .build();
-        CommandSpec secret =
-                CommandSpec.builder()
-                        .description(Text.of("Sets the secret key to use for this server."))
-                        .permission("buycraft.admin")
-                        .arguments(GenericArguments.string(Text.of("secret")))
-                        .executor(new SecretCmd(this))
-                        .build();
-        CommandSpec report =
-                CommandSpec.builder()
-                        .description(Text.of("Generates a report with debugging information you can send to support."))
-                        .executor(new ReportCmd(this))
-                        .permission("buycraft.admin")
-                        .build();
+        CommandSpec refresh = CommandSpec.builder()
+                .description(Text.of("Refreshes the package listing."))
+                .permission("buycraft.admin")
+                .executor(new RefreshCmd(this))
+                .build();
+        CommandSpec secret = CommandSpec.builder()
+                .description(Text.of("Sets the secret key to use for this server."))
+                .permission("buycraft.admin")
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("key"))))
+                .executor(new SecretCmd(this))
+                .build();
+        CommandSpec report = CommandSpec.builder()
+                .description(Text.of("Generates a report with debugging information you can send to support."))
+                .executor(new ReportCmd(this))
+                .permission("buycraft.admin")
+                .build();
         CommandSpec list = CommandSpec.builder()
                 .description(Text.of("Lists all Buycraft packages and their prices."))
                 .executor(new ListPackagesCmd(this))
+                .build();
+        CommandSpec info = CommandSpec.builder()
+                .description(Text.of("Retrieves public information about the webstore this server is associated with."))
+                .executor(new InfoCmd(this))
+                .build();
+        CommandSpec forcecheck = CommandSpec.builder()
+                .description(Text.of("Forces a purchase check."))
+                .executor(new ForceCheckCmd(this))
+                .permission("buycraft.admin")
                 .build();
         return CommandSpec.builder()
                 .description(Text.of("Main command for the Buycraft plugin."))
@@ -172,6 +174,8 @@ public class BuycraftPlugin {
                 .child(list, "list", "packages")
                 .child(secret, "secret")
                 .child(refresh, "refresh")
+                .child(info, "info")
+                .child(forcecheck, "forcecheck")
                 .build();
     }
 

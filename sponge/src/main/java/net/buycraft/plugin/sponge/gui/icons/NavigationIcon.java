@@ -4,24 +4,17 @@ import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.gui.GuiView;
 import org.spongepowered.api.entity.living.player.Player;
 
-/**
- * Created by meyerzinn on 2/19/16.
- */
 public class NavigationIcon extends GuiIcon {
 
-    private final NavigationDirection /* one */ direction;
+    private final NavigationDirection direction;
 
-    /**
-     * @param plugin
-     * @param view
-     * @param direction True for forward, false for backwards.
-     */
     public NavigationIcon(BuycraftPlugin plugin, GuiView view, NavigationDirection direction) {
         super(plugin, view);
         this.direction = direction;
     }
 
-    @Override public void onClick(GuiView view, Player clicker) {
+    @Override
+    public void onClick(GuiView view, Player clicker) {
         switch (direction) {
             case FORWARD:
                 view.setPage(view.getPage() + 1);
@@ -40,5 +33,4 @@ public class NavigationIcon extends GuiIcon {
                 break;
         }
     }
-
 }

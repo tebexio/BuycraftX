@@ -6,10 +6,6 @@ import net.buycraft.plugin.execution.PlayerLoginExecution;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
-/**
- * Created by meyerzinn on 2/14/16.
- */
-
 @RequiredArgsConstructor
 public class BuycraftListener {
 
@@ -26,7 +22,4 @@ public class BuycraftListener {
             plugin.getPlatform().executeAsync(new PlayerLoginExecution(qp, plugin.getPlatform()));
         }
     }
-
-    // No need for a command listener thanks to Sponge's awesome Command system.
-
 }
