@@ -23,6 +23,8 @@ import org.spongepowered.api.item.inventory.custom.CustomInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextFormat;
+import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.translation.FixedTranslation;
 
 import java.util.ArrayList;
@@ -100,8 +102,8 @@ public class GuiView {
             }
             if (c.supports(Keys.ITEM_LORE)) {
                 c.offer(Keys.ITEM_LORE, new ArrayList<>(Arrays.asList(Text.builder("Price: ").color(TextColors.GRAY).append(Text.builder(plugin
-                        .getServerInformation().getAccount().getCurrency().getSymbol() + p.getEffectivePrice()).color(TextColors.GREEN).build())
-                        .build())));
+                        .getServerInformation().getAccount().getCurrency().getSymbol() + p.getEffectivePrice()).color(TextColors.DARK_GREEN)
+                        .style(TextStyles.BOLD).build()).build())));
             }
             if (inventory.getSlot(new SlotIndex(i + node.getSubcategories().size())).isPresent()) {
                 inventory.getSlot(new SlotIndex(i + node.getSubcategories().size())).get().set(c);
