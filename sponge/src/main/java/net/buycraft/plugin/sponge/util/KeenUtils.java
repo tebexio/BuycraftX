@@ -14,7 +14,7 @@ public class KeenUtils {
 
         // Server data
         serverData.put("id", plugin.getServerInformation().getServer().getId());
-        serverData.put("platform", "bukkit");
+        serverData.put("platform", "sponge");
         serverData.put("platform_version", Sponge.getPlatform().getMinecraftVersion());
         serverData.put("online_mode", Sponge.getServer().getOnlineMode());
 
