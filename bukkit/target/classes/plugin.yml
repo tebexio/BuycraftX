@@ -1,0 +1,7 @@
+name: BuycraftX
+main: net.buycraft.plugin.bukkit.BuycraftPlugin
+version: 0.2.1-SNAPSHOT
+author: Buycraft
+commands:
+  buycraft:
+    description: Main command for the Buycraft plugin.
