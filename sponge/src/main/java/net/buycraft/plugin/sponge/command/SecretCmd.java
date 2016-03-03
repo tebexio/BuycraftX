@@ -2,7 +2,6 @@ package net.buycraft.plugin.sponge.command;
 
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
@@ -17,15 +16,13 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 
-/**
- * Created by meyerzinn on 2/15/16.
- */
 @AllArgsConstructor
 public class SecretCmd implements CommandExecutor {
 
     private final BuycraftPlugin plugin;
 
-    @Override public CommandResult execute(final CommandSource src, final CommandContext args) throws CommandException {
+    @Override
+    public CommandResult execute(final CommandSource src, final CommandContext args) throws CommandException {
         if (!(src instanceof ConsoleSource)) {
             src.sendMessage(
                     Text.builder("For security reasons, your Buycraft secret key must be set via the console.").color(TextColors.RED).build());
@@ -35,7 +32,8 @@ public class SecretCmd implements CommandExecutor {
                         .color(TextColors.RED).build());
             } else {
                 plugin.getPlatform().executeAsync(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         ApiClient client = new ProductionApiClient((String) args.getOne("secret").get(), plugin.getHttpClient());
                         ServerInformation information = plugin.getServerInformation();
                         plugin.setApiClient(client);

@@ -4,13 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
-import net.buycraft.plugin.util.Node;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import net.buycraft.plugin.sponge.gui.icons.CategoryIcon;
-import net.buycraft.plugin.sponge.gui.icons.GuiIcon;
-import net.buycraft.plugin.sponge.gui.icons.NavigationDirection;
-import net.buycraft.plugin.sponge.gui.icons.NavigationIcon;
-import net.buycraft.plugin.sponge.gui.icons.PackageIcon;
+import net.buycraft.plugin.sponge.gui.icons.*;
+import net.buycraft.plugin.util.Node;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,7 +19,6 @@ import org.spongepowered.api.item.inventory.custom.CustomInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.translation.FixedTranslation;
 
@@ -32,11 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by meyerzinn on 2/15/16.
- */
 public class GuiView {
-
     /*
     * This class makes several assumptions about the way the system works:
     * 1. A view is just a collection of subcategories/packages ordered by their given weight.
@@ -45,7 +36,6 @@ public class GuiView {
     * 4. Packages and subcategories are on a "tree", beginning with the root category.
     * In order for assumption 4 to be fully correct, a field, "parent", must be added to the Package and
      */
-
     @Getter
     private BuycraftPlugin plugin;
     @Getter
@@ -150,6 +140,7 @@ public class GuiView {
 
     /**
      * Gets the working size the inventory should be. This does not include the footer bar.
+     *
      * @return
      */
     private int getSize() {

@@ -3,11 +3,10 @@ package net.buycraft.plugin.sponge.command;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
+import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.tasks.SendCheckoutLinkTask;
 import net.buycraft.plugin.util.Node;
-import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -24,18 +23,15 @@ import org.spongepowered.api.text.format.TextColors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-/**
- * Created by meyerzinn on 2/14/16.
- */
 @AllArgsConstructor
 public class ListPackagesCmd implements CommandExecutor {
 
     private final BuycraftPlugin plugin;
 
-    @Override public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    @Override
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 
         if (plugin.getApiClient() == null) {
             src.sendMessage(Text.builder("Set up a secret key first with /buycraft secret.").color(TextColors.RED).build());
@@ -50,9 +46,7 @@ public class ListPackagesCmd implements CommandExecutor {
         try {
             sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), new ArrayList<Package>(), "Categories", Optional
                     .absent()), src);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ApiException e) {
+        } catch (IOException | ApiException e) {
             e.printStackTrace();
         }
 
@@ -67,9 +61,7 @@ public class ListPackagesCmd implements CommandExecutor {
                     if (commandSource instanceof Player) {
                         try {
                             sendPaginatedMessage(node.getChild(category), source);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (ApiException e) {
+                        } catch (IOException | ApiException e) {
                             e.printStackTrace();
                         }
                     }

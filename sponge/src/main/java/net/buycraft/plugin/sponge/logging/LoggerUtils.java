@@ -10,7 +10,6 @@ import java.util.logging.Level;
 
 @AllArgsConstructor
 public class LoggerUtils {
-
     private final BuycraftPlugin plugin;
     private final Client bugsnagClient;
 

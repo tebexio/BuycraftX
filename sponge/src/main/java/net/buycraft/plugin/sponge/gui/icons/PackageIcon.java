@@ -7,11 +7,7 @@ import net.buycraft.plugin.sponge.gui.GuiView;
 import net.buycraft.plugin.sponge.tasks.SendCheckoutLinkTask;
 import org.spongepowered.api.entity.living.player.Player;
 
-/**
- * Created by meyerzinn on 2/17/16.
- */
 public class PackageIcon extends GuiIcon {
-
     @Getter
     private final Package aPackage;
 
@@ -21,7 +17,8 @@ public class PackageIcon extends GuiIcon {
     }
 
 
-    @Override public void onClick(GuiView view, Player clicker) {
+    @Override
+    public void onClick(GuiView view, Player clicker) {
         view.destroy();
         new SendCheckoutLinkTask(getPlugin(), aPackage.getId(), clicker);
     }

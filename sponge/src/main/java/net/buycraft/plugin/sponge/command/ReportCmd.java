@@ -28,16 +28,13 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by meyerzinn on 2/14/16.
- */
-
 @AllArgsConstructor
 public class ReportCmd implements CommandExecutor {
 
     private final BuycraftPlugin plugin;
 
-    @Override public CommandResult execute(final CommandSource src, CommandContext args) throws CommandException {
+    @Override
+    public CommandResult execute(final CommandSource src, CommandContext args) throws CommandException {
         src.sendMessage(Text.builder("Please wait...").color(TextColors.RED).build());
 
         final StringWriter out = new StringWriter();
@@ -94,7 +91,8 @@ public class ReportCmd implements CommandExecutor {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(plugin.getListingUpdateTask().getListing(), writer);
         plugin.getPlatform().executeAsync(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 writer.println();
                 writer.println();
                 writer.println("### Service status ###");
