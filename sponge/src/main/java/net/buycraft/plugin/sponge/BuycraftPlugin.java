@@ -1,5 +1,6 @@
 package net.buycraft.plugin.sponge;
 
+import com.bugsnag.Client;
 import com.google.inject.Inject;
 import io.keen.client.java.KeenClient;
 import lombok.Getter;
@@ -21,6 +22,8 @@ import net.buycraft.plugin.sponge.command.ListPackagesCmd;
 import net.buycraft.plugin.sponge.command.RefreshCmd;
 import net.buycraft.plugin.sponge.command.ReportCmd;
 import net.buycraft.plugin.sponge.command.SecretCmd;
+import net.buycraft.plugin.sponge.logging.BugsnagNilLogger;
+import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
@@ -40,9 +43,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by meyerzinn on 2/14/16.
- */
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
 public class BuycraftPlugin {
 
@@ -79,6 +79,8 @@ public class BuycraftPlugin {
     @Getter
     @Inject
     private Logger logger;
+    @Getter
+    private LoggerUtils loggerUtils;
 
     @Getter
     @Inject
@@ -131,14 +133,13 @@ public class BuycraftPlugin {
                     .submit(this);
         }
 
+        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnagClient.setLogger(new BugsnagNilLogger());
+        loggerUtils = new LoggerUtils(this, bugsnagClient);
+
         Sponge.getEventManager().registerListeners(this, new BuycraftListener(this));
 
-        /*
-        *TODO: Commands.
-         */
-        Sponge.getCommandManager().register(this, buildCommands(), "buycraft", "buy");
-
-
+        Sponge.getCommandManager().register(this, buildCommands(), "buycraft");
     }
 
     private CommandSpec buildCommands() {
@@ -171,7 +172,6 @@ public class BuycraftPlugin {
                 .child(list, "list", "packages")
                 .child(secret, "secret")
                 .child(refresh, "refresh")
-                .executor(new ListPackagesCmd(this)) // TEMP Until GUI is implemented.
                 .build();
     }
 
