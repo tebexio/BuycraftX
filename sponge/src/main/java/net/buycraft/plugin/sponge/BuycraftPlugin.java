@@ -166,6 +166,7 @@ public class BuycraftPlugin {
         CommandSpec forcecheck = CommandSpec.builder()
                 .description(Text.of("Forces a purchase check."))
                 .executor(new ForceCheckCmd(this))
+                .permission("buycraft.admin")
                 .build();
         return CommandSpec.builder()
                 .description(Text.of("Main command for the Buycraft plugin."))
