@@ -27,7 +27,12 @@ public class ForceCheckSubcommand implements Subcommand {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getDuePlayerFetcher());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                plugin.getDuePlayerFetcher().run(false);
+            }
+        });
         sender.sendMessage(ChatColor.GREEN + "Successfully queued player check.");
     }
 
