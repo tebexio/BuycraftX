@@ -7,7 +7,8 @@
     <groupId>net.buycraft</groupId>
     <artifactId>BuycraftX</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>${buycraftx-version}</version>
+
     <modules>
         <module>common</module>
         <module>bukkit</module>
@@ -34,4 +35,9 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <properties>
+        <buycraftx-version>0.2.1-SNAPSHOT</buycraftx-version>
+    </properties>
+
 </project>

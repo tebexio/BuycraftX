@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BuycraftX.iml" filepath="$PROJECT_DIR$/BuycraftX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bukkit/buycraftx-bukkit.iml" filepath="$PROJECT_DIR$/bukkit/buycraftx-bukkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bungeecord/buycraftx-bungeecord.iml" filepath="$PROJECT_DIR$/bungeecord/buycraftx-bungeecord.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/buycraftx-common.iml" filepath="$PROJECT_DIR$/common/buycraftx-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sponge/buycraftx-sponge.iml" filepath="$PROJECT_DIR$/sponge/buycraftx-sponge.iml" />
+    </modules>
+  </component>
+</project>

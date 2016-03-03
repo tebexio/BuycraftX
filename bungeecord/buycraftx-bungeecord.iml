@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-api:1.8-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-chat:1.8-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-config:1.8-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.yaml:snakeyaml:1.14" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-event:1.8-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-protocol:1.8-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-codec:4.0.33.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport:4.0.33.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-buffer:4.0.33.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-common:4.0.33.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
+    <orderEntry type="module" module-name="buycraftx-common" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.3.1" level="project" />
+    <orderEntry type="library" name="Maven: io.keen:keen-client-java-core:2.1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.6.0" level="project" />
+    <orderEntry type="library" name="Maven: com.bugsnag:bugsnag:1.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20140107" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.16.4" level="project" />
+  </component>
+</module>

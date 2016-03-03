@@ -1,6 +1,6 @@
 name: BuycraftX
 main: net.buycraft.plugin.bukkit.BuycraftPlugin
-version: ${project.version}
+version: ${buycraftx-version}
 author: Buycraft
 commands:
   buycraft:

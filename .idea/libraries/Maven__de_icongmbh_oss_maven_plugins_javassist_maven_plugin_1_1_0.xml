@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: de.icongmbh.oss.maven.plugins:javassist-maven-plugin:1.1.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/icongmbh/oss/maven/plugins/javassist-maven-plugin/1.1.0/javassist-maven-plugin-1.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/de/icongmbh/oss/maven/plugins/javassist-maven-plugin/1.1.0/javassist-maven-plugin-1.1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/de/icongmbh/oss/maven/plugins/javassist-maven-plugin/1.1.0/javassist-maven-plugin-1.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
