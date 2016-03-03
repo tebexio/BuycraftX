@@ -1,9 +1,7 @@
 package net.buycraft.plugin.sponge.gui.icons;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.buycraft.plugin.data.Category;
-import net.buycraft.plugin.gui.Node;
+import net.buycraft.plugin.util.Node;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.gui.GuiView;
 import org.spongepowered.api.entity.living.player.Player;

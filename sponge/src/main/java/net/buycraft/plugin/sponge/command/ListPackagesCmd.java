@@ -1,11 +1,13 @@
 package net.buycraft.plugin.sponge.command;
 
+import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
-import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.tasks.SendCheckoutLinkTask;
+import net.buycraft.plugin.util.Node;
+import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -16,15 +18,14 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationBuilder;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by meyerzinn on 2/14/16.
@@ -46,39 +47,43 @@ public class ListPackagesCmd implements CommandExecutor {
             return CommandResult.success();
         }
 
-        PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
-        PaginationBuilder builder = paginationService.builder();
-
-        List<Text> contents = new ArrayList<Text>();
-        for (Category category : plugin.getListingUpdateTask().getListing().getCategories()) {
-            for (final Package p : category.getPackages()) {
-                contents.add(
-                        Text.builder(p.getName()).color(TextColors
-                                .AQUA)
-                                .onClick(TextActions.executeCallback(new Consumer<CommandSource>() {
-                                    @Override public void accept(CommandSource commandSource) {
-                                        if (commandSource instanceof Player) {
-                                            plugin.getPlatform()
-                                                    .executeBlocking(new SendCheckoutLinkTask(plugin, p.getId(), (Player) commandSource));
-                                        }
-                                    }
-                                }))
-                                //                                    .onClick(TextActions.openUrl(new URL((plugin.getApiClient()
-                                // .getCheckoutUri(((Player) src).getName(), p.getId())
-                                //                                    ).getUrl())))
-                                .append
-                                        (Text.of(" "))
-                                .append
-                                        (Text.builder
-                                                (plugin
-                                                        .getServerInformation()
-                                                        .getAccount()
-                                                        .getCurrency()
-                                                        .getSymbol() + p
-                                                        .getEffectivePrice().toString()).color(TextColors.GRAY).build()).build());
-            }
+        try {
+            sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), new ArrayList<Package>(), "Categories", Optional
+                    .absent()), src);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ApiException e) {
+            e.printStackTrace();
         }
-        builder.title(Text.builder("Buycraft Packages").color(TextColors.AQUA).build()).contents(contents).paddingString("-").sendTo(src);
+
         return CommandResult.success();
     }
+
+    private void sendPaginatedMessage(Node node, CommandSource source) throws IOException, ApiException {
+        PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
+        PaginationBuilder builder = paginationService.builder();
+        List<Text> contents = node.getSubcategories().stream()
+                .map(category -> Text.builder("> " + category.getName()).color(TextColors.AQUA).onClick(TextActions.executeCallback(commandSource -> {
+                    if (commandSource instanceof Player) {
+                        try {
+                            sendPaginatedMessage(node.getChild(category), source);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (ApiException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                })).build()).collect(Collectors.toList());
+        for (Package p : node.getPackages()) {
+            contents.add(Text.builder(p.getName()).color(TextColors.GRAY).append(Text.builder(" for $x.".replace("$", plugin.getApiClient()
+                    .getServerInformation().getAccount().getCurrency().getSymbol()).replace("x", "" + p.getEffectivePrice())).color(TextColors
+                    .BLUE).build()).onClick(TextActions.executeCallback(commandSource -> {
+                if (commandSource instanceof Player) {
+                    new SendCheckoutLinkTask(plugin, p.getId(), (Player) commandSource).run();
+                }
+            })).build());
+        }
+        builder.title(Text.builder("BuycraftX Listing").color(TextColors.AQUA).build()).contents(contents).paddingString("-").sendTo(source);
+    }
+
 }

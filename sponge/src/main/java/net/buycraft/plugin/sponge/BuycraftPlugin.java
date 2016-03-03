@@ -171,7 +171,7 @@ public class BuycraftPlugin {
                 .child(list, "list", "packages")
                 .child(secret, "secret")
                 .child(refresh, "refresh")
-                .executor(new GuiCmd(this))
+                .executor(new ListPackagesCmd(this)) // TEMP Until GUI is implemented.
                 .build();
     }
 
