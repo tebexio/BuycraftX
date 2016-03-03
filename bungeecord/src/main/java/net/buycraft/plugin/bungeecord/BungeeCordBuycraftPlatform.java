@@ -6,11 +6,13 @@ import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.platform.NoBlocking;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+@NoBlocking
 public class BungeeCordBuycraftPlatform implements IBuycraftPlatform {
     private final BuycraftPlugin plugin;
 
