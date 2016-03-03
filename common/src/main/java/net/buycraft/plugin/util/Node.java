@@ -1,4 +1,4 @@
-package net.buycraft.plugin.gui;
+package net.buycraft.plugin.util;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
