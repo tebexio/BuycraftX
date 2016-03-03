@@ -22,7 +22,7 @@ public class RefreshSubcommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        Sponge.getScheduler().createAsyncExecutor(plugin).execute(plugin.getListingUpdateTask());
+        Sponge.getScheduler().createTaskBuilder().execute(plugin.getListingUpdateTask()).async().submit(plugin);
 
         sender.sendMessage(Text.builder("Listing refresh queued.").color(TextColors.GREEN).build());
         return CommandResult.success();

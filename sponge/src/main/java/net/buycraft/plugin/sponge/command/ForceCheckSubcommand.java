@@ -27,7 +27,7 @@ public class ForceCheckSubcommand implements CommandExecutor {
             return CommandResult.success();
         }
 
-        Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> plugin.getDuePlayerFetcher().run(false));
+        Sponge.getScheduler().createTaskBuilder().execute(() -> plugin.getDuePlayerFetcher().run(false)).async().submit(plugin);
 
         sender.sendMessage(Text.builder("Successfully queued player check.").color(TextColors.GREEN).build());
         return CommandResult.success();

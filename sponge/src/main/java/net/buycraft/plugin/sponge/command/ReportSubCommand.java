@@ -19,6 +19,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,8 +43,9 @@ public class ReportSubCommand implements CommandExecutor {
         final String os = System.getProperty("os.name") + " | " + System.getProperty("os.version") + " | " + System.getProperty("os.arch");
         String javaVersion = System.getProperty("java.version") + " | " + System.getProperty("java.vendor");
         String serverVersion = Sponge.getPlatform().getImplementation().getName();
-        String serverIP = "";//TODO
-        int serverPort = 25565;//TODO
+        InetSocketAddress address = Sponge.getServer().getBoundAddress().get();
+        String serverIP = getHostString(address);
+        int serverPort = address.getPort();
         String buycraftVersion = Sponge.getPluginManager().fromInstance(plugin).get().getVersion();
 
         writer.println("### Server Information ###");
@@ -81,28 +84,32 @@ public class ReportSubCommand implements CommandExecutor {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(plugin.getListingUpdateTask().getListing(), writer);
 
-        Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-            writer.println();
-            writer.println();
-            writer.println("### Service status ###");
+        Sponge.getScheduler().createTaskBuilder()
+                .execute(() -> {
+                    writer.println();
+                    writer.println();
+                    writer.println("### Service status ###");
 
-            // Try fetching test URLs
-            tryGet("Buycraft plugin API", "https://plugin.buycraft.net", writer);
-            tryGet("Google over HTTPS", "https://encrypted.google.com", writer);
-            tryGet("Google over HTTP", "http://www.google.com", writer);
+                    // Try fetching test URLs
+                    tryGet("Buycraft plugin API", "https://plugin.buycraft.net", writer);
+                    tryGet("Google over HTTPS", "https://encrypted.google.com", writer);
+                    tryGet("Google over HTTP", "http://www.google.com", writer);
 
-            SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
-            String filename = "report-" + f.format(new Date()) + ".txt";
-            Path p = plugin.getWorkFolder().resolve(filename);
+                    SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+                    String filename = "report-" + f.format(new Date()) + ".txt";
+                    Path p = plugin.getWorkFolder().resolve(filename);
 
-            try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
-                w.write(out.toString());
-                sender.sendMessage(Text.builder("Report saved as " + p.toAbsolutePath().toString()).color(TextColors.GOLD).build());
-            } catch (IOException e) {
-                sender.sendMessage(Text.builder("Can't save report. Dumping onto console...").color(TextColors.RED).build());
-                plugin.getLogger().info(out.toString());
-            }
-        });
+                    try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
+                        w.write(out.toString());
+                        sender.sendMessage(Text.builder("Report saved as " + p.toAbsolutePath().toString()).color(TextColors.GOLD).build());
+                    } catch (IOException e) {
+                        sender.sendMessage(Text.builder("Can't save report. Dumping onto console...").color(TextColors.RED).build());
+                        plugin.getLogger().info(out.toString());
+                    }
+                })
+                .async()
+                .submit(plugin);
+
         return CommandResult.success();
     }
 
@@ -118,5 +125,18 @@ public class ReportSubCommand implements CommandExecutor {
             writer.println("Can't access " + type + " (" + url + "):");
             e.printStackTrace(writer);
         }
+    }
+
+    static String getHostString(InetSocketAddress socketAddress) {
+        InetAddress address = socketAddress.getAddress();
+        if (address == null) {
+            // The InetSocketAddress was specified with a string (either a numeric IP or a host name). If
+            // it is a name, all IPs for that name should be tried. If it is an IP address, only that IP
+            // address should be tried.
+            return socketAddress.getHostName();
+        }
+        // The InetSocketAddress has a specific address: we should only try that address. Therefore we
+        // return the address and ignore any host name that may be available.
+        return address.getHostAddress();
     }
 }

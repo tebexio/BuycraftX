@@ -59,7 +59,7 @@ public class SecretSubcommand implements CommandExecutor {
                     )
             ).color(TextColors.GREEN).build());
 
-            Sponge.getScheduler().createAsyncExecutor(plugin).execute(plugin.getDuePlayerFetcher());
+            Sponge.getScheduler().createTaskBuilder().execute(plugin.getDuePlayerFetcher()).async().submit(plugin);
         });
 
         return CommandResult.success();
