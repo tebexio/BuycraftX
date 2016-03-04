@@ -2,6 +2,7 @@ package net.buycraft.plugin.sponge.signs.purchases;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
+import net.buycraft.plugin.sponge.tasks.SignUpdateApplication;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.SerializedBlockLocation;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -13,6 +14,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -80,30 +82,45 @@ public class RecentPurchaseSignListener {
         plugin.getPlatform().executeAsync(new SignUpdater(plugin));
     }
 
+    private boolean isSign(Location<World> sign) {
+        return sign.getBlockType().equals(BlockTypes.WALL_SIGN) || sign.getBlockType().equals(BlockTypes.STANDING_SIGN);
+    }
+
+    private boolean removeSign(Player player, SerializedBlockLocation location) {
+        if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
+            if (!player.hasPermission("buycraft.admin")) {
+                player.sendMessage(Text.builder("You don't have permission to break this sign.").color(TextColors.RED).build());
+                return false;
+            }
+            if (plugin.getRecentPurchaseSignStorage().removeSign(location)) {
+                player.sendMessage(Text.builder("Removed recent purchase sign!").color(TextColors.RED).build());
+                plugin.getPlatform().executeAsync(new SignUpdater(plugin));
+                return true;
+            }
+        }
+        return true;
+    }
+
     @Listener
     public void onBlockBreak(ChangeBlockEvent.Break event) {
         // TODO: Check directions too
         for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
             Optional<Location<World>> locationOptional = transaction.getOriginal().getLocation();
-            if (locationOptional.isPresent()) {
-                if (locationOptional.get().getBlockType().equals(BlockTypes.WALL_SIGN) ||
-                        locationOptional.get().getBlockType().equals(BlockTypes.STANDING_SIGN)) {
-                    SerializedBlockLocation location = SerializedBlockLocation.fromSpongeLocation(locationOptional.get());
-                    if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
-                        if (event.getCause().first(Player.class).isPresent()) {
-                            Player player = event.getCause().first(Player.class).get();
-                            if (!player.hasPermission("buycraft.admin")) {
-                                player.sendMessage(Text.builder("You don't have permission to break this sign.").color(TextColors.RED).build());
+            Optional<Player> playerOptional = event.getCause().first(Player.class);
+            if (locationOptional.isPresent() && playerOptional.isPresent()) {
+                Location<World> location = locationOptional.get();
+                if (isSign(location)) {
+                    if (!removeSign(playerOptional.get(), SerializedBlockLocation.fromSpongeLocation(location))) {
+                        event.setCancelled(true);
+                    }
+                } else {
+                    for (Direction direction : SignUpdateApplication.SKULL_CHECK) {
+                        Location<World> rel = location.getRelative(direction);
+                        if (isSign(rel)) {
+                            if (!removeSign(playerOptional.get(), SerializedBlockLocation.fromSpongeLocation(rel))) {
                                 event.setCancelled(true);
-                                return;
                             }
-                            if (plugin.getRecentPurchaseSignStorage().removeSign(location)) {
-                                player.sendMessage(Text.builder("Removed recent purchase sign!").color(TextColors.RED).build());
-                                plugin.getPlatform().executeAsync(new SignUpdater(plugin));
-                                return;
-                            }
-                        } else {
-                            event.setCancelled(true);
+                            return;
                         }
                     }
                 }
