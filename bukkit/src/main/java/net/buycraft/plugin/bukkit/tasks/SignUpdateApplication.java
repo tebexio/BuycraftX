@@ -49,7 +49,7 @@ public class SignUpdateApplication implements Runnable {
                     NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
                     format.setCurrency(Currency.getInstance(entry.getValue().getCurrency().getIso4217()));
 
-                    sign.setLine(2, NumberFormat.getCurrencyInstance().format(entry.getValue().getAmount()));
+                    sign.setLine(2, format.format(entry.getValue().getAmount()));
                     sign.setLine(3, "");
                 } else {
                     for (int i = 0; i < 4; i++) {

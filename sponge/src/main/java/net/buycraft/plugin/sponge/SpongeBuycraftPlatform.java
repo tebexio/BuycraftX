@@ -2,6 +2,7 @@ package net.buycraft.plugin.sponge;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
+import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -60,16 +61,21 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
         Sponge.getScheduler().createTaskBuilder().execute(runnable).delay(time, unit).submit(plugin);
     }
 
+    private Optional<Player> getPlayer(QueuedPlayer player) {
+        if (player.getUuid() != null) {
+            return Sponge.getServer().getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
+        }
+        return Sponge.getServer().getPlayer(player.getName());
+    }
+
     @Override
     public boolean isPlayerOnline(QueuedPlayer player) {
-        String uuidwd = player.getUuid().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-                "$1-$2-$3-$4-$5");
-        return Sponge.getServer().getPlayer(UUID.fromString(uuidwd)).isPresent();
+        return getPlayer(player).isPresent();
     }
 
     @Override
     public int getFreeSlots(QueuedPlayer player) {
-        Optional<Player> player1 = Sponge.getServer().getPlayer(UUID.fromString(player.getUuid()));
+        Optional<Player> player1 = getPlayer(player);
         if (!player1.isPresent()) {
             return -1;
         } else {

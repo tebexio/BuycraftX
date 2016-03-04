@@ -22,22 +22,29 @@ import net.buycraft.plugin.sponge.logging.BugsnagNilLogger;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignStorage;
+import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
+import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
 public class BuycraftPlugin {
@@ -80,29 +87,41 @@ public class BuycraftPlugin {
 
     @Getter
     @Inject
-    @DefaultConfig(sharedRoot = false)
-    private Path config;
+    @ConfigDir(sharedRoot = false)
+    private Path baseDirectory;
 
     @Listener
     public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
         platform = new SpongeBuycraftPlatform(this);
         try {
-            if (!getConfig().toFile().exists()) {
+            try {
+                Files.createDirectory(baseDirectory);
+            } catch (FileAlreadyExistsException ignored) {
+
+            }
+            Path configPath = baseDirectory.resolve("config.properties");
+            if (!Files.exists(configPath)) {
                 configuration.fillDefaults();
-                configuration.save(getConfig());
+                configuration.save(configPath);
             } else {
-                configuration.load(getConfig());
+                configuration.load(configPath);
                 configuration.fillDefaults();
             }
         } catch (IOException e) {
             getLogger().error("Unable to load configuration! The plugin will disable itself now.", e);
             return;
         }
+
         httpClient = new OkHttpClient.Builder()
                 .connectTimeout(500, TimeUnit.MILLISECONDS)
                 .writeTimeout(1, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
                 .build();
+
+        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnagClient.setLogger(new BugsnagNilLogger());
+        loggerUtils = new LoggerUtils(this, bugsnagClient);
+
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
@@ -129,13 +148,37 @@ public class BuycraftPlugin {
                     .submit(this);
         }
 
-        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
-        bugsnagClient.setLogger(new BugsnagNilLogger());
-        loggerUtils = new LoggerUtils(this, bugsnagClient);
+        recentPurchaseSignStorage = new RecentPurchaseSignStorage();
+        try {
+            recentPurchaseSignStorage.load(baseDirectory.resolve("purchase_signs.json"));
+        } catch (IOException e) {
+            logger.warn("Can't load purchase signs, continuing anyway", e);
+        }
+
+        Sponge.getScheduler().createTaskBuilder()
+                .delay(1, TimeUnit.SECONDS)
+                .interval(15, TimeUnit.MINUTES)
+                .execute(new SignUpdater(this))
+                .submit(this);
 
         Sponge.getEventManager().registerListeners(this, new BuycraftListener(this));
+        Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
 
         Sponge.getCommandManager().register(this, buildCommands(), "buycraft");
+    }
+
+    @Listener
+    public void onGameStoppingServerEvent(GameStoppingServerEvent event) {
+        try {
+            recentPurchaseSignStorage.save(baseDirectory.resolve("purchase_signs.json"));
+        } catch (IOException e) {
+            logger.error("Can't save purchase signs, continuing anyway");
+        }
+        try {
+            saveConfiguration();
+        } catch (IOException e) {
+            logger.warn("Can't save configuration", e);
+        }
     }
 
     private CommandSpec buildCommands() {
@@ -147,7 +190,7 @@ public class BuycraftPlugin {
         CommandSpec secret = CommandSpec.builder()
                 .description(Text.of("Sets the secret key to use for this server."))
                 .permission("buycraft.admin")
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("key"))))
+                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("secret"))))
                 .executor(new SecretCmd(this))
                 .build();
         CommandSpec report = CommandSpec.builder()
@@ -180,7 +223,7 @@ public class BuycraftPlugin {
     }
 
     public void saveConfiguration() throws IOException {
-        configuration.save(getConfig());
+        configuration.save(baseDirectory.resolve("config.properties"));
     }
 
     public void updateInformation(ApiClient client) throws IOException, ApiException {

@@ -3,6 +3,7 @@ package net.buycraft.plugin.sponge.signs.purchases;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
+import net.buycraft.plugin.sponge.util.SerializedBlockLocation;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
@@ -12,6 +13,10 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+
+import java.util.Optional;
 
 
 @RequiredArgsConstructor
@@ -32,11 +37,17 @@ public class RecentPurchaseSignListener {
         if (!ourSign) {
             return;
         }
-        if (!event.getCause().first(Player.class).isPresent()) {
+
+        Optional<Player> pl = event.getCause().first(Player.class);
+
+        if (!pl.isPresent()) {
             // This change was not caused by a player.
             return;
         }
-        if (!event.getCause().first(Player.class).get().hasPermission("buycraft.admin")) {
+
+        Player player = pl.get();
+
+        if (!player.hasPermission("buycraft.admin")) {
             event.getCause().first(Player.class).get().sendMessage(Text.builder("You can't create Buycraft signs.").color(TextColors.RED).build());
             return;
         }
@@ -49,19 +60,18 @@ public class RecentPurchaseSignListener {
             return;
         }
         if (pos <= 0) {
-            event.getCause().first(Player.class).get()
-                    .sendMessage(Text.builder("You can't show negative or zero purchases!").color(TextColors.RED).build());
+            player.sendMessage(Text.builder("You can't show negative or zero purchases!").color(TextColors.RED).build());
             return;
         }
 
         if (pos > 100) {
-            event.getCause().first(Player.class).get()
-                    .sendMessage(Text.builder("You can't show more than 100 recent purchases!").color(TextColors.RED).build());
+            player.sendMessage(Text.builder("You can't show more than 100 recent purchases!").color(TextColors.RED).build());
             return;
         }
 
-        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(event.getTargetTile().getLocation(), pos));
-        event.getCause().first(Player.class).get().sendMessage(Text.builder("Added new recent purchase sign!").color(TextColors.GREEN).build());
+        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(
+                SerializedBlockLocation.fromSpongeLocation(event.getTargetTile().getLocation()), pos));
+        player.sendMessage(Text.builder("Added new recent purchase sign!").color(TextColors.GREEN).build());
 
         for (int i = 0; i < 4; i++) {
             event.getText().lines().set(i, Text.EMPTY);
@@ -72,13 +82,14 @@ public class RecentPurchaseSignListener {
 
     @Listener
     public void onBlockBreak(ChangeBlockEvent.Break event) {
-        // This is what happens when you code without sleep.
-        // TODO Someone should check if this actually works .-.
+        // TODO: Check directions too
         for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
-            if (transaction.getOriginal().getLocation().isPresent()) {
-                if (transaction.getOriginal().getLocation().get().getBlockType().equals(BlockTypes.WALL_SIGN) || transaction.getOriginal()
-                        .getLocation().get().getBlockType().equals(BlockTypes.STANDING_SIGN)) {
-                    if (plugin.getRecentPurchaseSignStorage().containsLocation(transaction.getOriginal().getLocation().get())) {
+            Optional<Location<World>> locationOptional = transaction.getOriginal().getLocation();
+            if (locationOptional.isPresent()) {
+                if (locationOptional.get().getBlockType().equals(BlockTypes.WALL_SIGN) ||
+                        locationOptional.get().getBlockType().equals(BlockTypes.STANDING_SIGN)) {
+                    SerializedBlockLocation location = SerializedBlockLocation.fromSpongeLocation(locationOptional.get());
+                    if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
                         if (event.getCause().first(Player.class).isPresent()) {
                             Player player = event.getCause().first(Player.class).get();
                             if (!player.hasPermission("buycraft.admin")) {
@@ -86,7 +97,7 @@ public class RecentPurchaseSignListener {
                                 event.setCancelled(true);
                                 return;
                             }
-                            if (plugin.getRecentPurchaseSignStorage().removeSign(transaction.getOriginal().getLocation().get())) {
+                            if (plugin.getRecentPurchaseSignStorage().removeSign(location)) {
                                 player.sendMessage(Text.builder("Removed recent purchase sign!").color(TextColors.RED).build());
                                 plugin.getPlatform().executeAsync(new SignUpdater(plugin));
                                 return;

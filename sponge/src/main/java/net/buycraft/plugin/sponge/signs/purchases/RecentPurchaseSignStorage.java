@@ -2,8 +2,7 @@ package net.buycraft.plugin.sponge.signs.purchases;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import net.buycraft.plugin.sponge.util.SerializedBlockLocation;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -29,7 +28,7 @@ public class RecentPurchaseSignStorage {
         return signs.remove(location);
     }
 
-    public boolean removeSign(Location<World> location) {
+    public boolean removeSign(SerializedBlockLocation location) {
         for (Iterator<RecentPurchaseSignPosition> it = signs.iterator(); it.hasNext(); ) {
             RecentPurchaseSignPosition psp = it.next();
             if (psp.getLocation().equals(location)) {
@@ -44,7 +43,7 @@ public class RecentPurchaseSignStorage {
         return ImmutableList.copyOf(signs);
     }
 
-    public boolean containsLocation(Location<World> location) {
+    public boolean containsLocation(SerializedBlockLocation location) {
         for (RecentPurchaseSignPosition sign : signs) {
             if (sign.getLocation().equals(location)) {
                 return true;
