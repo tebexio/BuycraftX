@@ -44,7 +44,6 @@ public class SignUpdateApplication implements Runnable {
     @Override
     public void run() {
         for (Map.Entry<RecentPurchaseSignPosition, RecentPayment> entry : paymentMap.entrySet()) {
-            plugin.getLogger().info(entry.toString());
             Location<World> location = entry.getKey().getLocation().toSpongeLocation();
 
             Optional<TileEntity> entity = location.getTileEntity();
