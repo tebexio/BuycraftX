@@ -18,15 +18,15 @@ public class LoggerUtils {
     }
 
     public void log(Level level, String message, Throwable e) {
-        final MetaData data = new MetaData();
-        if (plugin.getServerInformation() != null) {
-            data.put("account_id", plugin.getServerInformation().getAccount().getId());
-            data.put("server_id", plugin.getServerInformation().getServer().getId());
-        }
-
         if (e != null) {
+            MetaData data = new MetaData();
+            if (plugin.getServerInformation() != null) {
+                data.put("account_id", plugin.getServerInformation().getAccount().getId());
+                data.put("server_id", plugin.getServerInformation().getServer().getId());
+            }
+
             Sponge.getGame().getScheduler().createTaskBuilder()
-                    .execute(() -> bugsnagClient.notify(e))
+                    .execute(() -> bugsnagClient.notify(e, data))
                     .async()
                     .submit(plugin);
         }
