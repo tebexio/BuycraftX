@@ -8,6 +8,8 @@ import net.buycraft.plugin.sponge.util.SerializedBlockLocation;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
+import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
+import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -75,9 +77,13 @@ public class RecentPurchaseSignListener {
                 SerializedBlockLocation.fromSpongeLocation(event.getTargetTile().getLocation()), pos));
         player.sendMessage(Text.builder("Added new recent purchase sign!").color(TextColors.GREEN).build());
 
+        // The below is due to the design of the Sponge Data API
+        SignData signData = event.getText();
+        ListValue<Text> lines = signData.lines();
         for (int i = 0; i < 4; i++) {
-            event.getText().lines().set(i, Text.EMPTY);
+            lines.set(i, Text.EMPTY);
         }
+        signData.set(lines);
 
         plugin.getPlatform().executeAsync(new SignUpdater(plugin));
     }
