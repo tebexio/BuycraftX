@@ -57,7 +57,7 @@ public class ListPackagesCmd implements CommandExecutor {
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         PaginationBuilder builder = paginationService.builder();
         List<Text> contents = node.getSubcategories().stream()
-                .map(category -> Text.builder("> " + category.getName()).color(TextColors.AQUA).onClick(TextActions.executeCallback(commandSource -> {
+                .map(category -> Text.builder("> " + category.getName()).color(TextColors.GRAY).onClick(TextActions.executeCallback(commandSource -> {
                     if (commandSource instanceof Player) {
                         try {
                             sendPaginatedMessage(node.getChild(category), source);
@@ -67,11 +67,12 @@ public class ListPackagesCmd implements CommandExecutor {
                     }
                 })).build()).collect(Collectors.toList());
         for (Package p : node.getPackages()) {
-            contents.add(Text.builder(p.getName()).color(TextColors.GRAY).append(Text.builder(" for $x.".replace("$", plugin.getApiClient()
-                    .getServerInformation().getAccount().getCurrency().getSymbol()).replace("x", "" + p.getEffectivePrice())).color(TextColors
-                    .BLUE).build()).onClick(TextActions.executeCallback(commandSource -> {
+            contents.add(Text.builder(p.getName()).color(TextColors.WHITE).append(Text.builder(" for ").color(TextColors.GRAY).build())
+                    .append(Text.builder("$x.".replace("$", plugin.getServerInformation().getAccount().getCurrency().getSymbol())
+                            .replace("x", "" + p.getEffectivePrice())).color(TextColors.GREEN).build())
+                    .onClick(TextActions.executeCallback(commandSource -> {
                 if (commandSource instanceof Player) {
-                    new SendCheckoutLinkTask(plugin, p.getId(), (Player) commandSource).run();
+                    plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, p.getId(), (Player) commandSource));
                 }
             })).build());
         }
