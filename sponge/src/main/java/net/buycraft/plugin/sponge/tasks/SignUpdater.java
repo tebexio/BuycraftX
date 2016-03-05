@@ -58,7 +58,7 @@ public class SignUpdater implements Runnable {
                 .collect(Collectors.toSet());
         // Add MHF_Question too.
         usernames.add("MHF_Question");
-        ListenableFuture<Collection<GameProfile>> future = Sponge.getServer().getGameProfileManager().getAllByName(usernames, false);
+        ListenableFuture<Collection<GameProfile>> future = Sponge.getServer().getGameProfileManager().getAllByName(usernames, true);
         future.addListener(() -> {
             Collection<GameProfile> result;
             try {
