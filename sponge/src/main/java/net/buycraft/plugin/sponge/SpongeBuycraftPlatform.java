@@ -62,7 +62,7 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
     }
 
     private Optional<Player> getPlayer(QueuedPlayer player) {
-        if (player.getUuid() != null) {
+        if (player.getUuid() != null && (plugin.getConfiguration().isBungeeCord() || Sponge.getServer().getOnlineMode())) {
             return Sponge.getServer().getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
         }
         return Sponge.getServer().getPlayer(player.getName());

@@ -63,7 +63,7 @@ public class BungeeCordBuycraftPlatform implements IBuycraftPlatform {
     }
 
     private ProxiedPlayer getPlayer(QueuedPlayer player) {
-        if (player.getUuid() != null) {
+        if (player.getUuid() != null && plugin.getProxy().getConfig().isOnlineMode()) {
             return plugin.getProxy().getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
         }
         return plugin.getProxy().getPlayer(player.getName());
