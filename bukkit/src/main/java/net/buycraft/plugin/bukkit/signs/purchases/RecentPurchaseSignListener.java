@@ -76,7 +76,6 @@ public class RecentPurchaseSignListener implements Listener {
                 }
                 if (plugin.getRecentPurchaseSignStorage().removeSign(event.getBlock().getLocation())) {
                     event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
                 }
             }
             return;
@@ -92,7 +91,6 @@ public class RecentPurchaseSignListener implements Listener {
                 }
                 if (plugin.getRecentPurchaseSignStorage().removeSign(onFace)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
                 }
             }
         }

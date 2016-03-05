@@ -94,7 +94,6 @@ public class RecentPurchaseSignListener {
             }
             if (plugin.getRecentPurchaseSignStorage().removeSign(location)) {
                 player.sendMessage(Text.builder("Removed recent purchase sign!").color(TextColors.RED).build());
-                plugin.getPlatform().executeAsync(new SignUpdater(plugin));
                 return true;
             }
         }
