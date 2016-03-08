@@ -11,6 +11,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -161,13 +163,13 @@ public class GuiView {
     }
 
     public void close() {
-        viewer.closeInventory();
+        viewer.closeInventory(Cause.of(NamedCause.of("FORCED", plugin)));
         iconHandlers.clear();
         Sponge.getEventManager().unregisterListeners(this);
     }
 
     public void open() {
-        viewer.openInventory(inventory);
+        viewer.openInventory(inventory, Cause.of(NamedCause.of("GUI", plugin)));
         update();
     }
 

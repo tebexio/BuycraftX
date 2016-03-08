@@ -45,7 +45,7 @@ public class ReportCmd implements CommandExecutor {
         String javaVersion = System.getProperty("java.version") + " | " + System.getProperty("java.vendor");
         String serverPlatform = Sponge.getPlatform().getImplementation().getName();
 
-        String serverVersion = Sponge.getPlatform().getImplementation().getVersion();
+        String serverVersion = Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN");
         String serverIP = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getHostName() : "?";
         int serverPort = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getPort() : -1;
         String buycraftVersion = "Unknown.";

@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.tasks;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.RecentPayment;
@@ -11,7 +10,7 @@ import org.spongepowered.api.profile.GameProfile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,21 +57,20 @@ public class SignUpdater implements Runnable {
                 .collect(Collectors.toSet());
         // Add MHF_Question too.
         usernames.add("MHF_Question");
-        ListenableFuture<Collection<GameProfile>> future = Sponge.getServer().getGameProfileManager().getAllByName(usernames, true);
-        future.addListener(() -> {
-            Collection<GameProfile> result;
-            try {
-                result = future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                plugin.getLogger().error("Unable to fetch player profiles", e);
+        CompletableFuture<Collection<GameProfile>> future = Sponge.getServer().getGameProfileManager().getAllByName(usernames, true);
+        // TODO: https://github.com/SpongePowered/SpongeCommon/issues/567 needs to be resolved
+        future.whenComplete((result, throwable) -> {
+            if (throwable != null) {
+                plugin.getLogger().error("Unable to fetch player profiles", throwable);
                 return;
             }
 
-            Map<String, GameProfile> profileMap = result.stream().collect(Collectors.toMap(GameProfile::getName, Function.identity()));
+            Map<String, GameProfile> profileMap = result.stream().filter(p -> p.getName().isPresent())
+                    .collect(Collectors.toMap(p -> p.getName().get(), Function.identity()));
 
             Sponge.getScheduler().createTaskBuilder()
                     .execute(new SignUpdateApplication(plugin, signToPurchases, profileMap))
                     .submit(plugin);
-        }, Sponge.getScheduler().createAsyncExecutor(plugin));
+        });
     }
 }

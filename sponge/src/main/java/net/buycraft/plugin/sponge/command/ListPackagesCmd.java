@@ -14,7 +14,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.pagination.PaginationBuilder;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -55,7 +55,7 @@ public class ListPackagesCmd implements CommandExecutor {
 
     private void sendPaginatedMessage(Node node, CommandSource source) throws IOException, ApiException {
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
-        PaginationBuilder builder = paginationService.builder();
+        PaginationList.Builder builder = paginationService.builder();
         List<Text> contents = node.getSubcategories().stream()
                 .map(category -> Text.builder("> " + category.getName()).color(TextColors.GRAY).onClick(TextActions.executeCallback(commandSource -> {
                     if (commandSource instanceof Player) {
@@ -76,7 +76,7 @@ public class ListPackagesCmd implements CommandExecutor {
                 }
             })).build());
         }
-        builder.title(Text.builder("BuycraftX Listing").color(TextColors.AQUA).build()).contents(contents).paddingString("-").sendTo(source);
+        builder.title(Text.builder("BuycraftX Listing").color(TextColors.AQUA).build()).contents(contents).padding(Text.of("-")).sendTo(source);
     }
 
 }
