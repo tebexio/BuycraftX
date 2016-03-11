@@ -47,11 +47,12 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                 try {
                     platform.dispatchCommand(finalCommand);
                     couldRun.add(command.getCommand().getId());
-                    it.remove();
                 } catch (Exception e) {
                     platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'. " +
                             "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, command.getPlayer().getName()), e);
                 }
+
+                it.remove();
             }
 
             run++;
