@@ -58,7 +58,6 @@ public class SignUpdater implements Runnable {
         // Add MHF_Question too.
         usernames.add("MHF_Question");
         CompletableFuture<Collection<GameProfile>> future = Sponge.getServer().getGameProfileManager().getAllByName(usernames, true);
-        // TODO: https://github.com/SpongePowered/SpongeCommon/issues/567 needs to be resolved
         future.whenComplete((result, throwable) -> {
             if (throwable != null) {
                 plugin.getLogger().error("Unable to fetch player profiles", throwable);
