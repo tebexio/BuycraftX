@@ -137,7 +137,7 @@ public class BuycraftPlugin {
         }
         placeholderManager.addPlaceholder(new NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
-        platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform), 1, TimeUnit.SECONDS);
+        platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
         commandExecutor = new QueuedCommandExecutor(platform);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(1).delayTicks(1).execute((Runnable) commandExecutor).async().submit(this);
         listingUpdateTask = new ListingUpdateTask(this);

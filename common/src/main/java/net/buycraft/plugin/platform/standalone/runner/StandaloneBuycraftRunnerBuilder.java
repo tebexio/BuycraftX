@@ -21,9 +21,11 @@ public class StandaloneBuycraftRunnerBuilder {
     private final Logger logger;
     @NonNull
     private final ScheduledExecutorService executorService;
+    @NonNull
+    private boolean verbose = true;
 
     public StandaloneBuycraftRunner start() {
-        StandaloneBuycraftRunner runner = new StandaloneBuycraftRunner(dispatcher, determiner, apiKey, logger, executorService);
+        StandaloneBuycraftRunner runner = new StandaloneBuycraftRunner(dispatcher, determiner, apiKey, logger, executorService, verbose);
         runner.initializeTasks();
         return runner;
     }

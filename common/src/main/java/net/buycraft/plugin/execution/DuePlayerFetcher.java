@@ -23,6 +23,7 @@ public class DuePlayerFetcher implements Runnable {
     private final Lock lock = new ReentrantLock();
     @Getter
     private final AtomicBoolean inProgress = new AtomicBoolean(false);
+    private final boolean verbose;
     private final Random random = new Random();
 
     @Override
@@ -41,7 +42,9 @@ public class DuePlayerFetcher implements Runnable {
         }
 
         try {
-            platform.log(Level.INFO, "Fetching all due players...");
+            if (verbose) {
+                platform.log(Level.INFO, "Fetching all due players...");
+            }
 
             Map<String, QueuedPlayer> allDue = new HashMap<>();
 
@@ -69,11 +72,15 @@ public class DuePlayerFetcher implements Runnable {
                 page++;
             } while (information.getMeta().isMore());
 
-            platform.log(Level.INFO, String.format("Fetched due players (%d found).", allDue.size()));
+            if (verbose) {
+                platform.log(Level.INFO, String.format("Fetched due players (%d found).", allDue.size()));
+            }
 
             // Issue immediate task if required.
             if (information.getMeta().isExecuteOffline()) {
-                platform.log(Level.INFO, "Executing commands that can be completed now...");
+                if (verbose) {
+                    platform.log(Level.INFO, "Executing commands that can be completed now...");
+                }
                 platform.executeAsync(new ImmediateExecutionRunner(platform));
             }
 

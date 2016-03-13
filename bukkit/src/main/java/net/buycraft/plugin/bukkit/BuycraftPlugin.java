@@ -124,7 +124,8 @@ public class BuycraftPlugin extends JavaPlugin {
         placeholderManager.addPlaceholder(new UuidPlaceholder());
 
         // Queueing tasks.
-        getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform), 20);
+        getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
+                configuration.isVerbose()), 20);
         commandExecutor = new QueuedCommandExecutor(platform);
         getServer().getScheduler().runTaskTimer(this, (Runnable) commandExecutor, 1, 1);
         listingUpdateTask = new ListingUpdateTask(this);

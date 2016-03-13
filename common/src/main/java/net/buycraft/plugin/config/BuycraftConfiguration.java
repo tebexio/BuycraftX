@@ -50,6 +50,14 @@ public class BuycraftConfiguration {
         return properties.getProperty("buy-command-name", "buy");
     }
 
+    public void setVerbose(boolean verbose) {
+        properties.setProperty("verbose", Boolean.toString(verbose));
+    }
+
+    public boolean isVerbose() {
+        return getBoolean("verbose", true);
+    }
+
     private boolean getBoolean(String key, boolean val) {
         if (!properties.containsKey(key))
             return val;
@@ -75,5 +83,6 @@ public class BuycraftConfiguration {
         defaultSet("check-for-updates", "true");
         defaultSet("disable-buy-command", "false");
         defaultSet("buy-command-name", "buy");
+        defaultSet("verbose", "true");
     }
 }
