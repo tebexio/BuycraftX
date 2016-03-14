@@ -2,7 +2,6 @@ package net.buycraft.plugin.sponge;
 
 import com.bugsnag.Client;
 import com.google.inject.Inject;
-import io.keen.client.java.KeenClient;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -65,8 +64,6 @@ public class BuycraftPlugin {
     private ListingUpdateTask listingUpdateTask;
     @Getter
     private ServerInformation serverInformation;
-    @Getter
-    private KeenClient keenClient;
     @Getter
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
     @Getter
