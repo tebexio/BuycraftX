@@ -77,7 +77,7 @@ public class BuycraftPlugin extends Plugin {
         // Initialize API client.
         httpClient = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.SECONDS)
-                .writeTimeout(1, TimeUnit.SECONDS)
+                .writeTimeout(3, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
                 .dispatcher(new Dispatcher(getExecutorService()))
                 .build();

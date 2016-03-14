@@ -17,7 +17,7 @@ public class AnalyticsUtil {
         Map<String, Object> pluginData = new LinkedHashMap<>();
 
         // Server data
-        serverData.put("platform", "bungeecord");
+        serverData.put("platform", "sponge");
         serverData.put("platform_version", Sponge.getPlatform().getMinecraftVersion().getName());
         serverData.put("online_mode", Sponge.getServer().getOnlineMode());
 
