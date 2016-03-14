@@ -44,7 +44,7 @@ public class StandaloneBuycraftRunner {
     private class Platform extends StandaloneBuycraftPlatform {
         Platform() {
             super(new ProductionApiClient(apiKey, new OkHttpClient.Builder()
-                    .connectTimeout(500, TimeUnit.MILLISECONDS)
+                    .connectTimeout(1, TimeUnit.SECONDS)
                     .writeTimeout(1, TimeUnit.SECONDS)
                     .readTimeout(3, TimeUnit.SECONDS)
                     .build()), executorService);
