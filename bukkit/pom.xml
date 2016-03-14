@@ -40,10 +40,6 @@
                     </artifactSet>
                     <relocations>
                         <relocation>
-                            <pattern>io.keen</pattern>
-                            <shadedPattern>net.buycraft.plugin.bukkit.internal.keenio</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>com.bugsnag</pattern>
                             <shadedPattern>net.buycraft.plugin.bukkit.internal.bugsnag</shadedPattern>
                         </relocation>
@@ -84,12 +80,6 @@
             <groupId>net.buycraft</groupId>
             <artifactId>buycraftx-common</artifactId>
             <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.keen</groupId>
-            <artifactId>keen-client-java-core</artifactId>
-            <version>2.1.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

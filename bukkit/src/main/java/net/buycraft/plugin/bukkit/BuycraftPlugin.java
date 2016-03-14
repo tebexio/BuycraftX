@@ -1,8 +1,6 @@
 package net.buycraft.plugin.bukkit;
 
 import com.bugsnag.Client;
-import com.google.gson.Gson;
-import io.keen.client.java.*;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -19,7 +17,7 @@ import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.SignUpdater;
-import net.buycraft.plugin.bukkit.util.KeenUtils;
+import net.buycraft.plugin.bukkit.util.AnalyticsUtil;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
@@ -61,8 +59,6 @@ public class BuycraftPlugin extends JavaPlugin {
     private CategoryViewGUI categoryViewGUI;
     @Getter
     private ViewCategoriesGUI viewCategoriesGUI;
-    @Getter
-    private KeenClient keenClient;
     @Getter
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
     @Getter
@@ -177,34 +173,10 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Send data to Keen IO
         if (serverInformation != null) {
-            keenClient = new KeenClient.Builder() {
-                @Override
-                protected KeenJsonHandler getDefaultJsonHandler() throws Exception {
-                    return new KeenJsonHandler() {
-                        private final Gson gson = new Gson();
-
-                        @Override
-                        public Map<String, Object> readJson(Reader reader) throws IOException {
-                            return gson.fromJson(reader, Map.class);
-                        }
-
-                        @Override
-                        public void writeJson(Writer writer, Map<String, ?> map) throws IOException {
-                            gson.toJson(map, writer);
-                            writer.close();
-                        }
-                    };
-                }
-            }.build();
-            KeenProject project = new KeenProject(serverInformation.getAnalytics().getInternal().getProject(),
-                    serverInformation.getAnalytics().getInternal().getKey(),
-                    null);
-            keenClient.setDefaultProject(project);
-
             getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
                 @Override
                 public void run() {
-                    KeenUtils.postServerInformation(BuycraftPlugin.this);
+                    AnalyticsUtil.postServerInformation(BuycraftPlugin.this);
                 }
             }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
         }

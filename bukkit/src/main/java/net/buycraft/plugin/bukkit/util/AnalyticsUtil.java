@@ -2,26 +2,26 @@ package net.buycraft.plugin.bukkit.util;
 
 import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.util.AnalyticsSend;
 import org.bukkit.Bukkit;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 @UtilityClass
-public class KeenUtils {
+public class AnalyticsUtil {
     private static String getMCVersion(String version) {
         int start = version.indexOf("(MC:");
         return version.substring(start + 5, version.length() - 1);
     }
 
     public static void postServerInformation(BuycraftPlugin plugin) {
-        // account id, server id, plugin version, server version, online/offline mode, platform
         Map<String, Object> serverData = new LinkedHashMap<>();
-        Map<String, Object> accountData = new LinkedHashMap<>();
         Map<String, Object> pluginData = new LinkedHashMap<>();
 
         // Server data
-        serverData.put("id", plugin.getServerInformation().getServer().getId());
         serverData.put("platform", "bukkit");
         serverData.put("platform_version", getMCVersion(Bukkit.getVersion()));
         serverData.put("online_mode", Bukkit.getOnlineMode());
@@ -29,15 +29,15 @@ public class KeenUtils {
         // Plugin data
         pluginData.put("version", plugin.getDescription().getVersion());
 
-        // Account data
-        accountData.put("id", plugin.getServerInformation().getAccount().getId());
-
-        // Combine and send to Keen IO
+        // Combine and send to Buycraft
         Map<String, Object> keenData = new LinkedHashMap<>();
         keenData.put("server", serverData);
-        keenData.put("account", accountData);
         keenData.put("plugin", pluginData);
 
-        plugin.getKeenClient().addEvent("server_startups", keenData);
+        try {
+            AnalyticsSend.sendAnalytics(plugin.getHttpClient(), plugin.getConfiguration().getServerKey(), keenData);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.WARNING, "Can't send analytics", e);
+        }
     }
 }

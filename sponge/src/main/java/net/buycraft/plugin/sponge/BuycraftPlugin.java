@@ -26,6 +26,7 @@ import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
+import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -161,10 +162,22 @@ public class BuycraftPlugin {
                 .execute(new SignUpdater(this))
                 .submit(this);
 
+        if (serverInformation != null) {
+            Sponge.getScheduler().createTaskBuilder()
+                    .delay(0, TimeUnit.SECONDS)
+                    .interval(1, TimeUnit.DAYS)
+                    .execute(() -> AnalyticsUtil.postServerInformation(this))
+                    .submit(this);
+        }
+
         Sponge.getEventManager().registerListeners(this, new BuycraftListener(this));
         Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
 
         Sponge.getCommandManager().register(this, buildCommands(), "buycraft");
+        Sponge.getCommandManager().register(this, CommandSpec.builder()
+                .description(Text.of("Lists all Buycraft packages and their prices."))
+                .executor(new ListPackagesCmd(this))
+                .build(), configuration.getBuyCommandName());
     }
 
     @Listener
@@ -198,10 +211,6 @@ public class BuycraftPlugin {
                 .executor(new ReportCmd(this))
                 .permission("buycraft.admin")
                 .build();
-        CommandSpec list = CommandSpec.builder()
-                .description(Text.of("Lists all Buycraft packages and their prices."))
-                .executor(new ListPackagesCmd(this))
-                .build();
         CommandSpec info = CommandSpec.builder()
                 .description(Text.of("Retrieves public information about the webstore this server is associated with."))
                 .executor(new InfoCmd(this))
@@ -214,7 +223,6 @@ public class BuycraftPlugin {
         return CommandSpec.builder()
                 .description(Text.of("Main command for the Buycraft plugin."))
                 .child(report, "report")
-                .child(list, "list", "packages")
                 .child(secret, "secret")
                 .child(refresh, "refresh")
                 .child(info, "info")
