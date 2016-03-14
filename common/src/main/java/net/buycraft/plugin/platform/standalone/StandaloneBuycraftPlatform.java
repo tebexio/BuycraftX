@@ -71,7 +71,7 @@ public abstract class StandaloneBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public CommandExecutor getExecutor() {
-        return null;
+        return commandExecutor;
     }
 
     @Override
