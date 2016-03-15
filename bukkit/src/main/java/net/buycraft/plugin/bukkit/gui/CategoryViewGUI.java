@@ -40,9 +40,14 @@ public class CategoryViewGUI {
     }
 
     public void update() {
+        if (plugin.getApiClient() == null || plugin.getServerInformation() != null) {
+            plugin.getLogger().warning("No secret key available (or no server information), so can't update inventories.");
+            return;
+        }
+
         Listing listing = plugin.getListingUpdateTask().getListing();
         if (listing == null) {
-            plugin.getLogger().warning("No listing found, so can't update categories.");
+            plugin.getLogger().warning("No listing found, so can't update inventories.");
             return;
         }
 

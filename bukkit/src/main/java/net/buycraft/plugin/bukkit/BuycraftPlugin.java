@@ -119,16 +119,26 @@ public class BuycraftPlugin extends JavaPlugin {
         placeholderManager.addPlaceholder(new NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
 
-        // Queueing tasks.
+        // Start the essential tasks.
         getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
                 configuration.isVerbose()), 20);
         commandExecutor = new QueuedCommandExecutor(platform);
         getServer().getScheduler().runTaskTimer(this, (Runnable) commandExecutor, 1, 1);
+
+        // Initialize the GUIs.
+        viewCategoriesGUI = new ViewCategoriesGUI(this);
+        categoryViewGUI = new CategoryViewGUI(this);
+
+        // Update listing.
         listingUpdateTask = new ListingUpdateTask(this);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run(); // for a first synchronous run
             getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
+
+            // Update GUIs too.
+            viewCategoriesGUI.update();
+            categoryViewGUI.update();
         }
 
         // Register listener.
@@ -143,13 +153,6 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("signupdate", new SignUpdateSubcommand(this));
         command.getSubcommandMap().put("report", new ReportCommand(this));
         getCommand("buycraft").setExecutor(command);
-
-        // Initialize GUIs.
-        viewCategoriesGUI = new ViewCategoriesGUI(this);
-        viewCategoriesGUI.update();
-
-        categoryViewGUI = new CategoryViewGUI(this);
-        categoryViewGUI.update();
 
         // Initialize sign data and listener.
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
