@@ -22,19 +22,23 @@ public class ProductionApiClient implements ApiClient {
     private final OkHttpClient httpClient;
     private final String secret;
 
-    public ProductionApiClient(final String secret) {
+    public ProductionApiClient(String secret) {
         this(secret, new OkHttpClient());
     }
 
-    public ProductionApiClient(final String secret, OkHttpClient client) {
+    public ProductionApiClient(String secret, OkHttpClient client) {
         this.secret = Objects.requireNonNull(secret, "secret");
         this.httpClient = Objects.requireNonNull(client, "client");
     }
 
-    private <T> T get(String endpoint, Type type) throws IOException, ApiException {
-        Request request = new Request.Builder()
+    private Request.Builder getBuilder(String endpoint) {
+        return new Request.Builder()
                 .url(API_URL + endpoint)
-                .addHeader("X-Buycraft-Secret", secret)
+                .addHeader("X-Buycraft-Secret", secret);
+    }
+
+    private <T> T get(String endpoint, Type type) throws IOException, ApiException {
+        Request request = getBuilder(endpoint)
                 .get()
                 .build();
         Response response = httpClient.newCall(request).execute();
@@ -85,9 +89,7 @@ public class ProductionApiClient implements ApiClient {
             builder.add("ids[]", id.toString());
         }
 
-        Request request = new Request.Builder()
-                .url(API_URL + "/queue")
-                .addHeader("X-Buycraft-Secret", secret)
+        Request request = getBuilder("/queue")
                 .method("DELETE", builder.build())
                 .build();
         Response response = httpClient.newCall(request).execute();
@@ -106,9 +108,7 @@ public class ProductionApiClient implements ApiClient {
                 .add("package_id", Integer.toString(packageId))
                 .build();
 
-        Request request = new Request.Builder()
-                .url(API_URL + "/checkout")
-                .addHeader("X-Buycraft-Secret", secret)
+        Request request = getBuilder("/checkout")
                 .post(body)
                 .build();
         Response response = httpClient.newCall(request).execute();
