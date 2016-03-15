@@ -6,16 +6,17 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Value
 public class SerializedBlockLocation {
-    private final String world;
+    private final UUID world;
     private final int x;
     private final int y;
     private final int z;
 
     public static SerializedBlockLocation fromSpongeLocation(Location<World> location) {
-        return new SerializedBlockLocation(location.getExtent().getName(), location.getBlockX(), location.getBlockY(),
+        return new SerializedBlockLocation(location.getExtent().getUniqueId(), location.getBlockX(), location.getBlockY(),
                 location.getBlockZ());
     }
 
