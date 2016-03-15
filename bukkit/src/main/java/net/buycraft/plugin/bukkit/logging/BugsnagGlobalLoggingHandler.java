@@ -59,6 +59,7 @@ public class BugsnagGlobalLoggingHandler extends Handler {
         if (plugin.getServerInformation() != null) {
             data.put("account_id", plugin.getServerInformation().getAccount().getId());
             data.put("server_id", plugin.getServerInformation().getServer().getId());
+            data.put("platform", "bukkit");
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
