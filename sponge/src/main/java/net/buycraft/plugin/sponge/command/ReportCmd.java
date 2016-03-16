@@ -1,9 +1,8 @@
 package net.buycraft.plugin.sponge.command;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
+import okhttp3.CacheControl;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.spongepowered.api.Sponge;
@@ -65,6 +64,7 @@ public class ReportCmd implements CommandExecutor {
         writer.println("Server version: " + serverVersion);
         writer.println("Server IP and port: " + serverIP + " / " + serverPort);
         writer.println("Online mode: " + Sponge.getServer().getOnlineMode());
+        writer.println("Buycraft is-bungeecord setting: " + plugin.getConfiguration().isBungeeCord());
         writer.println();
 
         writer.println("### Plugin Information ###");
@@ -86,14 +86,10 @@ public class ReportCmd implements CommandExecutor {
 
         writer.println("Players in queue: " + plugin.getDuePlayerFetcher().getDuePlayers());
         writer.println("Listing update last completed: " + plugin.getListingUpdateTask().getLastUpdate());
-        writer.println("Listing: ");
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        gson.toJson(plugin.getListingUpdateTask().getListing(), writer);
         plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {
-                writer.println();
                 writer.println();
                 writer.println("### Service status ###");
 
@@ -121,6 +117,7 @@ public class ReportCmd implements CommandExecutor {
     private void tryGet(String type, String url, PrintWriter writer) {
         Request request = new Request.Builder()
                 .get()
+                .cacheControl(CacheControl.FORCE_NETWORK)
                 .url(url)
                 .build();
         try {

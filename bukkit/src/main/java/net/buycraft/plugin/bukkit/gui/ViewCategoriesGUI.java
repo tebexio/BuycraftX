@@ -40,7 +40,7 @@ public class ViewCategoriesGUI implements Listener {
     public void update() {
         inventory.clear();
 
-        if (plugin.getApiClient() == null || plugin.getServerInformation() != null) {
+        if (plugin.getApiClient() == null || plugin.getServerInformation() == null) {
             plugin.getLogger().warning("No secret key available (or no server information), so can't update inventories.");
             return;
         }

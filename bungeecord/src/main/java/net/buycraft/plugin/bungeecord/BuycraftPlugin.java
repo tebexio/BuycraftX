@@ -21,9 +21,11 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.md_5.bungee.api.plugin.Plugin;
+import okhttp3.Cache;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -75,11 +77,26 @@ public class BuycraftPlugin extends Plugin {
         }
 
         // Initialize API client.
+        // This has to be done partially async due to the SecurityManager.
+        FutureTask<Cache> cacheFutureTask = new FutureTask<>(new Callable<Cache>() {
+            @Override
+            public Cache call() throws Exception {
+                return new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10);
+            }
+        });
+        Cache cache;
+        try {
+            cache = cacheFutureTask.get();
+        } catch (InterruptedException | ExecutionException e) {
+            getLogger().log(Level.SEVERE, "Can't create cache", e);
+            cache = null;
+        }
         httpClient = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.SECONDS)
                 .writeTimeout(3, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
                 .dispatcher(new Dispatcher(getExecutorService()))
+                .cache(cache)
                 .build();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {

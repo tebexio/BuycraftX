@@ -3,6 +3,7 @@ package net.buycraft.plugin.bukkit.command;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import okhttp3.CacheControl;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.bukkit.Bukkit;
@@ -51,6 +52,7 @@ public class ReportCommand implements Subcommand {
         writer.println("Server version: " + serverVersion);
         writer.println("Server IP and port: " + serverIP + " / " + serverPort);
         writer.println("Online mode: " + Bukkit.getOnlineMode());
+        writer.println("Buycraft is-bungeecord setting: " + plugin.getConfiguration().isBungeeCord());
         writer.println();
 
         writer.println("### Plugin Information ###");
@@ -72,15 +74,10 @@ public class ReportCommand implements Subcommand {
 
         writer.println("Players in queue: " + plugin.getDuePlayerFetcher().getDuePlayers());
         writer.println("Listing update last completed: " + plugin.getListingUpdateTask().getLastUpdate());
-        writer.println("Listing: ");
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        gson.toJson(plugin.getListingUpdateTask().getListing(), writer);
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                writer.println();
                 writer.println();
                 writer.println("### Service status ###");
 
@@ -107,6 +104,7 @@ public class ReportCommand implements Subcommand {
     private void tryGet(String type, String url, PrintWriter writer) {
         Request request = new Request.Builder()
                 .get()
+                .cacheControl(CacheControl.FORCE_NETWORK)
                 .url(url)
                 .build();
 

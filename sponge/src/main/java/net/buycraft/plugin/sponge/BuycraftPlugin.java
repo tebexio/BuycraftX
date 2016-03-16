@@ -26,6 +26,7 @@ import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -39,6 +40,7 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -114,6 +116,7 @@ public class BuycraftPlugin {
                 .connectTimeout(1, TimeUnit.SECONDS)
                 .writeTimeout(3, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
+                .cache(new Cache(baseDirectory.resolve("cache").toFile(), 1024 * 1024 * 10))
                 .build();
 
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);

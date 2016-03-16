@@ -3,6 +3,7 @@ package net.buycraft.plugin.bungeecord.command;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import okhttp3.CacheControl;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -95,6 +96,7 @@ public class ReportCommand implements Subcommand {
     private void tryGet(String type, String url, PrintWriter writer) {
         Request request = new Request.Builder()
                 .get()
+                .cacheControl(CacheControl.FORCE_NETWORK)
                 .url(url)
                 .build();
 
