@@ -104,7 +104,7 @@ public class ReportCommand implements Subcommand {
     private void tryGet(String type, String url, PrintWriter writer) {
         Request request = new Request.Builder()
                 .get()
-                .cacheControl(CacheControl.FORCE_NETWORK)
+                .cacheControl(new CacheControl.Builder().noStore().build())
                 .url(url)
                 .build();
 

@@ -14,7 +14,6 @@ import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
-    private static final CacheControl POLICY = new CacheControl.Builder().noCache().build();
 
     private final Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -38,14 +37,14 @@ public class ProductionApiClient implements ApiClient {
     }
 
     private <T> T get(String endpoint, Type type) throws IOException, ApiException {
-        return get(endpoint, CacheControl.FORCE_NETWORK, type);
+        return get(endpoint, null, type);
     }
 
     private <T> T get(String endpoint, CacheControl control, Type type) throws IOException, ApiException {
-        Request request = getBuilder(endpoint)
-                .cacheControl(control)
-                .get()
-                .build();
+        Request.Builder requestBuilder = getBuilder(endpoint).get();
+        if (control != null) requestBuilder.cacheControl(control);
+        Request request = requestBuilder.build();
+
         Response response = httpClient.newCall(request).execute();
 
         if (response.isSuccessful()) {
@@ -61,19 +60,19 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public ServerInformation getServerInformation() throws IOException, ApiException {
-        return get("/information", POLICY, ServerInformation.class);
+        return get("/information", CacheControl.FORCE_NETWORK, ServerInformation.class);
     }
 
     @Override
     public Listing retrieveListing() throws IOException, ApiException {
-        Listing listing = get("/listing", POLICY, Listing.class);
+        Listing listing = get("/listing", CacheControl.FORCE_NETWORK, Listing.class);
         listing.order();
         return listing;
     }
 
     @Override
     public QueueInformation retrieveOfflineQueue() throws IOException, ApiException {
-        return get("/queue/offline-commands", POLICY, QueueInformation.class);
+        return get("/queue/offline-commands", CacheControl.FORCE_NETWORK, QueueInformation.class);
     }
 
     @Override
