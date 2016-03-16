@@ -14,6 +14,7 @@ import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
+    private static final CacheControl NO_STORE = new CacheControl.Builder().noStore().build();
 
     private final Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -72,17 +73,17 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public QueueInformation retrieveOfflineQueue() throws IOException, ApiException {
-        return get("/queue/offline-commands", CacheControl.FORCE_NETWORK, QueueInformation.class);
+        return get("/queue/offline-commands", NO_STORE, QueueInformation.class);
     }
 
     @Override
     public DueQueueInformation retrieveDueQueue(int limit, int page) throws IOException, ApiException {
-        return get("/queue?limit=" + limit + "&page=" + page, DueQueueInformation.class);
+        return get("/queue?limit=" + limit + "&page=" + page, CacheControl.FORCE_NETWORK, DueQueueInformation.class);
     }
 
     @Override
     public QueueInformation getPlayerQueue(int id) throws IOException, ApiException {
-        return get("/queue/online-commands/" + id, QueueInformation.class);
+        return get("/queue/online-commands/" + id, NO_STORE, QueueInformation.class);
     }
 
     @Override
@@ -130,6 +131,6 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public List<RecentPayment> getRecentPayments(int limit) throws IOException, ApiException {
-        return get("/payments?limit=" + limit, new TypeToken<List<RecentPayment>>() {}.getType());
+        return get("/payments?limit=" + limit, CacheControl.FORCE_NETWORK, new TypeToken<List<RecentPayment>>() {}.getType());
     }
 }
