@@ -9,14 +9,12 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
-    private static final CacheControl MOSTLY_STATIC = new CacheControl.Builder().maxAge(1, TimeUnit.HOURS).build();
+    private static final CacheControl POLICY = new CacheControl.Builder().noCache().build();
 
     private final Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -63,19 +61,19 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public ServerInformation getServerInformation() throws IOException, ApiException {
-        return get("/information", MOSTLY_STATIC, ServerInformation.class);
+        return get("/information", POLICY, ServerInformation.class);
     }
 
     @Override
     public Listing retrieveListing() throws IOException, ApiException {
-        Listing listing = get("/listing", MOSTLY_STATIC, Listing.class);
+        Listing listing = get("/listing", POLICY, Listing.class);
         listing.order();
         return listing;
     }
 
     @Override
     public QueueInformation retrieveOfflineQueue() throws IOException, ApiException {
-        return get("/queue/offline-commands", QueueInformation.class);
+        return get("/queue/offline-commands", POLICY, QueueInformation.class);
     }
 
     @Override
