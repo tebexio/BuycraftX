@@ -186,6 +186,7 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Set up Bugsnag.
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnagClient.setAppVersion(getDescription().getVersion());
         bugsnagClient.setLogger(new BugsnagNilLogger());
         Bukkit.getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));
         getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));

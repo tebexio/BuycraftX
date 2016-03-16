@@ -117,6 +117,7 @@ public class BuycraftPlugin {
                 .build();
 
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnagClient.setAppVersion(getClass().getAnnotation(Plugin.class).version());
         bugsnagClient.setLogger(new BugsnagNilLogger());
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 
