@@ -7,6 +7,7 @@ import net.buycraft.plugin.platform.NoBlocking;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -15,7 +16,7 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
     private final IBuycraftPlatform platform;
     private final boolean blocking;
-    private final Queue<ToRunQueuedCommand> commandQueue = new ArrayDeque<>();
+    private final Queue<ToRunQueuedCommand> commandQueue = new ConcurrentLinkedQueue<>();
 
     public QueuedCommandExecutor(IBuycraftPlatform platform) {
         this.platform = platform;
