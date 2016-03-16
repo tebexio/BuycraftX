@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
     private static final CacheControl MOSTLY_STATIC = new CacheControl.Builder().maxAge(1, TimeUnit.HOURS).build();
-    private static final CacheControl MOSTLY_DYNAMIC = new CacheControl.Builder().maxAge(1, TimeUnit.HOURS).build();
 
     private final Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -81,7 +80,7 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public DueQueueInformation retrieveDueQueue(int limit, int page) throws IOException, ApiException {
-        return get("/queue?limit=" + limit + "&page=" + page, MOSTLY_DYNAMIC, DueQueueInformation.class);
+        return get("/queue?limit=" + limit + "&page=" + page, DueQueueInformation.class);
     }
 
     @Override
