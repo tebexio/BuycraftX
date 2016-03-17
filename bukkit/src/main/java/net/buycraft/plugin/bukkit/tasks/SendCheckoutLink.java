@@ -2,11 +2,10 @@ package net.buycraft.plugin.bukkit.tasks;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import mkremins.fanciful.FancyMessage;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -32,13 +31,15 @@ public class SendCheckoutLink implements Runnable {
         }
 
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
-        player.spigot().sendMessage(new ComponentBuilder("To buy your package, click ")
-                .color(net.md_5.bungee.api.ChatColor.GRAY)
-                .append("here")
-                .color(net.md_5.bungee.api.ChatColor.AQUA)
-                .bold(true)
-                .event(new ClickEvent(ClickEvent.Action.OPEN_URL, response.getUrl()))
-                .create());
+        new FancyMessage("To buy your package, click ")
+                .color(ChatColor.GRAY)
+                .then("here")
+                .color(ChatColor.GREEN)
+                .style(ChatColor.UNDERLINE)
+                .link(response.getUrl())
+                .then(".")
+                .color(ChatColor.GRAY)
+                .send(player);
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
     }
 }
