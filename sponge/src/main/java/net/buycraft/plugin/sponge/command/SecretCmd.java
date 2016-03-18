@@ -2,6 +2,7 @@ package net.buycraft.plugin.sponge.command;
 
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiClient;
+import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
@@ -35,6 +36,13 @@ public class SecretCmd implements CommandExecutor {
                     @Override
                     public void run() {
                         ApiClient client = new ProductionApiClient((String) args.getOne("secret").get(), plugin.getHttpClient());
+                        try {
+                            plugin.updateInformation(client);
+                        } catch (IOException | ApiException e) {
+                            src.sendMessage(Text.builder("Apologies, but that key didn't seem to work. Try again.").color(TextColors.RED).build());
+                            return;
+                        }
+
                         ServerInformation information = plugin.getServerInformation();
                         plugin.setApiClient(client);
                         plugin.getListingUpdateTask().run();
@@ -42,9 +50,11 @@ public class SecretCmd implements CommandExecutor {
                         try {
                             plugin.saveConfiguration();
                         } catch (IOException e) {
-                            src.sendMessage(Text.builder("Apologies, but that key didn't seem to work. Try again.").color(TextColors.RED).build());
+                            src.sendMessage(Text.builder("Apologies, but we couldn't save the public key to your configuration file.").color(TextColors.RED).build());
                         }
-                        src.sendMessage(Text.builder(String.format("Looks like you're good to go!")).color(TextColors.GREEN).build());
+                        src.sendMessage(Text.builder(String.format("Looks like you're good to go! " +
+                                        "This server is now registered as server '%s' for the web store '%s'.",
+                                information.getServer().getName(), information.getAccount().getName())).color(TextColors.GREEN).build());
                         plugin.getPlatform().executeAsync(plugin.getDuePlayerFetcher());
                     }
                 });
