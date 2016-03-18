@@ -159,15 +159,6 @@ public class BuycraftPlugin extends Plugin {
         getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
     }
 
-    @Override
-    public void onDisable() {
-        try {
-            saveConfiguration();
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Can't save configuration", e);
-        }
-    }
-
     public void saveConfiguration() throws IOException {
         Path configPath = getDataFolder().toPath().resolve("config.properties");
         configuration.save(configPath);

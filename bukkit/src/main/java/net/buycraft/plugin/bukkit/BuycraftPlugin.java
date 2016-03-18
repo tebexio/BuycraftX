@@ -208,11 +208,6 @@ public class BuycraftPlugin extends JavaPlugin {
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Can't save buy now signs, continuing anyway", e);
         }
-        try {
-            saveConfiguration();
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Can't save configuration", e);
-        }
     }
 
     public void saveConfiguration() throws IOException {

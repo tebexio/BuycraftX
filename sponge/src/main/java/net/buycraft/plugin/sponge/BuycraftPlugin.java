@@ -188,11 +188,6 @@ public class BuycraftPlugin {
         } catch (IOException e) {
             logger.error("Can't save purchase signs, continuing anyway");
         }
-        try {
-            saveConfiguration();
-        } catch (IOException e) {
-            logger.warn("Can't save configuration", e);
-        }
     }
 
     private CommandSpec buildCommands() {
