@@ -41,6 +41,8 @@ public class DuePlayerFetcher implements Runnable {
             return;
         }
 
+        int nextCheck = 300;
+
         try {
             if (verbose) {
                 platform.log(Level.INFO, "Fetching all due players...");
@@ -53,6 +55,7 @@ public class DuePlayerFetcher implements Runnable {
             do {
                 try {
                     information = platform.getApiClient().retrieveDueQueue(250, page);
+                    nextCheck = information.getMeta().getNextCheck();
                 } catch (IOException | ApiException e) {
                     platform.log(Level.SEVERE, "Could not fetch due players queue", e);
                     return;
@@ -66,7 +69,6 @@ public class DuePlayerFetcher implements Runnable {
                     Thread.sleep(random.nextInt(1000) + 500);
                 } catch (InterruptedException e) {
                     platform.log(Level.SEVERE, "Interrupted", e);
-                    return;
                 }
 
                 page++;
@@ -122,11 +124,10 @@ public class DuePlayerFetcher implements Runnable {
                     }
                 }
             });
-
-            if (scheduleAgain)
-                platform.executeAsyncLater(this, information.getMeta().getNextCheck(), TimeUnit.SECONDS);
         } finally {
             inProgress.set(false);
+            if (scheduleAgain)
+                platform.executeAsyncLater(this, nextCheck, TimeUnit.SECONDS);
         }
     }
 
