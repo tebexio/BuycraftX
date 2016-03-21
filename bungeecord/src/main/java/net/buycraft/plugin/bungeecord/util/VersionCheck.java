@@ -11,6 +11,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
@@ -24,6 +25,38 @@ public class VersionCheck implements Listener {
 
     private static final String UPDATE_MESSAGE = "A new version of BuycraftX (%s) is available. Go to your server panel at" +
             " https://server.buycraft.net to update.";
+
+    private boolean isVersionGreater(String one, String two) {
+        String[] componentsOne = one.split("\\.");
+        String[] componentsTwo = two.split("\\.");
+
+        int verLen = Math.max(componentsOne.length, componentsTwo.length);
+
+        int[] numOne = new int[verLen];
+        int[] numTwo = new int[verLen];
+
+        for (int i = 0; i < componentsOne.length; i++) {
+            numOne[i] = Integer.parseInt(componentsOne[i]);
+        }
+        for (int i = 0; i < componentsTwo.length; i++) {
+            numTwo[i] = Integer.parseInt(componentsTwo[i]);
+        }
+
+        // Quick exclusion check.
+        if (Arrays.equals(numOne, numTwo)) {
+            return false;
+        }
+
+        for (int i = 0; i < numOne.length; i++) {
+            if (numTwo[i] == numOne[i])
+                continue;
+
+            if (numTwo[i] > numOne[i])
+                return true;
+        }
+
+        return false;
+    }
 
     public void verify() throws IOException {
         if (pluginVersion.endsWith("-SNAPSHOT")) {
@@ -40,7 +73,7 @@ public class VersionCheck implements Listener {
         String latestVersionString = lastKnownVersion.getVersion();
 
         if (!latestVersionString.equals(pluginVersion)) {
-            upToDate = false;
+            upToDate = isVersionGreater(pluginVersion, latestVersionString);
         }
     }
 
