@@ -1,6 +1,6 @@
 package net.buycraft.plugin.util;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.data.responses.Version;
 import okhttp3.OkHttpClient;
@@ -24,7 +24,10 @@ public class VersionUtil {
         }
 
         try (ResponseBody body = response.body()) {
-            return new Gson().fromJson(body.string(), Version.class);
+            return new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                    .create()
+                    .fromJson(body.string(), Version.class);
         }
     }
 }

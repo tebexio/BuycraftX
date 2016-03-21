@@ -87,6 +87,7 @@ public class BuycraftPlugin extends Plugin {
                 return new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10);
             }
         });
+        getProxy().getScheduler().runAsync(this, cacheFutureTask);
         Cache cache;
         try {
             cache = cacheFutureTask.get();

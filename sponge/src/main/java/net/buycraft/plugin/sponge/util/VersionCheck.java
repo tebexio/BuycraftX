@@ -77,7 +77,11 @@ public class VersionCheck {
         String latestVersionString = lastKnownVersion.getVersion();
 
         if (!latestVersionString.equals(pluginVersion)) {
-            upToDate = isVersionGreater(pluginVersion, latestVersionString);
+            upToDate = !isVersionGreater(pluginVersion, latestVersionString);
+
+            if (!upToDate) {
+                plugin.getLogger().info(String.format(UPDATE_MESSAGE, lastKnownVersion.getVersion()));
+            }
         }
     }
 
