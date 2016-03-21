@@ -26,6 +26,7 @@ import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
+import net.buycraft.plugin.sponge.util.VersionCheck;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -119,8 +120,18 @@ public class BuycraftPlugin {
                 .cache(new Cache(baseDirectory.resolve("cache").toFile(), 1024 * 1024 * 10))
                 .build();
 
+        // Check for latest version.
+        String curVersion = getClass().getAnnotation(Plugin.class).version();
+        VersionCheck check = new VersionCheck(this, curVersion);
+        try {
+            check.verify();
+        } catch (IOException e) {
+            getLogger().error("Can't check for updates", e);
+        }
+        Sponge.getEventManager().registerListeners(this, check);
+
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
-        bugsnagClient.setAppVersion(getClass().getAnnotation(Plugin.class).version());
+        bugsnagClient.setAppVersion(curVersion);
         bugsnagClient.setLogger(new BugsnagNilLogger());
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 

@@ -9,17 +9,20 @@ import net.buycraft.plugin.bungeecord.logging.BugsnagGlobalLoggingHandler;
 import net.buycraft.plugin.bungeecord.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bungeecord.logging.BugsnagNilLogger;
 import net.buycraft.plugin.bungeecord.util.AnalyticsUtil;
+import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
 import net.buycraft.plugin.data.responses.ServerInformation;
+import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.util.VersionUtil;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
 import okhttp3.Dispatcher;
@@ -120,6 +123,15 @@ public class BuycraftPlugin extends Plugin {
             }
             apiClient = client;
         }
+
+        // Check for latest version.
+        VersionCheck check = new VersionCheck(this, getDescription().getVersion());
+        try {
+            check.verify();
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Can't check for updates", e);
+        }
+        getProxy().getPluginManager().registerListener(this, check);
 
         // Initialize placeholders.
         placeholderManager.addPlaceholder(new NamePlaceholder());

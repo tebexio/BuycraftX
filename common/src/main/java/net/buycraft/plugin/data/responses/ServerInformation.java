@@ -3,6 +3,7 @@ package net.buycraft.plugin.data.responses;
 import com.google.gson.annotations.SerializedName;
 import lombok.Value;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import java.util.Map;
 public class ServerInformation {
     private final Account account;
     private final Server server;
-    private final Analytics analytics;
 
     @Value
     public static class Account {
@@ -33,16 +33,5 @@ public class ServerInformation {
         @SerializedName("iso_4217")
         private final String iso4217;
         private final String symbol;
-    }
-
-    @Value
-    public static class Analytics {
-        private final KeenIoData internal;
-    }
-
-    @Value
-    public static class KeenIoData {
-        private final String project;
-        private final String key;
     }
 }

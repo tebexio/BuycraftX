@@ -1,0 +1,30 @@
+package net.buycraft.plugin.util;
+
+import com.google.gson.Gson;
+import lombok.experimental.UtilityClass;
+import net.buycraft.plugin.data.responses.Version;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+import java.io.IOException;
+
+@UtilityClass
+public class VersionUtil {
+    public static Version getVersion(OkHttpClient client, String platform) throws IOException {
+        Request request = new Request.Builder()
+                .url("https://plugin.buycraft.net/versions/" + platform)
+                .build();
+
+        Response response = client.newCall(request).execute();
+
+        if (!response.isSuccessful()) {
+            return null;
+        }
+
+        try (ResponseBody body = response.body()) {
+            return new Gson().fromJson(body.string(), Version.class);
+        }
+    }
+}

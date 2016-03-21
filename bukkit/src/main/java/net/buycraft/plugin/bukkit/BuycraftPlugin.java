@@ -18,6 +18,7 @@ import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.SignUpdater;
 import net.buycraft.plugin.bukkit.util.AnalyticsUtil;
+import net.buycraft.plugin.bukkit.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
@@ -118,6 +119,15 @@ public class BuycraftPlugin extends JavaPlugin {
             }
             apiClient = client;
         }
+
+        // Check for latest version.
+        VersionCheck check = new VersionCheck(this, getDescription().getVersion());
+        try {
+            check.verify();
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Can't check for updates", e);
+        }
+        getServer().getPluginManager().registerEvents(check, this); // out!
 
         // Initialize placeholders.
         placeholderManager.addPlaceholder(new NamePlaceholder());
