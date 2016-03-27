@@ -26,10 +26,7 @@ public class LoggerUtils {
                 data.put("platform", "sponge");
             }
 
-            Sponge.getGame().getScheduler().createTaskBuilder()
-                    .execute(() -> bugsnagClient.notify(e, data))
-                    .async()
-                    .submit(plugin);
+            bugsnagClient.notify(e, data);
         }
 
         if (level == Level.INFO) {

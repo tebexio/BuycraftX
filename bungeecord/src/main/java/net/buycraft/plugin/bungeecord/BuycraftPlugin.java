@@ -165,11 +165,23 @@ public class BuycraftPlugin extends Plugin {
         }
 
         // Set up Bugsnag.
-        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
-        bugsnagClient.setAppVersion(getDescription().getVersion());
-        bugsnagClient.setLogger(new BugsnagNilLogger());
-        getProxy().getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));
-        getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
+        // Hack due to SecurityManager shenanigans.
+        FutureTask<Client> clientInit = new FutureTask<>(new Callable<Client>() {
+            @Override
+            public Client call() throws Exception {
+                return new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+            }
+        });
+        getProxy().getScheduler().runAsync(this, clientInit);
+        try {
+            Client bugsnagClient = clientInit.get();
+            bugsnagClient.setAppVersion(getDescription().getVersion());
+            bugsnagClient.setLogger(new BugsnagNilLogger());
+            getProxy().getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));
+            getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
+        } catch (InterruptedException | ExecutionException e) {
+            getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
+        }
     }
 
     public void saveConfiguration() throws IOException {

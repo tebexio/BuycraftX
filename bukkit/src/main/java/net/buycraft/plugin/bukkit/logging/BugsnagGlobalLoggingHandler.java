@@ -62,16 +62,11 @@ public class BugsnagGlobalLoggingHandler extends Handler {
             data.put("platform", "bukkit");
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (record.getLevel() == Level.SEVERE) {
-                    client.notify(record.getThrown(), "error", data);
-                } else if (record.getLevel() == Level.WARNING) {
-                    client.notify(record.getThrown(), "warning", data);
-                }
-            }
-        });
+        if (record.getLevel() == Level.SEVERE) {
+            client.notify(record.getThrown(), "error", data);
+        } else if (record.getLevel() == Level.WARNING) {
+            client.notify(record.getThrown(), "warning", data);
+        }
     }
 
     @Override
