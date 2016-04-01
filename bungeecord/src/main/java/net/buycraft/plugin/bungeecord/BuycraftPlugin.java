@@ -22,6 +22,7 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.VersionUtil;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
@@ -101,6 +102,7 @@ public class BuycraftPlugin extends Plugin {
                 .readTimeout(3, TimeUnit.SECONDS)
                 .dispatcher(new Dispatcher(getExecutorService()))
                 .cache(cache)
+                .dns(new Ipv4PreferDns())
                 .build();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {

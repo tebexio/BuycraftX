@@ -27,6 +27,7 @@ import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import net.buycraft.plugin.sponge.util.VersionCheck;
+import net.buycraft.plugin.util.Ipv4PreferDns;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -118,6 +119,7 @@ public class BuycraftPlugin {
                 .writeTimeout(3, TimeUnit.SECONDS)
                 .readTimeout(3, TimeUnit.SECONDS)
                 .cache(new Cache(baseDirectory.resolve("cache").toFile(), 1024 * 1024 * 10))
+                .dns(new Ipv4PreferDns())
                 .build();
 
         // Check for latest version.
