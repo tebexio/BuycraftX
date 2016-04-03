@@ -1,5 +1,7 @@
 package net.buycraft.plugin.config;
 
+import com.google.common.base.Joiner;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -7,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 public class BuycraftConfiguration {
@@ -42,12 +46,12 @@ public class BuycraftConfiguration {
         return properties.getProperty("server-key", null);
     }
 
-    public void setBuyCommandName(String key) {
-        properties.setProperty("buy-command-name", key);
+    public void setBuyCommandName(List<String> keys) {
+        properties.setProperty("buy-command-name", Joiner.on(',').join(keys));
     }
 
-    public String getBuyCommandName() {
-        return properties.getProperty("buy-command-name", "buy");
+    public List<String> getBuyCommandName() {
+        return Arrays.asList(properties.getProperty("buy-command-name", "buy").split(","));
     }
 
     public void setVerbose(boolean verbose) {
