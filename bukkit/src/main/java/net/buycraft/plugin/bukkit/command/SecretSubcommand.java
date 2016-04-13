@@ -20,12 +20,12 @@ public class SecretSubcommand implements Subcommand {
     @Override
     public void execute(final CommandSender sender, final String[] args) {
         if (!(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(ChatColor.RED + "For security reasons, your Buycraft secret key must be set via the console.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_console_only"));
             return;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + "You must specify your server key. You can find your key at https://server.buycraft.net/servers.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_need_key"));
             return;
         }
 
@@ -36,7 +36,7 @@ public class SecretSubcommand implements Subcommand {
                 try {
                     plugin.updateInformation(client);
                 } catch (IOException | ApiException e) {
-                    sender.sendMessage(ChatColor.RED + "Apologies, but that key didn't seem to work. Try again.");
+                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_does_not_work"));
                     return;
                 }
 
@@ -47,11 +47,10 @@ public class SecretSubcommand implements Subcommand {
                 try {
                     plugin.saveConfiguration();
                 } catch (IOException e) {
-                    sender.sendMessage(ChatColor.RED + "Apologies, but we couldn't save the public key to your configuration file.");
+                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_cant_be_saved"));
                 }
 
-                sender.sendMessage(String.format(ChatColor.GREEN + "Looks like you're good to go! " +
-                                "This server is now registered as server '%s' for the web store '%s'.",
+                sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("secret_success",
                         information.getServer().getName(), information.getAccount().getName()));
 
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getDuePlayerFetcher());
@@ -61,6 +60,6 @@ public class SecretSubcommand implements Subcommand {
 
     @Override
     public String getDescription() {
-        return "Sets the secret key to use for this server.";
+        return plugin.getI18n().get("usage_secret");
     }
 }

@@ -90,7 +90,7 @@ public class ViewCategoriesGUI implements Listener {
 
             final CategoryViewGUI.GUIImpl gui = plugin.getCategoryViewGUI().getFirstPage(category);
             if (gui == null) {
-                player.sendMessage(ChatColor.RED + "There's nothing here!");
+                player.sendMessage(ChatColor.RED + plugin.getI18n().get("nothing_in_category"));
                 return;
             }
 

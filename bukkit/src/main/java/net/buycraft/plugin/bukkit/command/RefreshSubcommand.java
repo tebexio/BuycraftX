@@ -13,21 +13,21 @@ public class RefreshSubcommand implements Subcommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length != 0) {
-            sender.sendMessage(ChatColor.RED + "This command does not accept any parameters.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_params"));
             return;
         }
 
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(ChatColor.RED + "Set up a secret key first with /buycraft secret.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("need_secret_key"));
             return;
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getListingUpdateTask());
-        sender.sendMessage(ChatColor.GREEN + "Listing refresh queued.");
+        sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("refresh_queued"));
     }
 
     @Override
     public String getDescription() {
-        return "Refreshes the list of categories and packages.";
+        return plugin.getI18n().get("usage_refresh");
     }
 }

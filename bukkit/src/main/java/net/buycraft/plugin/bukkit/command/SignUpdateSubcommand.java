@@ -14,26 +14,26 @@ public class SignUpdateSubcommand implements Subcommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length != 0) {
-            sender.sendMessage(ChatColor.RED + "This command does not accept any parameters.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_params"));
             return;
         }
 
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(ChatColor.RED + "Set up a secret key first with /buycraft secret.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("need_secret_key"));
             return;
         }
 
         if (plugin.getDuePlayerFetcher().getInProgress().get()) {
-            sender.sendMessage(ChatColor.RED + "We're currently checking for new purchases. Sit tight!");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("already_checking_for_purchases"));
             return;
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
-        sender.sendMessage(ChatColor.GREEN + "Successfully queued sign update.");
+        sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("sign_update_queued"));
     }
 
     @Override
     public String getDescription() {
-        return "Forces an update to your recent purchase signs.";
+        return plugin.getI18n().get("usage_signupdate");
     }
 }

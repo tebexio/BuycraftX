@@ -23,6 +23,7 @@ import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
+import net.buycraft.plugin.config.BuycraftI18n;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -76,12 +77,15 @@ public class BuycraftPlugin extends JavaPlugin {
     private IBuycraftPlatform platform;
     @Getter
     private CommandExecutor commandExecutor;
+    @Getter
+    private BuycraftI18n i18n;
 
     @Override
     public void onEnable() {
         // Pre-initialization.
         GUIUtil.setPlugin(this);
         platform = new BukkitBuycraftPlatform(this);
+        i18n = new BuycraftI18n();
 
         // Initialize configuration.
         getDataFolder().mkdir();
@@ -161,7 +165,7 @@ public class BuycraftPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
 
         // Initialize and register commands.
-        BuycraftCommand command = new BuycraftCommand();
+        BuycraftCommand command = new BuycraftCommand(this);
         command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
         command.getSubcommandMap().put("info", new InformationSubcommand(this));

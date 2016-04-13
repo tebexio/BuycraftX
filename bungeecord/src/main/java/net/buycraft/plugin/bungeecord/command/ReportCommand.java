@@ -27,7 +27,7 @@ public class ReportCommand implements Subcommand {
 
     @Override
     public void execute(final CommandSender sender, String[] args) {
-        sender.sendMessage(ChatColor.GOLD + "Please wait...");
+        sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("report_wait"));
 
         final StringWriter out = new StringWriter();
         final PrintWriter writer = new PrintWriter(out, true);
@@ -84,9 +84,9 @@ public class ReportCommand implements Subcommand {
 
                 try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
                     w.write(out.toString());
-                    sender.sendMessage(ChatColor.GOLD + "Report saved as " + p.toAbsolutePath().toString());
+                    sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("report_saved", p.toAbsolutePath().toString()));
                 } catch (IOException e) {
-                    sender.sendMessage(ChatColor.RED + "Can't save report. Dumping onto console...");
+                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("report_cant_save"));
                     plugin.getLogger().info(out.toString());
                 }
             }

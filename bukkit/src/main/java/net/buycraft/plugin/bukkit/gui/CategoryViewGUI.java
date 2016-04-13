@@ -217,14 +217,14 @@ public class CategoryViewGUI {
                     format.setCurrency(Currency.getInstance(plugin.getServerInformation().getAccount().getCurrency().getIso4217()));
 
                     String price = String.valueOf(ChatColor.GRAY) +
-                            "Price: " +
+                            plugin.getI18n().get("price") +
                             ChatColor.DARK_GREEN +
                             ChatColor.BOLD +
                             format.format(p.getEffectivePrice());
                     lore.add(price);
 
                     if (p.getSale() != null && p.getSale().isActive()) {
-                        lore.add(ChatColor.RED + "(-" + format.format(p.getSale().getDiscount()) + " off!)");
+                        lore.add(ChatColor.RED + plugin.getI18n().get("amount_off", format.format(p.getSale().getDiscount())));
                     }
 
                     meta.setLore(lore);
@@ -238,18 +238,18 @@ public class CategoryViewGUI {
             int bottomBase = base + 36;
             if (page > 0) {
                 // Definitely draw a previous button
-                inventory.setItem(bottomBase + 1, withName(Material.NETHER_STAR, ChatColor.AQUA + "Previous Page"));
+                inventory.setItem(bottomBase + 1, withName(Material.NETHER_STAR, ChatColor.AQUA + plugin.getI18n().get("previous_page")));
             }
 
             if (subcatPartition.size() - 1 > page || packagePartition.size() - 1 > page) {
                 // Definitely draw a next button
-                inventory.setItem(bottomBase + 7, withName(Material.NETHER_STAR, ChatColor.AQUA + "Next Page"));
+                inventory.setItem(bottomBase + 7, withName(Material.NETHER_STAR, ChatColor.AQUA + plugin.getI18n().get("next_page")));
             }
 
             // Draw a parent or "view all categories" button
             ItemStack parent = new ItemStack(Material.BOOK_AND_QUILL);
             ItemMeta meta = parent.getItemMeta();
-            meta.setDisplayName(ChatColor.GRAY + (parentId == null ? "View All Categories" : "Back to Parent"));
+            meta.setDisplayName(ChatColor.GRAY + (parentId == null ? plugin.getI18n().get("view_all_categories") : plugin.getI18n().get("back_to_parent")));
             parent.setItemMeta(meta);
             inventory.setItem(bottomBase + 4, parent);
         }

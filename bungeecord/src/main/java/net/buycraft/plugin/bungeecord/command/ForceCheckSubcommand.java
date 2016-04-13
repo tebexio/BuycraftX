@@ -12,17 +12,17 @@ public class ForceCheckSubcommand implements Subcommand {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length != 0) {
-            sender.sendMessage(ChatColor.RED + "This command does not accept any parameters.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_params"));
             return;
         }
 
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(ChatColor.RED + "Set up a secret key first with /buycraft secret.");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("need_secret_key"));
             return;
         }
 
         if (plugin.getDuePlayerFetcher().getInProgress().get()) {
-            sender.sendMessage(ChatColor.RED + "We're currently checking for new purchases. Sit tight!");
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("already_checking_for_purchases"));
             return;
         }
 
@@ -32,11 +32,11 @@ public class ForceCheckSubcommand implements Subcommand {
                 plugin.getDuePlayerFetcher().run(false);
             }
         });
-        sender.sendMessage(ChatColor.GREEN + "Successfully queued player check.");
+        sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("forcecheck_queued"));
     }
 
     @Override
     public String getDescription() {
-        return "Forces a purchase check.";
+        return plugin.getI18n().get("usage_forcecheck");
     }
 }

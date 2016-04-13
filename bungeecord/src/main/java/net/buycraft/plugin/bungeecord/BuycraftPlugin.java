@@ -14,6 +14,7 @@ import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
+import net.buycraft.plugin.config.BuycraftI18n;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
@@ -59,11 +60,14 @@ public class BuycraftPlugin extends Plugin {
     private IBuycraftPlatform platform;
     @Getter
     private CommandExecutor commandExecutor;
+    @Getter
+    private BuycraftI18n i18n;
 
     @Override
     public void onEnable() {
         // Pre-initialization.
         platform = new BungeeCordBuycraftPlatform(this);
+        i18n = new BuycraftI18n();
 
         // Initialize configuration.
         getDataFolder().mkdir();
@@ -149,7 +153,7 @@ public class BuycraftPlugin extends Plugin {
         getProxy().getPluginManager().registerListener(this, new BuycraftListener(this));
 
         // Initialize and register commands.
-        BuycraftCommand command = new BuycraftCommand();
+        BuycraftCommand command = new BuycraftCommand(this);
         command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
         command.getSubcommandMap().put("info", new InformationSubcommand(this));

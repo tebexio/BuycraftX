@@ -9,6 +9,7 @@ import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.config.BuycraftConfiguration;
+import net.buycraft.plugin.config.BuycraftI18n;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -92,9 +93,13 @@ public class BuycraftPlugin {
     @ConfigDir(sharedRoot = false)
     private Path baseDirectory;
 
+    @Getter
+    private BuycraftI18n i18n;
+
     @Listener
     public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
         platform = new SpongeBuycraftPlatform(this);
+        i18n = new BuycraftI18n();
         try {
             try {
                 Files.createDirectory(baseDirectory);
