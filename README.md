@@ -11,6 +11,10 @@ BuycraftX is an entirely new plugin for use with the [Buycraft.net service](http
   * Sponge 3.x
 * Custom item IDs are not supported, as it is not portable to other platforms and is deprecated.
 
+## Translations
+
+Help us translate the BuycraftX project by participating in our Crowdin project located at https://crowdin.com/project/buycraftx-plugin.
+
 ## Standalone executor
 
 BuycraftX can be integrated into your own custom applications to handle command execution. Most applications will
