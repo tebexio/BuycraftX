@@ -22,12 +22,12 @@ public class InfoCmd implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(Text.builder("Set up a secret key first with /buycraft secret.").color(TextColors.RED).build());
+            sender.sendMessage(Text.builder(plugin.getI18n().get("no_params")).color(TextColors.RED).build());
             return CommandResult.success();
         }
 
         if (plugin.getServerInformation() == null) {
-            sender.sendMessage(Text.builder("No server information found.").color(TextColors.RED).build());
+            sender.sendMessage(Text.builder(plugin.getI18n().get("information_no_server")).color(TextColors.RED).build());
             return CommandResult.success();
         }
 
@@ -44,15 +44,11 @@ public class InfoCmd implements CommandExecutor {
                     .color(TextColors.GREEN)
                     .build();
 
-            LiteralText prices = Text.builder(plugin.getServerInformation().getAccount().getCurrency().getIso4217())
-                    .color(TextColors.GREEN)
-                    .build();
-
             sender.sendMessages(
-                    Text.builder("Information on this server:").color(TextColors.GRAY).build(),
-                    Text.builder("Webstore: ").color(TextColors.GRAY).append(webstore).build(),
-                    Text.builder("Server: ").color(TextColors.GRAY).append(server).build(),
-                    Text.builder("Server prices are in ").color(TextColors.GRAY).append(prices).build()
+                    Text.builder(plugin.getI18n().get("information_title") + " ").color(TextColors.GRAY).build(),
+                    Text.builder(plugin.getI18n().get("information_sponge_server") + " ").color(TextColors.GRAY).append(server).build(),
+                    Text.builder(plugin.getI18n().get("information_currency", plugin.getServerInformation().getAccount().getCurrency().getIso4217()))
+                            .color(TextColors.GRAY).build()
             );
         } catch (MalformedURLException e) {
             e.printStackTrace();

@@ -26,18 +26,14 @@ public class SendCheckoutLink implements Runnable {
         try {
             response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId);
         } catch (IOException | ApiException e) {
-            player.sendMessage(ChatColor.RED + "Whoops! We weren't able to get a link for you to check out this package.");
+            player.sendMessage(ChatColor.RED + plugin.getI18n().get("cant_check_out"));
             return;
         }
 
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
-        new FancyMessage("To buy your package, click ")
+        new FancyMessage(plugin.getI18n().get("to_buy_this_package"))
                 .color(ChatColor.GRAY)
-                .then("here")
-                .color(ChatColor.GREEN)
-                .style(ChatColor.UNDERLINE)
                 .link(response.getUrl())
-                .then(".")
                 .color(ChatColor.GRAY)
                 .send(player);
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");

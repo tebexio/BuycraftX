@@ -18,18 +18,18 @@ public class ForceCheckCmd implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(Text.builder("Set up a secret key first with /buycraft secret.").color(TextColors.RED).build());
+            sender.sendMessage(Text.builder(plugin.getI18n().get("need_secret_key")).color(TextColors.RED).build());
             return CommandResult.success();
         }
 
         if (plugin.getDuePlayerFetcher().getInProgress().get()) {
-            sender.sendMessage(Text.builder("We're currently checking for new purchases. Sit tight!").color(TextColors.RED).build());
+            sender.sendMessage(Text.builder(plugin.getI18n().get("already_checking_for_purchases")).color(TextColors.RED).build());
             return CommandResult.success();
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(() -> plugin.getDuePlayerFetcher().run(false)).async().submit(plugin);
 
-        sender.sendMessage(Text.builder("Successfully queued player check.").color(TextColors.GREEN).build());
+        sender.sendMessage(Text.builder(plugin.getI18n().get("forcecheck_queued")).color(TextColors.GREEN).build());
         return CommandResult.success();
     }
 }

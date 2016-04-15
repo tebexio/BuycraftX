@@ -26,11 +26,10 @@ public class SecretCmd implements CommandExecutor {
     public CommandResult execute(final CommandSource src, final CommandContext args) throws CommandException {
         if (!(src instanceof ConsoleSource)) {
             src.sendMessage(
-                    Text.builder("For security reasons, your Buycraft secret key must be set via the console.").color(TextColors.RED).build());
+                    Text.builder(plugin.getI18n().get("secret_console_only")).color(TextColors.RED).build());
         } else {
             if (!args.getOne("secret").isPresent()) {
-                src.sendMessage(Text.builder("You must specify your server key. You can find your key at https://server.buycraft.net/servers.")
-                        .color(TextColors.RED).build());
+                src.sendMessage(Text.builder(plugin.getI18n().get("secret_need_key")).color(TextColors.RED).build());
             } else {
                 plugin.getPlatform().executeAsync(new Runnable() {
                     @Override
@@ -39,7 +38,7 @@ public class SecretCmd implements CommandExecutor {
                         try {
                             plugin.updateInformation(client);
                         } catch (IOException | ApiException e) {
-                            src.sendMessage(Text.builder("Apologies, but that key didn't seem to work. Try again.").color(TextColors.RED).build());
+                            src.sendMessage(Text.builder(plugin.getI18n().get("secret_does_not_work")).color(TextColors.RED).build());
                             return;
                         }
 
@@ -50,10 +49,9 @@ public class SecretCmd implements CommandExecutor {
                         try {
                             plugin.saveConfiguration();
                         } catch (IOException e) {
-                            src.sendMessage(Text.builder("Apologies, but we couldn't save the public key to your configuration file.").color(TextColors.RED).build());
+                            src.sendMessage(Text.builder(plugin.getI18n().get("secret_cant_be_saved")).color(TextColors.RED).build());
                         }
-                        src.sendMessage(Text.builder(String.format("Looks like you're good to go! " +
-                                        "This server is now registered as server '%s' for the web store '%s'.",
+                        src.sendMessage(Text.builder(plugin.getI18n().get("secret_success",
                                 information.getServer().getName(), information.getAccount().getName())).color(TextColors.GREEN).build());
                         plugin.getPlatform().executeAsync(plugin.getDuePlayerFetcher());
                     }

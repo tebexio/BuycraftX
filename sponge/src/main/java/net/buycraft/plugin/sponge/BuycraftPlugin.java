@@ -194,7 +194,7 @@ public class BuycraftPlugin {
 
         Sponge.getCommandManager().register(this, buildCommands(), "buycraft");
         Sponge.getCommandManager().register(this, CommandSpec.builder()
-                .description(Text.of("Lists all Buycraft packages and their prices."))
+                .description(Text.of(i18n.get("usage_sponge_listing")))
                 .executor(new ListPackagesCmd(this))
                 .build(), configuration.getBuyCommandName());
     }
@@ -210,27 +210,27 @@ public class BuycraftPlugin {
 
     private CommandSpec buildCommands() {
         CommandSpec refresh = CommandSpec.builder()
-                .description(Text.of("Refreshes the package listing."))
+                .description(Text.of(i18n.get("usage_refresh")))
                 .permission("buycraft.admin")
                 .executor(new RefreshCmd(this))
                 .build();
         CommandSpec secret = CommandSpec.builder()
-                .description(Text.of("Sets the secret key to use for this server."))
+                .description(Text.of(i18n.get("usage_secret")))
                 .permission("buycraft.admin")
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("secret"))))
                 .executor(new SecretCmd(this))
                 .build();
         CommandSpec report = CommandSpec.builder()
-                .description(Text.of("Generates a report with debugging information you can send to support."))
+                .description(Text.of(i18n.get("usage_report")))
                 .executor(new ReportCmd(this))
                 .permission("buycraft.admin")
                 .build();
         CommandSpec info = CommandSpec.builder()
-                .description(Text.of("Retrieves public information about the webstore this server is associated with."))
+                .description(Text.of(i18n.get("usage_information")))
                 .executor(new InfoCmd(this))
                 .build();
         CommandSpec forcecheck = CommandSpec.builder()
-                .description(Text.of("Forces a purchase check."))
+                .description(Text.of(i18n.get("usage_forcecheck")))
                 .executor(new ForceCheckCmd(this))
                 .permission("buycraft.admin")
                 .build();

@@ -52,7 +52,8 @@ public class ViewCategoriesGUI implements Listener {
         }
 
         if (roundNine(listing.getCategories().size()) != inventory.getSize()) {
-            Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()), "Buycraft: Categories");
+            Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()), "Buycraft: " +
+                    plugin.getI18n().get("categories"));
             GUIUtil.replaceInventory(inventory, work);
             inventory = work;
         }

@@ -31,14 +31,14 @@ public class SendCheckoutLinkTask implements Runnable {
             response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId);
         } catch (IOException | ApiException e) {
             player.sendMessage(
-                    Text.builder("Whoops! We weren't able to get a link for you to check out this package.").color(TextColors.RED).build());
+                    Text.builder(plugin.getI18n().get("cant_check_out")).color(TextColors.RED).build());
             return;
         }
         if (response != null) {
             player.sendMessage(Text.builder("                                            ").style(TextStyles.STRIKETHROUGH).build());
             try {
-                player.sendMessage(Text.builder("To buy your package, click ").color(TextColors.GRAY).append(Text.builder("here").onClick(TextActions
-                        .openUrl(new URL(response.getUrl()))).build()).append(Text.builder(".").color(TextColors.GRAY).build()).build());
+                player.sendMessage(Text.builder(plugin.getI18n().get("to_buy_this_package")).color(TextColors.GRAY).onClick(TextActions
+                        .openUrl(new URL(response.getUrl()))).build());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

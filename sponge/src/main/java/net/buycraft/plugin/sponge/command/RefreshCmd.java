@@ -18,10 +18,10 @@ public class RefreshCmd implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         if (plugin.getApiClient() == null) {
-            src.sendMessage(Text.builder("Set up a secret key first with /buycraft secret.").color(TextColors.RED).build());
+            src.sendMessage(Text.builder(plugin.getI18n().get("need_secret_key")).color(TextColors.RED).build());
         } else {
             plugin.getPlatform().executeAsync(plugin.getListingUpdateTask());
-            src.sendMessage(Text.builder("Listing update queued.").color(TextColors.GREEN).build());
+            src.sendMessage(Text.builder(plugin.getI18n().get("refresh_queued")).color(TextColors.GREEN).build());
         }
         return CommandResult.success();
     }

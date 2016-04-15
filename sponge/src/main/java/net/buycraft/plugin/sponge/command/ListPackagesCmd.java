@@ -31,21 +31,21 @@ public class ListPackagesCmd implements CommandExecutor {
     private final BuycraftPlugin plugin;
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-
+    public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
         if (plugin.getApiClient() == null) {
-            src.sendMessage(Text.builder("Set up a secret key first with /buycraft secret.").color(TextColors.RED).build());
+            sender.sendMessage(Text.builder(plugin.getI18n().get("no_params")).color(TextColors.RED).build());
             return CommandResult.success();
         }
 
         if (plugin.getListingUpdateTask().getListing() == null) {
-            src.sendMessage(Text.builder("We're currently retrieving the listing. Sit tight!").color(TextColors.RED).build());
+            sender.sendMessage(Text.builder("We're currently retrieving the listing. Sit tight!").color(TextColors.RED).build());
             return CommandResult.success();
         }
 
         try {
-            sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), new ArrayList<Package>(), "Categories", Optional
-                    .absent()), src);
+            sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), new ArrayList<Package>(),
+                    plugin.getI18n().get("categories"), Optional
+                    .absent()), sender);
         } catch (IOException | ApiException e) {
             e.printStackTrace();
         }
@@ -67,8 +67,8 @@ public class ListPackagesCmd implements CommandExecutor {
                     }
                 })).build()).collect(Collectors.toList());
         for (Package p : node.getPackages()) {
-            contents.add(Text.builder(p.getName()).color(TextColors.WHITE).append(Text.builder(" for ").color(TextColors.GRAY).build())
-                    .append(Text.builder("$x.".replace("$", plugin.getServerInformation().getAccount().getCurrency().getSymbol())
+            contents.add(Text.builder(p.getName()).color(TextColors.WHITE).append(Text.builder(" - ").color(TextColors.GRAY).build())
+                    .append(Text.builder("$x".replace("$", plugin.getServerInformation().getAccount().getCurrency().getSymbol())
                             .replace("x", "" + p.getEffectivePrice())).color(TextColors.GREEN).build())
                     .onClick(TextActions.executeCallback(commandSource -> {
                 if (commandSource instanceof Player) {
@@ -76,7 +76,7 @@ public class ListPackagesCmd implements CommandExecutor {
                 }
             })).build());
         }
-        builder.title(Text.builder("BuycraftX Listing").color(TextColors.AQUA).build()).contents(contents).padding(Text.of("-")).sendTo(source);
+        builder.title(Text.builder(plugin.getI18n().get("sponge_listing")).color(TextColors.AQUA).build()).contents(contents).padding(Text.of("-")).sendTo(source);
     }
 
 }

@@ -34,7 +34,7 @@ public class ReportCmd implements CommandExecutor {
 
     @Override
     public CommandResult execute(final CommandSource src, CommandContext args) throws CommandException {
-        src.sendMessage(Text.builder("Please wait...").color(TextColors.RED).build());
+        src.sendMessage(Text.builder(plugin.getI18n().get("report_wait")).color(TextColors.RED).build());
 
         final StringWriter out = new StringWriter();
         final PrintWriter writer = new PrintWriter(out, true);
@@ -104,9 +104,9 @@ public class ReportCmd implements CommandExecutor {
 
                 try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
                     w.write(out.toString());
-                    src.sendMessage(Text.builder("Report saved as " + p.toAbsolutePath().toString()).color(TextColors.RED).build());
+                    src.sendMessage(Text.builder(plugin.getI18n().get("report_saved", p.toAbsolutePath().toString())).color(TextColors.YELLOW).build());
                 } catch (IOException e) {
-                    src.sendMessage(Text.builder("Can't save report. Dumping onto console...").color(TextColors.RED).build());
+                    src.sendMessage(Text.builder(plugin.getI18n().get("report_cant_save")).color(TextColors.RED).build());
                     plugin.getLogger().info(out.toString());
                 }
             }
