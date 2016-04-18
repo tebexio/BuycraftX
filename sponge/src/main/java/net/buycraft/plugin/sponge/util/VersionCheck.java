@@ -18,6 +18,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import static net.buycraft.plugin.util.VersionUtil.isVersionGreater;
+
 @RequiredArgsConstructor
 public class VersionCheck {
     private final BuycraftPlugin plugin;
@@ -26,41 +28,6 @@ public class VersionCheck {
     private Version lastKnownVersion;
     @Getter
     private boolean upToDate = true;
-
-    private static final String UPDATE_MESSAGE = "A new version of BuycraftX (%s) is available. Go to your server panel at" +
-            " https://server.buycraft.net to update.";
-
-    private boolean isVersionGreater(String one, String two) {
-        String[] componentsOne = one.split("\\.");
-        String[] componentsTwo = two.split("\\.");
-
-        int verLen = Math.max(componentsOne.length, componentsTwo.length);
-
-        int[] numOne = new int[verLen];
-        int[] numTwo = new int[verLen];
-
-        for (int i = 0; i < componentsOne.length; i++) {
-            numOne[i] = Integer.parseInt(componentsOne[i]);
-        }
-        for (int i = 0; i < componentsTwo.length; i++) {
-            numTwo[i] = Integer.parseInt(componentsTwo[i]);
-        }
-
-        // Quick exclusion check.
-        if (Arrays.equals(numOne, numTwo)) {
-            return false;
-        }
-
-        for (int i = 0; i < numOne.length; i++) {
-            if (numTwo[i] == numOne[i])
-                continue;
-
-            if (numTwo[i] > numOne[i])
-                return true;
-        }
-
-        return false;
-    }
 
     public void verify() throws IOException {
         if (pluginVersion.endsWith("-SNAPSHOT")) {
@@ -80,7 +47,7 @@ public class VersionCheck {
             upToDate = !isVersionGreater(pluginVersion, latestVersionString);
 
             if (!upToDate) {
-                plugin.getLogger().info(String.format(UPDATE_MESSAGE, lastKnownVersion.getVersion()));
+                plugin.getLogger().info(plugin.getI18n().get("update_available", lastKnownVersion.getVersion()));
             }
         }
     }
@@ -92,13 +59,9 @@ public class VersionCheck {
                 try {
                     event.getTargetEntity().sendMessage(
                             Text.builder()
-                                .append(Text.of(String.format("A new version of BuycraftX (%s) is available. Go to your server panel at ",
-                                        lastKnownVersion.getVersion())))
-                                .color(TextColors.YELLOW)
-                                .append(Text.of("https://server.buycraft.net"))
+                                .append(Text.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
                                 .onClick(TextActions.openUrl(new URL("https://server.buycraft.net")))
                                 .color(TextColors.YELLOW)
-                                .append(Text.of(" to update."))
                                 .build());
                 } catch (MalformedURLException e) {
                     throw new AssertionError(e); // seriously?

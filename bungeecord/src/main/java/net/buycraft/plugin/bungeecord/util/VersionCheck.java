@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import static net.buycraft.plugin.util.VersionUtil.isVersionGreater;
+
 @RequiredArgsConstructor
 public class VersionCheck implements Listener {
     private final BuycraftPlugin plugin;
@@ -22,41 +24,6 @@ public class VersionCheck implements Listener {
     private Version lastKnownVersion;
     @Getter
     private boolean upToDate = true;
-
-    private static final String UPDATE_MESSAGE = "A new version of BuycraftX (%s) is available. Go to your server panel at" +
-            " https://server.buycraft.net to update.";
-
-    private boolean isVersionGreater(String one, String two) {
-        String[] componentsOne = one.split("\\.");
-        String[] componentsTwo = two.split("\\.");
-
-        int verLen = Math.max(componentsOne.length, componentsTwo.length);
-
-        int[] numOne = new int[verLen];
-        int[] numTwo = new int[verLen];
-
-        for (int i = 0; i < componentsOne.length; i++) {
-            numOne[i] = Integer.parseInt(componentsOne[i]);
-        }
-        for (int i = 0; i < componentsTwo.length; i++) {
-            numTwo[i] = Integer.parseInt(componentsTwo[i]);
-        }
-
-        // Quick exclusion check.
-        if (Arrays.equals(numOne, numTwo)) {
-            return false;
-        }
-
-        for (int i = 0; i < numOne.length; i++) {
-            if (numTwo[i] == numOne[i])
-                continue;
-
-            if (numTwo[i] > numOne[i])
-                return true;
-        }
-
-        return false;
-    }
 
     public void verify() throws IOException {
         if (pluginVersion.endsWith("-SNAPSHOT")) {
@@ -76,7 +43,7 @@ public class VersionCheck implements Listener {
             upToDate = !isVersionGreater(pluginVersion, latestVersionString);
 
             if (!upToDate) {
-                plugin.getLogger().info(String.format(UPDATE_MESSAGE, lastKnownVersion.getVersion()));
+                plugin.getLogger().info(plugin.getI18n().get("update_available", lastKnownVersion.getVersion()));
             }
         }
     }
@@ -87,7 +54,7 @@ public class VersionCheck implements Listener {
             plugin.getPlatform().executeAsyncLater(new Runnable() {
                 @Override
                 public void run() {
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + String.format(UPDATE_MESSAGE, lastKnownVersion.getVersion()));
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + plugin.getI18n().get("update_available", lastKnownVersion.getVersion()));
                 }
             }, 3, TimeUnit.SECONDS);
         }
