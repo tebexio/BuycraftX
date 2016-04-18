@@ -32,9 +32,8 @@ public class SendCheckoutLink implements Runnable {
 
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
         new FancyMessage(plugin.getI18n().get("to_buy_this_package"))
-                .color(ChatColor.GRAY)
+                .color(ChatColor.GREEN)
                 .link(response.getUrl())
-                .color(ChatColor.GRAY)
                 .send(player);
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
     }

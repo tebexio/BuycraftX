@@ -37,8 +37,8 @@ public class SendCheckoutLinkTask implements Runnable {
         if (response != null) {
             player.sendMessage(Text.builder("                                            ").style(TextStyles.STRIKETHROUGH).build());
             try {
-                player.sendMessage(Text.builder(plugin.getI18n().get("to_buy_this_package")).color(TextColors.GRAY).onClick(TextActions
-                        .openUrl(new URL(response.getUrl()))).build());
+                player.sendMessage(Text.builder(plugin.getI18n().get("to_buy_this_package")).color(TextColors.GREEN)
+                        .onClick(TextActions.openUrl(new URL(response.getUrl()))).build());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
