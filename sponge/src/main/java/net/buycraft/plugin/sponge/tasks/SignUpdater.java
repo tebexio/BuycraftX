@@ -25,12 +25,11 @@ public class SignUpdater implements Runnable {
 
         if (!maxPos.isPresent()) {
             // Nothing to do
-            plugin.getLogger().info("I have nothing to do");
             return;
         }
 
         if (plugin.getApiClient() == null) {
-            plugin.getLogger().info("I have no API client");
+            // Can't use API client
             return;
         }
 
