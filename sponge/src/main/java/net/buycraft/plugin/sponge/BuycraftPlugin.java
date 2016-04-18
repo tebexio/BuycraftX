@@ -99,7 +99,6 @@ public class BuycraftPlugin {
     @Listener
     public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
         platform = new SpongeBuycraftPlatform(this);
-        i18n = new BuycraftI18n();
         try {
             try {
                 Files.createDirectory(baseDirectory);
@@ -118,6 +117,8 @@ public class BuycraftPlugin {
             getLogger().error("Unable to load configuration! The plugin will disable itself now.", e);
             return;
         }
+
+        i18n = configuration.createI18n();
 
         httpClient = new OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.SECONDS)

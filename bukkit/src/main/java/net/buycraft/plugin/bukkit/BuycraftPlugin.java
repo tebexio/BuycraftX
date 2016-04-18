@@ -85,7 +85,6 @@ public class BuycraftPlugin extends JavaPlugin {
         // Pre-initialization.
         GUIUtil.setPlugin(this);
         platform = new BukkitBuycraftPlatform(this);
-        i18n = new BuycraftI18n();
 
         // Initialize configuration.
         getDataFolder().mkdir();
@@ -103,6 +102,8 @@ public class BuycraftPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        i18n = configuration.createI18n();
 
         // Initialize API client.
         httpClient = new OkHttpClient.Builder()

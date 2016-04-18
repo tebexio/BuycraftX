@@ -19,12 +19,8 @@ public class BuycraftI18n {
     @Getter
     private ResourceBundle userBundle;
 
-    public BuycraftI18n() {
-        try {
-            bundle = ResourceBundle.getBundle("messages");
-        } catch (MissingResourceException e) {
-            bundle = ResourceBundle.getBundle("messages", Locale.ENGLISH);
-        }
+    public BuycraftI18n(Locale locale) {
+        bundle = ResourceBundle.getBundle("messages", locale);
     }
 
     public void loadUserBundle(Path resource) throws IOException {

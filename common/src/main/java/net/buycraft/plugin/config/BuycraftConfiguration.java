@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 public class BuycraftConfiguration {
@@ -81,12 +82,21 @@ public class BuycraftConfiguration {
         return getBoolean("disable-buy-command", false);
     }
 
+    private Locale getLocale() {
+        return new Locale(properties.getProperty("language", "en"));
+    }
+
+    public BuycraftI18n createI18n() {
+        return new BuycraftI18n(getLocale());
+    }
+
     public void fillDefaults() {
         defaultSet("server-key", "INVALID");
         defaultSet("is-bungeecord", "false");
         defaultSet("check-for-updates", "true");
         defaultSet("disable-buy-command", "false");
         defaultSet("buy-command-name", "buy");
+        defaultSet("language", Locale.getDefault().getLanguage());
         defaultSet("verbose", "true");
     }
 }

@@ -67,7 +67,6 @@ public class BuycraftPlugin extends Plugin {
     public void onEnable() {
         // Pre-initialization.
         platform = new BungeeCordBuycraftPlatform(this);
-        i18n = new BuycraftI18n();
 
         // Initialize configuration.
         getDataFolder().mkdir();
@@ -83,6 +82,8 @@ public class BuycraftPlugin extends Plugin {
         } catch (IOException e) {
             throw new RuntimeException("Unable to load configuration!", e);
         }
+
+        i18n = configuration.createI18n();
 
         // Initialize API client.
         // This has to be done partially async due to the SecurityManager.
