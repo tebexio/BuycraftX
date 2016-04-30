@@ -1,7 +1,5 @@
 package net.buycraft.plugin.config;
 
-import com.google.common.base.Joiner;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -9,16 +7,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
 
 public class BuycraftConfiguration {
     private final Properties properties;
 
     public BuycraftConfiguration() {
         this.properties = new Properties();
+    }
+
+    private static String join(String separator, Collection<String> elements) {
+        StringBuilder builder = new StringBuilder();
+        for (String element : elements) {
+            builder.append(element).append(separator);
+        }
+        builder.delete(builder.length() - separator.length(), builder.length());
+        return builder.toString();
     }
 
     private void defaultSet(String key, String value) {
@@ -48,7 +52,7 @@ public class BuycraftConfiguration {
     }
 
     public void setBuyCommandName(List<String> keys) {
-        properties.setProperty("buy-command-name", Joiner.on(',').join(keys));
+        properties.setProperty("buy-command-name", join(",", keys));
     }
 
     public List<String> getBuyCommandName() {

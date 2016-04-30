@@ -79,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>net.buycraft</groupId>
-            <artifactId>buycraftx-common</artifactId>
+            <artifactId>buycraftx-plugin-shared</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>

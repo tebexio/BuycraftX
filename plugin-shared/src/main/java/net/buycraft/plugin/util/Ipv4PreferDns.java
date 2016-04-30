@@ -5,7 +5,10 @@ import okhttp3.Dns;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
 
 public class Ipv4PreferDns implements Dns {
     @Override
