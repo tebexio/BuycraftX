@@ -180,7 +180,7 @@ public class BuycraftPlugin extends JavaPlugin {
         try {
             recentPurchaseSignStorage.load(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Can't load purchase igns, continuing anyway", e);
+            getLogger().log(Level.WARNING, "Can't load purchase signs, continuing anyway");
         }
         getServer().getScheduler().runTaskTimerAsynchronously(this, new SignUpdater(this), 20, 3600 * 15);
         getServer().getPluginManager().registerEvents(new RecentPurchaseSignListener(this), this);
@@ -190,7 +190,7 @@ public class BuycraftPlugin extends JavaPlugin {
         try {
             buyNowSignStorage.load(getDataFolder().toPath().resolve("buy_now_signs.json"));
         } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Can't load buy now signs, continuing anyway", e);
+            getLogger().log(Level.WARNING, "Can't load buy now signs, continuing anyway");
         }
         buyNowSignListener = new BuyNowSignListener(this);
         getServer().getPluginManager().registerEvents(buyNowSignListener, this);
@@ -205,7 +205,6 @@ public class BuycraftPlugin extends JavaPlugin {
             }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
         }
 
-        // Set up Bugsnag.
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
         bugsnagClient.setAppVersion(getDescription().getVersion());
         bugsnagClient.setLogger(new BugsnagNilLogger());
