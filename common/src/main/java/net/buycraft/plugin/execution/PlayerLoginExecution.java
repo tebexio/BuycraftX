@@ -29,7 +29,6 @@ public class PlayerLoginExecution implements Runnable {
 
         platform.log(Level.INFO, String.format("Fetched %d commands for player '%s'.", information.getCommands().size(), player.getName()));
 
-        // Perform the actual command execution.
         // Queue commands for later.
         for (QueuedCommand command : information.getCommands()) {
             platform.getExecutor().queue(new ToRunQueuedCommand(player, command, true));
