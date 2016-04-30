@@ -16,10 +16,10 @@ public class AnalyticsSend {
                 .header("X-Buycraft-Secret", secret)
                 .build()).execute();
 
-        if (response.code() != 201) {
-            throw new IOException("Error whilst sending analytics (" + response.code() + "): " + response.body().string());
+        try (ResponseBody body = response.body()) {
+            if (response.code() != 201) {
+                throw new IOException("Error whilst sending analytics (" + response.code() + "): " + body.string());
+            }
         }
-
-        response.body().close();
     }
 }
