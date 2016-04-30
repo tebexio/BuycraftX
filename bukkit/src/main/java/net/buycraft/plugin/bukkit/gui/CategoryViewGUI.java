@@ -216,9 +216,8 @@ public class CategoryViewGUI {
                     NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
                     format.setCurrency(Currency.getInstance(plugin.getServerInformation().getAccount().getCurrency().getIso4217()));
 
-                    String price = String.valueOf(ChatColor.GRAY) +
+                    String price = ChatColor.GRAY +
                             plugin.getI18n().get("price") +
-                            ChatColor.GRAY +
                             ": " +
                             ChatColor.DARK_GREEN +
                             ChatColor.BOLD +
