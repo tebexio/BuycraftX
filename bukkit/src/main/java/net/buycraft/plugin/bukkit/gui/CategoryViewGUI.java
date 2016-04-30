@@ -218,6 +218,8 @@ public class CategoryViewGUI {
 
                     String price = String.valueOf(ChatColor.GRAY) +
                             plugin.getI18n().get("price") +
+                            ChatColor.GRAY +
+                            ": " +
                             ChatColor.DARK_GREEN +
                             ChatColor.BOLD +
                             format.format(p.getEffectivePrice());

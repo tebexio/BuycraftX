@@ -20,10 +20,11 @@ public class Package implements Comparable<Package> {
     }
 
     public BigDecimal getEffectivePrice() {
-        if (sale != null) {
-            return price.setScale(2, BigDecimal.ROUND_HALF_UP).subtract(sale.getDiscount().setScale(2, BigDecimal.ROUND_HALF_UP));
+        BigDecimal rounded = price.setScale(2, BigDecimal.ROUND_HALF_UP);
+        if (sale == null) {
+            return rounded;
         }
-        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return rounded.subtract(sale.getDiscount().setScale(2, BigDecimal.ROUND_HALF_UP));
     }
 
     @Value
