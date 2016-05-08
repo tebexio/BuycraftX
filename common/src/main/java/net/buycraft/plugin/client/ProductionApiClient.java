@@ -102,10 +102,11 @@ public class ProductionApiClient implements ApiClient {
                 .build();
         Response response = httpClient.newCall(request).execute();
 
-        if (!response.isSuccessful()) {
-            BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
-            response.body().close();
-            throw new ApiException(error.getErrorMessage());
+        try (ResponseBody body = response.body()) {
+            if (!response.isSuccessful()) {
+                BuycraftError error = gson.fromJson(body.charStream(), BuycraftError.class);
+                throw new ApiException(error.getErrorMessage());
+            }
         }
     }
 
@@ -121,14 +122,13 @@ public class ProductionApiClient implements ApiClient {
                 .build();
         Response response = httpClient.newCall(request).execute();
 
-        if (!response.isSuccessful()) {
-            BuycraftError error = gson.fromJson(response.body().charStream(), BuycraftError.class);
-            response.body().close();
-            throw new ApiException(error.getErrorMessage());
-        } else {
-            CheckoutUrlResponse urlResponse = gson.fromJson(response.body().charStream(), CheckoutUrlResponse.class);
-            response.body().close();
-            return urlResponse;
+        try (ResponseBody rspBody = response.body()) {
+            if (!response.isSuccessful()) {
+                BuycraftError error = gson.fromJson(rspBody.charStream(), BuycraftError.class);
+                throw new ApiException(error.getErrorMessage());
+            } else {
+                return gson.fromJson(rspBody.charStream(), CheckoutUrlResponse.class);
+            }
         }
     }
 
