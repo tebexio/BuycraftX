@@ -54,9 +54,8 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                 }
 
                 it.remove();
+                run++;
             }
-
-            run++;
         }
 
         long fullTime = System.nanoTime() - start;
