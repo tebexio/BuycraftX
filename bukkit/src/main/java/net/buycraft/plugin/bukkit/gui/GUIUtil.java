@@ -63,4 +63,11 @@ public class GUIUtil {
         stack.setItemMeta(meta);
         return stack;
     }
+
+    public static String trimName(String name) {
+        if (name.length() <= 32)
+            return name;
+
+        return name.substring(0, 29) + "...";
+    }
 }

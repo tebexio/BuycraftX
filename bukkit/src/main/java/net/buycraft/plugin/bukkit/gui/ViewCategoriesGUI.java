@@ -24,7 +24,8 @@ public class ViewCategoriesGUI implements Listener {
 
     public ViewCategoriesGUI(BuycraftPlugin plugin) {
         this.plugin = plugin;
-        inventory = Bukkit.createInventory(null, 9, "Buycraft: Categories");
+        inventory = Bukkit.createInventory(null, 9, GUIUtil.trimName("Buycraft: " +
+                plugin.getI18n().get("categories")));
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -52,8 +53,8 @@ public class ViewCategoriesGUI implements Listener {
         }
 
         if (roundNine(listing.getCategories().size()) != inventory.getSize()) {
-            Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()), "Buycraft: " +
-                    plugin.getI18n().get("categories"));
+            Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()),
+                    GUIUtil.trimName("Buycraft: " + plugin.getI18n().get("categories")));
             GUIUtil.replaceInventory(inventory, work);
             inventory = work;
         }

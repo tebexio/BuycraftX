@@ -157,13 +157,6 @@ public class CategoryViewGUI {
             closeAll();
         }
 
-        private String trimName(String name) {
-            if (name.length() <= 32)
-                return name;
-
-            return name.substring(0, 29) + "...";
-        }
-
         public void closeAll() {
             for (HumanEntity entity : ImmutableList.copyOf(inventory.getViewers())) {
                 entity.closeInventory();
@@ -175,7 +168,7 @@ public class CategoryViewGUI {
         }
 
         public GUIImpl(Integer parentId, int page, Category category) {
-            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), trimName("Buycraft: " + category.getName()));
+            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), GUIUtil.trimName("Buycraft: " + category.getName()));
             this.parentId = parentId;
             this.page = page;
             update(category);
@@ -282,7 +275,7 @@ public class CategoryViewGUI {
                         if (category1.getName().equals(ChatColor.stripColor(displayName))) {
                             final GUIImpl gui = getFirstPage(category1);
                             if (gui == null) {
-                                player.sendMessage(ChatColor.RED + "There's nothing here!");
+                                player.sendMessage(ChatColor.RED + plugin.getI18n().get("nothing_in_category"));
                                 return;
                             }
                             Bukkit.getScheduler().runTask(plugin, new Runnable() {
@@ -307,14 +300,14 @@ public class CategoryViewGUI {
                             return;
                         }
                     }
-                } else if (displayName.equals(ChatColor.AQUA + "Previous Page")) {
+                } else if (displayName.equals(ChatColor.AQUA + plugin.getI18n().get("previous_page"))) {
                     Bukkit.getScheduler().runTask(plugin, new Runnable() {
                         @Override
                         public void run() {
                             categoryMenus.get(category.getId()).get(page - 1).open(player);
                         }
                     });
-                } else if (displayName.equals(ChatColor.AQUA + "Next Page")) {
+                } else if (displayName.equals(ChatColor.AQUA + plugin.getI18n().get("next_page"))) {
                     Bukkit.getScheduler().runTask(plugin, new Runnable() {
                         @Override
                         public void run() {
