@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
-public class ImmediateExecutionRunner implements Runnable {
+public class ImmediateCommandExecutor implements Runnable {
     private final IBuycraftPlatform platform;
     private final Random random = new Random();
 

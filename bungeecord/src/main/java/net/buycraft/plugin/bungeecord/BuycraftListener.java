@@ -2,7 +2,7 @@ package net.buycraft.plugin.bungeecord;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.QueuedPlayer;
-import net.buycraft.plugin.execution.PlayerLoginExecution;
+import net.buycraft.plugin.execution.PlayerCommandExecutor;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -20,7 +20,7 @@ public class BuycraftListener implements Listener {
         QueuedPlayer qp = plugin.getDuePlayerFetcher().fetchAndRemoveDuePlayer(event.getPlayer().getName());
         if (qp != null) {
             plugin.getLogger().info(String.format("Executing login commands for %s...", event.getPlayer().getName()));
-            plugin.getProxy().getScheduler().runAsync(plugin, new PlayerLoginExecution(qp, plugin.getPlatform()));
+            plugin.getProxy().getScheduler().runAsync(plugin, new PlayerCommandExecutor(qp, plugin.getPlatform()));
         }
     }
 }

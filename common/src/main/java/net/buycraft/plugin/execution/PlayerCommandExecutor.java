@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
-public class PlayerLoginExecution implements Runnable {
+public class PlayerCommandExecutor implements Runnable {
     private final QueuedPlayer player;
     private final IBuycraftPlatform platform;
 

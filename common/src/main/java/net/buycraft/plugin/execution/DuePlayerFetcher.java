@@ -83,7 +83,7 @@ public class DuePlayerFetcher implements Runnable {
                 if (verbose) {
                     platform.log(Level.INFO, "Executing commands that can be completed now...");
                 }
-                platform.executeAsync(new ImmediateExecutionRunner(platform));
+                platform.executeAsync(new ImmediateCommandExecutor(platform));
             }
 
             lock.lock();
@@ -119,7 +119,7 @@ public class DuePlayerFetcher implements Runnable {
                             QueuedPlayer qp = processNow.get(i);
                             // 500ms delay between each player to spread server load for many online players, up to a
                             // maximum of 5 seconds
-                            platform.executeAsyncLater(new PlayerLoginExecution(qp, platform), Math.min(5000, i * 500), TimeUnit.MILLISECONDS);
+                            platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), Math.min(5000, i * 500), TimeUnit.MILLISECONDS);
                         }
                     }
                 }
