@@ -12,7 +12,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -20,11 +19,6 @@ import java.util.logging.Level;
 public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     private final BuycraftPlugin plugin;
-
-    @Override
-    public String getName() {
-        return "sponge";
-    }
 
     @Override
     public ApiClient getApiClient() {

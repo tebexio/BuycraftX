@@ -19,11 +19,6 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
     private final BuycraftPlugin plugin;
 
     @Override
-    public String getName() {
-        return "bukkit";
-    }
-
-    @Override
     public ApiClient getApiClient() {
         return plugin.getApiClient();
     }

@@ -2,7 +2,6 @@ package net.buycraft.plugin.platform.standalone;
 
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
@@ -74,8 +73,4 @@ public abstract class StandaloneBuycraftPlatform implements IBuycraftPlatform {
         return commandExecutor;
     }
 
-    @Override
-    public String getName() {
-        return null;
-    }
 }

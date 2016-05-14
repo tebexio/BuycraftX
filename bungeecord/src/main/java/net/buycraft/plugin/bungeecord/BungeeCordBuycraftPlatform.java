@@ -21,11 +21,6 @@ public class BungeeCordBuycraftPlatform implements IBuycraftPlatform {
     }
 
     @Override
-    public String getName() {
-        return "bungeecord";
-    }
-
-    @Override
     public ApiClient getApiClient() {
         return plugin.getApiClient();
     }

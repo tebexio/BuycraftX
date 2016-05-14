@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public interface IBuycraftPlatform {
-    String getName();
     ApiClient getApiClient();
     PlaceholderManager getPlaceholderManager();
     void dispatchCommand(String command);
