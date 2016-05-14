@@ -62,6 +62,7 @@ public class DuePlayerFetcher implements Runnable {
                 }
 
                 for (QueuedPlayer player : information.getPlayers()) {
+                    // Using Locale.US as servers can sometimes have other locales in use.
                     allDue.put(player.getName().toLowerCase(Locale.US), player);
                 }
 
@@ -143,6 +144,7 @@ public class DuePlayerFetcher implements Runnable {
     public QueuedPlayer fetchAndRemoveDuePlayer(String name) {
         lock.lock();
         try {
+            // Using Locale.US as servers can sometimes have other locales in use.
             return due.remove(name.toLowerCase(Locale.US));
         } finally {
             lock.unlock();

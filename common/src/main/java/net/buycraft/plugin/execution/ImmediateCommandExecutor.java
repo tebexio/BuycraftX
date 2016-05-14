@@ -26,6 +26,7 @@ public class ImmediateCommandExecutor implements Runnable {
 
         do {
             try {
+                // Retrieve offline command queue.
                 information = platform.getApiClient().retrieveOfflineQueue();
             } catch (IOException | ApiException e) {
                 platform.log(Level.SEVERE, "Could not fetch command queue", e);
