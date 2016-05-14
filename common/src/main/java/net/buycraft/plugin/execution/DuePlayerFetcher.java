@@ -26,6 +26,9 @@ public class DuePlayerFetcher implements Runnable {
     private final boolean verbose;
     private final Random random = new Random();
 
+    private static final int MAXIMUM_PER_PAGE = 250;
+    private static final int FALLBACK_CHECK_BACK_SECS = 300;
+
     @Override
     public void run() {
         run(true);
@@ -41,7 +44,7 @@ public class DuePlayerFetcher implements Runnable {
             return;
         }
 
-        int nextCheck = 300;
+        int nextCheck = FALLBACK_CHECK_BACK_SECS;
 
         try {
             if (verbose) {
@@ -54,7 +57,7 @@ public class DuePlayerFetcher implements Runnable {
             int page = 1;
             do {
                 try {
-                    information = platform.getApiClient().retrieveDueQueue(250, page);
+                    information = platform.getApiClient().retrieveDueQueue(MAXIMUM_PER_PAGE, page);
                     nextCheck = information.getMeta().getNextCheck();
                 } catch (IOException | ApiException e) {
                     platform.log(Level.SEVERE, "Could not fetch due players queue", e);
@@ -95,40 +98,34 @@ public class DuePlayerFetcher implements Runnable {
                 lock.unlock();
             }
 
-            platform.executeBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    // Check for online players and execute their commands.
-                    List<QueuedPlayer> processNow = new ArrayList<>();
-
-                    lock.lock();
-                    try {
-                        for (Iterator<QueuedPlayer> it = due.values().iterator(); it.hasNext(); ) {
-                            QueuedPlayer qp = it.next();
-                            if (platform.isPlayerOnline(qp)) {
-                                processNow.add(qp);
-                                it.remove();
-                            }
-                        }
-                    } finally {
-                        lock.unlock();
-                    }
-
-                    if (!processNow.isEmpty()) {
-                        platform.log(Level.INFO, String.format("Executing commands for %d online players...", processNow.size()));
-                        for (int i = 0; i < processNow.size(); i++) {
-                            QueuedPlayer qp = processNow.get(i);
-                            // 500ms delay between each player to spread server load for many online players, up to a
-                            // maximum of 5 seconds
-                            platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), Math.min(5000, i * 500), TimeUnit.MILLISECONDS);
-                        }
-                    }
-                }
-            });
+            processOnlinePlayers();
         } finally {
             inProgress.set(false);
             if (scheduleAgain)
                 platform.executeAsyncLater(this, nextCheck, TimeUnit.SECONDS);
+        }
+    }
+
+    private void processOnlinePlayers() {
+        // Check for online players and execute their commands.
+        List<QueuedPlayer> processNow = new ArrayList<>();
+
+        for (Iterator<QueuedPlayer> it = due.values().iterator(); it.hasNext(); ) {
+            QueuedPlayer qp = it.next();
+            if (platform.isPlayerOnline(qp)) {
+                processNow.add(qp);
+                it.remove();
+            }
+        }
+
+        if (!processNow.isEmpty()) {
+            platform.log(Level.INFO, String.format("Executing commands for %d online players...", processNow.size()));
+            for (int i = 0; i < processNow.size(); i++) {
+                QueuedPlayer qp = processNow.get(i);
+                // 500ms delay between each player to spread server load for many online players, up to a
+                // maximum of 5 seconds
+                platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), Math.min(5000, i * 500), TimeUnit.MILLISECONDS);
+            }
         }
     }
 
