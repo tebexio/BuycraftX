@@ -15,14 +15,15 @@ public class ToRunQueuedCommand {
     private final long queueTime = System.currentTimeMillis();
 
     public boolean canExecute(IBuycraftPlatform platform) {
-        boolean playerOnline = platform.isPlayerOnline(player);
+        Integer requiredSlots = command.getConditions().get("slots");
 
-        if (!playerOnline && requireOnline) {
-            return false;
+        if (requiredSlots != null || requireOnline) {
+            if (!platform.isPlayerOnline(player)) {
+                return false;
+            }
         }
 
-        Integer requiredSlots = command.getConditions().get("slots");
-        if (requiredSlots != null && requiredSlots > 0 && playerOnline) {
+        if (requiredSlots != null) {
             int free = platform.getFreeSlots(player);
             if (free < requiredSlots) {
                 return false;

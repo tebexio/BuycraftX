@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class QueuedCommandExecutor implements CommandExecutor, Runnable {
-    private static final long MAXIMUM_EXECUTION_TIME = TimeUnit.MILLISECONDS.toNanos(5);
+    private static final long MAXIMUM_NOTIFICATION_TIME = TimeUnit.MILLISECONDS.toNanos(5);
+    private static final int RUN_MAX_COMMANDS_BLOCKING = 10;
 
     private final IBuycraftPlatform platform;
     private final boolean blocking;
@@ -34,9 +35,9 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
         long start = System.nanoTime();
         int run = 0;
-        Iterator<ToRunQueuedCommand> it = commandQueue.iterator();
-        while (System.nanoTime() - start <= MAXIMUM_EXECUTION_TIME && it.hasNext()) {
-            if (blocking && run > 15) {
+
+        for (Iterator<ToRunQueuedCommand> it = commandQueue.iterator(); it.hasNext(); ) {
+            if (blocking && run >= RUN_MAX_COMMANDS_BLOCKING) {
                 break; // We have run too many commands, run more later
             }
 
@@ -60,7 +61,7 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
         long fullTime = System.nanoTime() - start;
         // +1ms to account for timing
-        if (fullTime > MAXIMUM_EXECUTION_TIME + TimeUnit.MILLISECONDS.toNanos(1)) {
+        if (fullTime > MAXIMUM_NOTIFICATION_TIME + TimeUnit.MILLISECONDS.toNanos(1)) {
             // Make the time much nicer.
             BigDecimal timeMs = new BigDecimal(fullTime).divide(new BigDecimal("1000000"), 2, BigDecimal.ROUND_CEILING);
             if (blocking) {
