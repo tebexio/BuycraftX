@@ -9,6 +9,7 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,18 @@ public class ProductionApiClient implements ApiClient {
                 .addHeader("X-Buycraft-Secret", secret);
     }
 
+    private ApiException handleError(Response response, ResponseBody body) throws IOException {
+        if (!Objects.equals(response.header("Content-Type"), "application/json")) {
+            return new ApiException("Unexpected error response: " + body.source().readString(32, StandardCharsets.UTF_8));
+        }
+        BuycraftError error = gson.fromJson(body.charStream(), BuycraftError.class);
+        if (error != null) {
+            return new ApiException(error.getErrorMessage());
+        } else {
+            return new ApiException("Unknown error occurred whilst deserializing error object.");
+        }
+    }
+
     private <T> T get(String endpoint, Type type) throws IOException, ApiException {
         return get(endpoint, null, type);
     }
@@ -52,12 +65,7 @@ public class ProductionApiClient implements ApiClient {
             if (response.isSuccessful()) {
                 return gson.fromJson(body.charStream(), type);
             } else {
-                BuycraftError error = gson.fromJson(body.charStream(), BuycraftError.class);
-                if (error != null) {
-                    throw new ApiException(error.getErrorMessage());
-                } else {
-                    throw new ApiException("Unknown error occurred whilst deserializing error object.");
-                }
+                throw handleError(response, body);
             }
         }
     }
@@ -104,8 +112,7 @@ public class ProductionApiClient implements ApiClient {
 
         try (ResponseBody body = response.body()) {
             if (!response.isSuccessful()) {
-                BuycraftError error = gson.fromJson(body.charStream(), BuycraftError.class);
-                throw new ApiException(error.getErrorMessage());
+                throw handleError(response, body);
             }
         }
     }
@@ -124,8 +131,7 @@ public class ProductionApiClient implements ApiClient {
 
         try (ResponseBody rspBody = response.body()) {
             if (!response.isSuccessful()) {
-                BuycraftError error = gson.fromJson(rspBody.charStream(), BuycraftError.class);
-                throw new ApiException(error.getErrorMessage());
+                throw handleError(response, rspBody);
             } else {
                 return gson.fromJson(rspBody.charStream(), CheckoutUrlResponse.class);
             }
