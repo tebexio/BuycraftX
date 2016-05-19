@@ -130,13 +130,16 @@ public class BuycraftPlugin {
 
         // Check for latest version.
         String curVersion = getClass().getAnnotation(Plugin.class).version();
-        VersionCheck check = new VersionCheck(this, curVersion);
-        try {
-            check.verify();
-        } catch (IOException e) {
-            getLogger().error("Can't check for updates", e);
+
+        if (configuration.isCheckForUpdates()) {
+            VersionCheck check = new VersionCheck(this, curVersion);
+            try {
+                check.verify();
+            } catch (IOException e) {
+                getLogger().error("Can't check for updates", e);
+            }
+            Sponge.getEventManager().registerListeners(this, check);
         }
-        Sponge.getEventManager().registerListeners(this, check);
 
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
         bugsnagClient.setAppVersion(curVersion);

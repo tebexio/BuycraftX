@@ -128,13 +128,15 @@ public class BuycraftPlugin extends JavaPlugin {
         }
 
         // Check for latest version.
-        VersionCheck check = new VersionCheck(this, getDescription().getVersion());
-        try {
-            check.verify();
-        } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Can't check for updates", e);
+        if (configuration.isCheckForUpdates()) {
+            VersionCheck check = new VersionCheck(this, getDescription().getVersion());
+            try {
+                check.verify();
+            } catch (IOException e) {
+                getLogger().log(Level.SEVERE, "Can't check for updates", e);
+            }
+            getServer().getPluginManager().registerEvents(check, this); // out!
         }
-        getServer().getPluginManager().registerEvents(check, this); // out!
 
         // Initialize placeholders.
         placeholderManager.addPlaceholder(new NamePlaceholder());

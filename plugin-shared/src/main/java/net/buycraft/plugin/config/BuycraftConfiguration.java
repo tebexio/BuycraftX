@@ -79,7 +79,7 @@ public class BuycraftConfiguration {
     }
 
     public boolean isCheckForUpdates() {
-        return getBoolean("check-for-updates", false);
+        return getBoolean("check-for-updates", true);
     }
 
     public boolean isDisableBuyCommand() {
@@ -87,7 +87,12 @@ public class BuycraftConfiguration {
     }
 
     private Locale getLocale() {
-        return new Locale(properties.getProperty("language", "en"));
+        String name = properties.getProperty("language", "en");
+        if (name.indexOf('_') != -1) {
+            String[] parts = name.split("_");
+            return new Locale(parts[0], parts[1]);
+        }
+        return new Locale(name);
     }
 
     public BuycraftI18n createI18n() {
