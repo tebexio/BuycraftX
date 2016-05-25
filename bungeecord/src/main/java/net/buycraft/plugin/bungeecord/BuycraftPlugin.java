@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bungeecord.command.*;
-import net.buycraft.plugin.bungeecord.logging.BugsnagGlobalLoggingHandler;
 import net.buycraft.plugin.bungeecord.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bungeecord.logging.BugsnagNilLogger;
 import net.buycraft.plugin.bungeecord.util.AnalyticsUtil;
@@ -23,6 +22,7 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.util.FilterBeforeNotify;
 import net.buycraft.plugin.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.VersionUtil;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -186,8 +186,9 @@ public class BuycraftPlugin extends Plugin {
             Client bugsnagClient = clientInit.get();
             bugsnagClient.setAppVersion(getDescription().getVersion());
             bugsnagClient.setLogger(new BugsnagNilLogger());
-            getProxy().getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));
-            getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
+            bugsnagClient.setProjectPackages("net.buycraft.plugin");
+            bugsnagClient.addBeforeNotify(new FilterBeforeNotify());
+            getProxy().getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
         } catch (InterruptedException | ExecutionException e) {
             getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
         }

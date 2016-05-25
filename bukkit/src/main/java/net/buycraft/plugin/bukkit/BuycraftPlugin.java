@@ -8,7 +8,6 @@ import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
-import net.buycraft.plugin.bukkit.logging.BugsnagGlobalLoggingHandler;
 import net.buycraft.plugin.bukkit.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bukkit.logging.BugsnagNilLogger;
 import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignListener;
@@ -31,6 +30,7 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.util.FilterBeforeNotify;
 import net.buycraft.plugin.util.Ipv4PreferDns;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -210,8 +210,9 @@ public class BuycraftPlugin extends JavaPlugin {
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
         bugsnagClient.setAppVersion(getDescription().getVersion());
         bugsnagClient.setLogger(new BugsnagNilLogger());
-        Bukkit.getLogger().addHandler(new BugsnagGlobalLoggingHandler(bugsnagClient, this));
-        getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
+        bugsnagClient.setProjectPackages("net.buycraft.plugin");
+        bugsnagClient.addBeforeNotify(new FilterBeforeNotify());
+        Bukkit.getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
     }
 
     @Override

@@ -28,6 +28,7 @@ import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import net.buycraft.plugin.sponge.util.VersionCheck;
+import net.buycraft.plugin.util.FilterBeforeNotify;
 import net.buycraft.plugin.util.Ipv4PreferDns;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -144,6 +145,8 @@ public class BuycraftPlugin {
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
         bugsnagClient.setAppVersion(curVersion);
         bugsnagClient.setLogger(new BugsnagNilLogger());
+        bugsnagClient.setProjectPackages("net.buycraft.plugin");
+        bugsnagClient.addBeforeNotify(new FilterBeforeNotify());
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 
         String serverKey = configuration.getServerKey();
