@@ -21,13 +21,16 @@ public class DuePlayerFetcher implements Runnable {
     private final IBuycraftPlatform platform;
     private final Map<String, QueuedPlayer> due = new HashMap<>();
     private final Lock lock = new ReentrantLock();
-    @Getter
     private final AtomicBoolean inProgress = new AtomicBoolean(false);
     private final boolean verbose;
     private final Random random = new Random();
 
     private static final int MAXIMUM_PER_PAGE = 250;
     private static final int FALLBACK_CHECK_BACK_SECS = 300;
+
+    public boolean inProgress() {
+        return inProgress.get();
+    }
 
     @Override
     public void run() {

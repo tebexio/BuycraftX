@@ -22,7 +22,7 @@ public class ForceCheckSubcommand implements Subcommand {
             return;
         }
 
-        if (plugin.getDuePlayerFetcher().getInProgress().get()) {
+        if (plugin.getDuePlayerFetcher().inProgress()) {
             sender.sendMessage(ChatColor.RED + plugin.getI18n().get("already_checking_for_purchases"));
             return;
         }
