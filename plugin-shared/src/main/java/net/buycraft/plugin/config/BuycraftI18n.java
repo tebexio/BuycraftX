@@ -19,7 +19,7 @@ public class BuycraftI18n {
     private ResourceBundle userBundle;
 
     public BuycraftI18n(Locale locale) {
-        bundle = ResourceBundle.getBundle("messages", locale);
+        bundle = ResourceBundle.getBundle("buycraftx_messages", locale);
     }
 
     public void loadUserBundle(Path resource) throws IOException {
