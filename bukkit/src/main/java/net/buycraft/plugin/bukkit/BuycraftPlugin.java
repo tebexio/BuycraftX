@@ -158,7 +158,6 @@ public class BuycraftPlugin extends JavaPlugin {
             getLogger().info("Fetching all server packages...");
             try {
                 listingUpdateTask.run(); // for a first synchronous run
-                getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
 
                 // Update GUIs too.
                 viewCategoriesGUI.update();
@@ -166,6 +165,7 @@ public class BuycraftPlugin extends JavaPlugin {
             } catch (Exception e) {
                 getLogger().log(Level.SEVERE, "Unable to fetch server packages", e);
             }
+            getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
         }
 
         // Register listener.
