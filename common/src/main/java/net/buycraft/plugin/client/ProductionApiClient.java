@@ -35,7 +35,9 @@ public class ProductionApiClient implements ApiClient {
     private Request.Builder getBuilder(String endpoint) {
         return new Request.Builder()
                 .url(API_URL + endpoint)
-                .addHeader("X-Buycraft-Secret", secret);
+                .addHeader("X-Buycraft-Secret", secret)
+                .addHeader("Accept", "application/json")
+                .addHeader("User-Agent", "BuycraftX");
     }
 
     private ApiException handleError(Response response, ResponseBody body) throws IOException {

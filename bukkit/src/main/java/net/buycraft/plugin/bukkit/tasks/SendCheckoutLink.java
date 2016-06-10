@@ -1,13 +1,15 @@
 package net.buycraft.plugin.bukkit.tasks;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import mkremins.fanciful.FancyMessage;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.inventivetalent.chat.ChatAPI;
 
 import java.io.IOException;
 
@@ -19,6 +21,7 @@ public class SendCheckoutLink implements Runnable {
     private final int pkgId;
     @NonNull
     private final Player player;
+    private static final Gson gson = new Gson();
 
     @Override
     public void run() {
@@ -31,10 +34,17 @@ public class SendCheckoutLink implements Runnable {
         }
 
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
-        new FancyMessage(plugin.getI18n().get("to_buy_this_package"))
-                .color(ChatColor.GREEN)
-                .link(response.getUrl())
-                .send(player);
+
+        // We have to manually generate JSON.
+        JsonObject messageObject = new JsonObject();
+        messageObject.addProperty("text", plugin.getI18n().get("to_buy_this_package"));
+        messageObject.addProperty("color", "green");
+        JsonObject clickEventObject = new JsonObject();
+        clickEventObject.addProperty("action", "open_url");
+        clickEventObject.addProperty("value", response.getUrl());
+        messageObject.add("clickEvent", clickEventObject);
+        ChatAPI.sendRawMessage(player, gson.toJson(messageObject));
+
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
     }
 }
