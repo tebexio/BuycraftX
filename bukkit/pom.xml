@@ -34,7 +34,6 @@
                 <configuration>
                     <artifactSet>
                         <excludes>
-                            <exclude>com.google.code.gson</exclude>
                             <exclude>com.google.guava</exclude>
                         </excludes>
                     </artifactSet>
@@ -42,6 +41,10 @@
                         <relocation>
                             <pattern>com.bugsnag</pattern>
                             <shadedPattern>net.buycraft.plugin.bukkit.internal.bugsnag</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>net.buycraft.plugin.bukkit.internal.gson</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okhttp3</pattern>
@@ -77,7 +80,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
+            <version>1.7.9-R0.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

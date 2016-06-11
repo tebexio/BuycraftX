@@ -31,8 +31,8 @@ public class BuycraftListener implements Listener {
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (!plugin.getConfiguration().isDisableBuyCommand()) {
             for (String s : plugin.getConfiguration().getBuyCommandName()) {
-                if (StringUtils.equalsIgnoreCase(event.getMessage().substring(1), s) ||
-                        StringUtils.startsWithIgnoreCase(event.getMessage().substring(1), s + " ")) {
+                if (event.getMessage().regionMatches(true, 1, s, 0, s.length()) ||
+                        event.getMessage().regionMatches(true, 1, s + " ", 0, s.length() + 1)) {
                     plugin.getViewCategoriesGUI().open(event.getPlayer());
                     event.setCancelled(true);
                 }

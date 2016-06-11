@@ -10,6 +10,9 @@ import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.inventivetalent.chat.ChatAPI;
+import org.inventivetalent.chat.Reflection;
+import org.inventivetalent.reflection.minecraft.Minecraft;
+import org.inventivetalent.reflection.resolver.minecraft.NMSClassResolver;
 
 import java.io.IOException;
 
@@ -22,6 +25,8 @@ public class SendCheckoutLink implements Runnable {
     @NonNull
     private final Player player;
     private static final Gson gson = new Gson();
+
+    static NMSClassResolver nmsClassResolver = new NMSClassResolver();
 
     @Override
     public void run() {
@@ -43,8 +48,36 @@ public class SendCheckoutLink implements Runnable {
         clickEventObject.addProperty("action", "open_url");
         clickEventObject.addProperty("value", response.getUrl());
         messageObject.add("clickEvent", clickEventObject);
-        ChatAPI.sendRawMessage(player, gson.toJson(messageObject));
+        if (Minecraft.VERSION.newerThan(Minecraft.Version.v1_8_R1)) {
+            ChatAPI.sendRawMessage(player, gson.toJson(messageObject));
+        } else {
+            trySendFor17(player, gson.toJson(messageObject));
+        }
 
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
+    }
+
+    private static void trySendFor17(Player player, String json) {
+        Class<?> nmsIChatBaseComponent = Reflection.getNMSClass("IChatBaseComponent");
+        Class<?> nmsChatSerializer;
+        try {
+            nmsChatSerializer = nmsClassResolver.resolve(new String[]{"ChatSerializer", "IChatBaseComponent$ChatSerializer"});
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        Class<?> nmsPacketPlayOutChat = Reflection.getNMSClass("PacketPlayOutChat");
+        try {
+            Object e = Reflection.getHandle(player);
+            Object connection = Reflection.getField(e.getClass(), "playerConnection").get(e);
+            Object serialized = Reflection.getMethod(nmsChatSerializer, "a", new Class[]{String.class}).invoke((Object)null, new Object[]{json});
+            Object packet = nmsPacketPlayOutChat.getConstructor(new Class[]{nmsIChatBaseComponent}).newInstance(new Object[]{serialized});
+
+            if(packet != null) {
+                Reflection.getMethod(connection.getClass(), "sendPacket", new Class[0]).invoke(connection, new Object[]{packet});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
