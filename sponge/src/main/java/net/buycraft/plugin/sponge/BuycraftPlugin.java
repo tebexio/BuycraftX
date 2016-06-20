@@ -163,7 +163,7 @@ public class BuycraftPlugin {
         placeholderManager.addPlaceholder(new UuidPlaceholder());
         platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
         commandExecutor = new QueuedCommandExecutor(platform);
-        Sponge.getScheduler().createTaskBuilder().intervalTicks(1).delayTicks(1).execute((Runnable) commandExecutor).async().submit(this);
+        Sponge.getScheduler().createTaskBuilder().intervalTicks(1).delayTicks(1).execute((Runnable) commandExecutor).submit(this);
         listingUpdateTask = new ListingUpdateTask(this);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
