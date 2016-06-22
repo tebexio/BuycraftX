@@ -1,6 +1,7 @@
 package net.buycraft.plugin.bungeecord;
 
 import com.bugsnag.Client;
+import com.google.common.base.Throwables;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -116,17 +117,15 @@ public class BuycraftPlugin extends Plugin {
             getLogger().info("Validating your server key...");
             final ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
             // Hack due to SecurityManager shenanigans.
-            FutureTask<Void> hackTask = new FutureTask<>(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    updateInformation(client);
-                    return null;
-                }
-            });
-            getProxy().getScheduler().runAsync(this, hackTask);
             try {
-                hackTask.get();
-            } catch (InterruptedException | ExecutionException e) {
+                runTaskToAppeaseBungeeSecurityManager(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        updateInformation(client);
+                        return null;
+                    }
+                });
+            } catch (ExecutionException e) {
                 getLogger().severe(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;
@@ -134,10 +133,16 @@ public class BuycraftPlugin extends Plugin {
 
         // Check for latest version.
         if (configuration.isCheckForUpdates()) {
-            VersionCheck check = new VersionCheck(this, getDescription().getVersion());
+            final VersionCheck check = new VersionCheck(this, getDescription().getVersion());
             try {
-                check.verify();
-            } catch (IOException e) {
+                runTaskToAppeaseBungeeSecurityManager(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        check.verify();
+                        return null;
+                    }
+                });
+            } catch (ExecutionException e) {
                 getLogger().log(Level.SEVERE, "Can't check for updates", e);
             }
             getProxy().getPluginManager().registerListener(this, check);
@@ -190,6 +195,14 @@ public class BuycraftPlugin extends Plugin {
             getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
         } catch (InterruptedException | ExecutionException e) {
             getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
+        }
+    }
+
+    private void runTaskToAppeaseBungeeSecurityManager(Callable<Void> runnable) throws ExecutionException {
+        try {
+            getExecutorService().submit(runnable).get();
+        } catch (InterruptedException e) {
+            throw new ExecutionException(e);
         }
     }
 
