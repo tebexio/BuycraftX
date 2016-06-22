@@ -6,7 +6,7 @@ BuycraftX is the official plugin for the [Buycraft](https://www.buycraft.net) we
 
 * A total rewrite of the plugin based on modern coding standards. The new plugin is geared towards reliability and performance.
 * Supports multiple platforms:
-  * Spigot 1.8.3 or above (1.9+ recommended)
+  * Spigot 1.7.10 or above (1.8.3+ recommended)
   * BungeeCord (recent versions)
   * Sponge 4.x
 * Custom item IDs are not supported, as it is not portable to other platforms and is deprecated.
