@@ -4,21 +4,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import net.buycraft.plugin.util.VersionUtil;
+import net.buycraft.plugin.shared.util.VersionUtil;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static net.buycraft.plugin.util.VersionUtil.isVersionGreater;
+import static net.buycraft.plugin.shared.util.VersionUtil.isVersionGreater;
 
 @RequiredArgsConstructor
 public class VersionCheck {

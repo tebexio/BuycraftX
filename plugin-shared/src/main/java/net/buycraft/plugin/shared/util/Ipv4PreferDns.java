@@ -1,4 +1,4 @@
-package net.buycraft.plugin.util;
+package net.buycraft.plugin.shared.util;
 
 import okhttp3.Dns;
 

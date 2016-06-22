@@ -2,7 +2,7 @@ package net.buycraft.plugin.sponge.util;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
-import net.buycraft.plugin.util.CommandOutput;
+import net.buycraft.plugin.shared.util.CommandOutput;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;

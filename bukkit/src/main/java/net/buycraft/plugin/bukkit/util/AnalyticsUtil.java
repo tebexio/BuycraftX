@@ -2,7 +2,7 @@ package net.buycraft.plugin.bukkit.util;
 
 import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.util.AnalyticsSend;
+import net.buycraft.plugin.shared.util.AnalyticsSend;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;

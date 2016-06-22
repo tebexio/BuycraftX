@@ -2,7 +2,7 @@ package net.buycraft.plugin.bukkit.util;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
-import net.buycraft.plugin.util.CommandOutput;
+import net.buycraft.plugin.shared.util.CommandOutput;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;

@@ -1,4 +1,4 @@
-package net.buycraft.plugin.config;
+package net.buycraft.plugin.shared.config;
 
 import java.io.IOException;
 import java.io.Reader;

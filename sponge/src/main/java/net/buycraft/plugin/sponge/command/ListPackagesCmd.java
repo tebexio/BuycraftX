@@ -6,7 +6,7 @@ import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.tasks.SendCheckoutLinkTask;
-import net.buycraft.plugin.util.Node;
+import net.buycraft.plugin.shared.util.Node;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;

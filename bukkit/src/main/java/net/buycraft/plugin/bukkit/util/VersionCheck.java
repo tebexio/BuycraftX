@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.data.responses.Version;
-import net.buycraft.plugin.util.VersionUtil;
+import net.buycraft.plugin.shared.util.VersionUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static net.buycraft.plugin.util.VersionUtil.isVersionGreater;
+import static net.buycraft.plugin.shared.util.VersionUtil.isVersionGreater;
 
 @RequiredArgsConstructor
 public class VersionCheck implements Listener {

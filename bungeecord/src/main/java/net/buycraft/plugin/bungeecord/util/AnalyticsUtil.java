@@ -2,7 +2,7 @@ package net.buycraft.plugin.bungeecord.util;
 
 import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
-import net.buycraft.plugin.util.AnalyticsSend;
+import net.buycraft.plugin.shared.util.AnalyticsSend;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;

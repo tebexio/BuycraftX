@@ -2,7 +2,7 @@ package net.buycraft.plugin.sponge.util;
 
 import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import net.buycraft.plugin.util.AnalyticsSend;
+import net.buycraft.plugin.shared.util.AnalyticsSend;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.Plugin;
 

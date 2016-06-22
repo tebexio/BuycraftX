@@ -1,4 +1,4 @@
-package net.buycraft.plugin.config;
+package net.buycraft.plugin.shared.config;
 
 import lombok.Getter;
 

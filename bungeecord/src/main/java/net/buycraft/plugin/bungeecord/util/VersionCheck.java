@@ -4,17 +4,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.buycraft.plugin.data.responses.Version;
-import net.buycraft.plugin.util.VersionUtil;
+import net.buycraft.plugin.shared.util.VersionUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static net.buycraft.plugin.util.VersionUtil.isVersionGreater;
+import static net.buycraft.plugin.shared.util.VersionUtil.isVersionGreater;
 
 @RequiredArgsConstructor
 public class VersionCheck implements Listener {
