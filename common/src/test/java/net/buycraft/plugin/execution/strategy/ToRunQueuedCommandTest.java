@@ -8,9 +8,8 @@ import net.buycraft.plugin.testutil.TestPlayer;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ToRunQueuedCommandTest {
     private static final QueuedCommand TEST_INSTANT_COMMAND = new QueuedCommand(0, 0, 0, ImmutableMap.<String, Integer>of(), "",

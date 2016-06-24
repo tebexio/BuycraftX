@@ -23,11 +23,11 @@ import java.util.*;
 
 @RequiredArgsConstructor
 public class SignUpdateApplication implements Runnable {
+    public static final List<Direction> SKULL_CHECK = ImmutableList.of(
+            Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NONE);
     private final BuycraftPlugin plugin;
     private final Map<RecentPurchaseSignPosition, RecentPayment> paymentMap;
     private final Map<String, GameProfile> resolvedProfiles;
-    public static final List<Direction> SKULL_CHECK = ImmutableList.of(
-            Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NONE);
 
     private Optional<Skull> findSkull(Location<World> start) {
         for (Direction direction : SKULL_CHECK) {

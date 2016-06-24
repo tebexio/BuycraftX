@@ -22,8 +22,6 @@ import net.buycraft.plugin.bukkit.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
-import net.buycraft.plugin.shared.config.BuycraftConfiguration;
-import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -31,6 +29,8 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.config.BuycraftConfiguration;
+import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -45,14 +45,14 @@ import java.util.logging.Level;
 
 public class BuycraftPlugin extends JavaPlugin {
     @Getter
+    private final PlaceholderManager placeholderManager = new PlaceholderManager();
+    @Getter
+    private final BuycraftConfiguration configuration = new BuycraftConfiguration();
+    @Getter
     @Setter
     private ApiClient apiClient;
     @Getter
     private DuePlayerFetcher duePlayerFetcher;
-    @Getter
-    private final PlaceholderManager placeholderManager = new PlaceholderManager();
-    @Getter
-    private final BuycraftConfiguration configuration = new BuycraftConfiguration();
     @Getter
     private ListingUpdateTask listingUpdateTask;
     @Getter

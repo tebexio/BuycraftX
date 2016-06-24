@@ -3,7 +3,6 @@ package net.buycraft.plugin.bukkit;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.execution.PlayerCommandExecutor;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

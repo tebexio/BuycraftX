@@ -4,7 +4,10 @@ import com.bugsnag.Client;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.bungeecord.command.*;
+import net.buycraft.plugin.bungeecord.command.ForceCheckSubcommand;
+import net.buycraft.plugin.bungeecord.command.InformationSubcommand;
+import net.buycraft.plugin.bungeecord.command.ReportCommand;
+import net.buycraft.plugin.bungeecord.command.SecretSubcommand;
 import net.buycraft.plugin.bungeecord.logging.BugsnagGlobalLoggingHandler;
 import net.buycraft.plugin.bungeecord.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bungeecord.logging.BugsnagNilLogger;
@@ -13,8 +16,6 @@ import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
-import net.buycraft.plugin.shared.config.BuycraftConfiguration;
-import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -22,6 +23,8 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.config.BuycraftConfiguration;
+import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
@@ -39,14 +42,14 @@ import java.util.logging.Level;
 
 public class BuycraftPlugin extends Plugin {
     @Getter
+    private final PlaceholderManager placeholderManager = new PlaceholderManager();
+    @Getter
+    private final BuycraftConfiguration configuration = new BuycraftConfiguration();
+    @Getter
     @Setter
     private ApiClient apiClient;
     @Getter
     private DuePlayerFetcher duePlayerFetcher;
-    @Getter
-    private final PlaceholderManager placeholderManager = new PlaceholderManager();
-    @Getter
-    private final BuycraftConfiguration configuration = new BuycraftConfiguration();
     @Getter
     private ServerInformation serverInformation;
     @Getter

@@ -43,28 +43,28 @@ public class BuycraftConfiguration {
         }
     }
 
-    public void setServerKey(String key) {
-        properties.setProperty("server-key", key);
-    }
-
     public String getServerKey() {
         return properties.getProperty("server-key", null);
     }
 
-    public void setBuyCommandName(List<String> keys) {
-        properties.setProperty("buy-command-name", join(",", keys));
+    public void setServerKey(String key) {
+        properties.setProperty("server-key", key);
     }
 
     public List<String> getBuyCommandName() {
         return Arrays.asList(properties.getProperty("buy-command-name", "buy").split(","));
     }
 
-    public void setVerbose(boolean verbose) {
-        properties.setProperty("verbose", Boolean.toString(verbose));
+    public void setBuyCommandName(List<String> keys) {
+        properties.setProperty("buy-command-name", join(",", keys));
     }
 
     public boolean isVerbose() {
         return getBoolean("verbose", true);
+    }
+
+    public void setVerbose(boolean verbose) {
+        properties.setProperty("verbose", Boolean.toString(verbose));
     }
 
     private boolean getBoolean(String key, boolean val) {

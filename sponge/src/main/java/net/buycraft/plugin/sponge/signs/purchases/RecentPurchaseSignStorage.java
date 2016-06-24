@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class RecentPurchaseSignStorage {
-    
+
     private final List<RecentPurchaseSignPosition> signs = new ArrayList<>();
     private transient final Gson gson = new Gson();
 

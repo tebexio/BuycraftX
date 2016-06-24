@@ -11,11 +11,10 @@ import java.util.logging.LogRecord;
 import java.util.regex.Pattern;
 
 public class BugsnagGlobalLoggingHandler extends Handler {
-    private final Client client;
-    private final BuycraftPlugin plugin;
-
     private static final Pattern LISTENER = Pattern.compile("Error dispatching event (.*) to listener net\\.buycraft\\.plugin\\.(.*)");
     private static final Pattern TASK = Pattern.compile("Task (.*)net\\.buycraft\\.plugin\\.(.*) encountered an exception");
+    private final Client client;
+    private final BuycraftPlugin plugin;
 
     public BugsnagGlobalLoggingHandler(Client client, BuycraftPlugin plugin) {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin");

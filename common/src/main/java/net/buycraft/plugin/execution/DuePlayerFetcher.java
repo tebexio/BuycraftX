@@ -1,7 +1,6 @@
 package net.buycraft.plugin.execution;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
@@ -18,16 +17,15 @@ import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class DuePlayerFetcher implements Runnable {
+    private static final int MAXIMUM_PER_PAGE = 250;
+    private static final int FALLBACK_CHECK_BACK_SECS = 300;
+    private static final int MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE = 15;
     private final IBuycraftPlatform platform;
     private final Map<String, QueuedPlayer> due = new HashMap<>();
     private final Lock lock = new ReentrantLock();
     private final AtomicBoolean inProgress = new AtomicBoolean(false);
     private final boolean verbose;
     private final Random random = new Random();
-
-    private static final int MAXIMUM_PER_PAGE = 250;
-    private static final int FALLBACK_CHECK_BACK_SECS = 300;
-    private static final int MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE = 15;
 
     public boolean inProgress() {
         return inProgress.get();

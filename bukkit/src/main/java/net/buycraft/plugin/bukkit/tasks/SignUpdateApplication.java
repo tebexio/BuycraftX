@@ -18,9 +18,8 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class SignUpdateApplication implements Runnable {
-    private static final String UNKNOWN_USERNAME = "MHF_Question";
     public static final BlockFace[] FACES = {BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
-
+    private static final String UNKNOWN_USERNAME = "MHF_Question";
     private final BuycraftPlugin plugin;
     private final Map<RecentPurchaseSignPosition, RecentPayment> signToPurchases;
 

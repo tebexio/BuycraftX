@@ -8,8 +8,6 @@ import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
-import net.buycraft.plugin.shared.config.BuycraftConfiguration;
-import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -17,6 +15,9 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.config.BuycraftConfiguration;
+import net.buycraft.plugin.shared.config.BuycraftI18n;
+import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.logging.BugsnagNilLogger;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
@@ -28,7 +29,6 @@ import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import net.buycraft.plugin.sponge.util.VersionCheck;
-import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -52,16 +52,15 @@ import java.util.concurrent.TimeUnit;
 public class BuycraftPlugin {
 
     static final String MAGIC_VERSION = "SET_BY_MAGIC";
-
+    @Getter
+    private final PlaceholderManager placeholderManager = new PlaceholderManager();
+    @Getter
+    private final BuycraftConfiguration configuration = new BuycraftConfiguration();
     @Getter
     @Setter
     private ApiClient apiClient;
     @Getter
     private DuePlayerFetcher duePlayerFetcher;
-    @Getter
-    private final PlaceholderManager placeholderManager = new PlaceholderManager();
-    @Getter
-    private final BuycraftConfiguration configuration = new BuycraftConfiguration();
     @Getter
     private ListingUpdateTask listingUpdateTask;
     @Getter

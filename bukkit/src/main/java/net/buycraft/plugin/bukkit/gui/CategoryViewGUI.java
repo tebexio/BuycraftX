@@ -32,6 +32,12 @@ public class CategoryViewGUI {
     private final BuycraftPlugin plugin;
     private final Map<Integer, List<GUIImpl>> categoryMenus = new HashMap<>();
 
+    private static int calculatePages(Category category) {
+        int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9D);
+        int pagesWithPackages = (int) Math.ceil(category.getPackages().size() / 36D);
+        return Math.max(pagesWithSubcats, pagesWithPackages);
+    }
+
     public GUIImpl getFirstPage(Category category) {
         if (!categoryMenus.containsKey(category.getId()))
             return null;
@@ -121,17 +127,18 @@ public class CategoryViewGUI {
         }
     }
 
-    private static int calculatePages(Category category) {
-        int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9D);
-        int pagesWithPackages = (int) Math.ceil(category.getPackages().size() / 36D);
-        return Math.max(pagesWithSubcats, pagesWithPackages);
-    }
-
     public class GUIImpl implements Listener {
         private final Inventory inventory;
         private final Integer parentId;
-        private Category category;
         private final int page;
+        private Category category;
+
+        public GUIImpl(Integer parentId, int page, Category category) {
+            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), GUIUtil.trimName("Buycraft: " + category.getName()));
+            this.parentId = parentId;
+            this.page = page;
+            update(category);
+        }
 
         private int calculateSize(Category category, int page) {
             // TODO: Calculate this amount based on no of packages
@@ -165,13 +172,6 @@ public class CategoryViewGUI {
 
         public void open(Player player) {
             player.openInventory(inventory);
-        }
-
-        public GUIImpl(Integer parentId, int page, Category category) {
-            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), GUIUtil.trimName("Buycraft: " + category.getName()));
-            this.parentId = parentId;
-            this.page = page;
-            update(category);
         }
 
         public void update(Category category) {

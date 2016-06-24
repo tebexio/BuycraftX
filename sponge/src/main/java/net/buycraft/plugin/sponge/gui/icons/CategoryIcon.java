@@ -1,9 +1,9 @@
 package net.buycraft.plugin.sponge.gui.icons;
 
 import lombok.Getter;
+import net.buycraft.plugin.shared.util.Node;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.gui.GuiView;
-import net.buycraft.plugin.shared.util.Node;
 import org.spongepowered.api.entity.living.player.Player;
 
 public class CategoryIcon extends GuiIcon {

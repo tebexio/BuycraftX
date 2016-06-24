@@ -24,11 +24,11 @@ public class StandaloneBuycraftRunner {
     private final Logger logger;
     private final ScheduledExecutorService executorService;
     private final IBuycraftPlatform platform;
+    private final boolean verbose;
     @Getter
     private ServerInformation serverInformation;
     @Getter
     private DuePlayerFetcher playerFetcher;
-    private final boolean verbose;
 
     StandaloneBuycraftRunner(CommandDispatcher dispatcher, PlayerDeterminer determiner, String apiKey, Logger logger, ScheduledExecutorService executorService, boolean verbose) {
         this.dispatcher = dispatcher;
@@ -38,6 +38,15 @@ public class StandaloneBuycraftRunner {
         this.executorService = executorService;
         this.platform = new Platform();
         this.verbose = verbose;
+    }
+
+    public void initializeTasks() {
+        try {
+            serverInformation = platform.getApiClient().getServerInformation();
+        } catch (IOException | ApiException e) {
+            throw new RuntimeException("Can't fetch account information", e);
+        }
+        executorService.schedule(playerFetcher = new DuePlayerFetcher(platform, verbose), 1, TimeUnit.SECONDS);
     }
 
     @NoBlocking
@@ -74,14 +83,5 @@ public class StandaloneBuycraftRunner {
         public void log(Level level, String message, Throwable throwable) {
             logger.log(level, message, throwable);
         }
-    }
-
-    public void initializeTasks() {
-        try {
-            serverInformation = platform.getApiClient().getServerInformation();
-        } catch (IOException | ApiException e) {
-            throw new RuntimeException("Can't fetch account information", e);
-        }
-        executorService.schedule(playerFetcher = new DuePlayerFetcher(platform, verbose), 1, TimeUnit.SECONDS);
     }
 }

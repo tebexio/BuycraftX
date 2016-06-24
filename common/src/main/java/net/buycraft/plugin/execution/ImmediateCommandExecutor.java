@@ -8,7 +8,7 @@ import net.buycraft.plugin.data.responses.QueueInformation;
 import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Random;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor

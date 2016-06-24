@@ -10,6 +10,7 @@ public class UuidUtil {
     /**
      * Translates a Mojang-style UUID into an UUID Java can use. The Buycraft plugin API returns all results with
      * Mojang-style UUIDs.
+     *
      * @param id the Mojang UUID to use
      * @return the Java UUID
      */

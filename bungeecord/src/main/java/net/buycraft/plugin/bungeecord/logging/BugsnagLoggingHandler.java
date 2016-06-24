@@ -11,11 +11,10 @@ import java.util.logging.LogRecord;
 import java.util.regex.Pattern;
 
 public class BugsnagLoggingHandler extends Handler {
-    private final Client client;
-    private final BuycraftPlugin plugin;
-
     private static final Pattern PLUGIN_ERROR = Pattern.compile("Could not dispatch command '(.*)' for player '(.*)'\\. " +
             "This is typically a plugin error, not an issue with BuycraftX\\.");
+    private final Client client;
+    private final BuycraftPlugin plugin;
 
     public BugsnagLoggingHandler(Client client, BuycraftPlugin plugin) {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin");

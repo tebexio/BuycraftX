@@ -142,6 +142,7 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public List<RecentPayment> getRecentPayments(int limit) throws IOException, ApiException {
-        return get("/payments?limit=" + limit, CacheControl.FORCE_NETWORK, new TypeToken<List<RecentPayment>>() {}.getType());
+        return get("/payments?limit=" + limit, CacheControl.FORCE_NETWORK, new TypeToken<List<RecentPayment>>() {
+        }.getType());
     }
 }

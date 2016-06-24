@@ -3,8 +3,8 @@ package net.buycraft.plugin.sponge.util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.responses.Version;
-import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.shared.util.VersionUtil;
+import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
@@ -57,10 +57,10 @@ public class VersionCheck {
                 try {
                     event.getTargetEntity().sendMessage(
                             Text.builder()
-                                .append(Text.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
-                                .onClick(TextActions.openUrl(new URL("https://server.buycraft.net")))
-                                .color(TextColors.YELLOW)
-                                .build());
+                                    .append(Text.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
+                                    .onClick(TextActions.openUrl(new URL("https://server.buycraft.net")))
+                                    .color(TextColors.YELLOW)
+                                    .build());
                 } catch (MalformedURLException e) {
                     throw new AssertionError(e); // seriously?
                 }

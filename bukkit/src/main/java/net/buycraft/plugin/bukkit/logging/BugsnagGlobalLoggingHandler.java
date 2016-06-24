@@ -5,7 +5,6 @@ import com.bugsnag.MetaData;
 import com.google.common.base.Preconditions;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import org.apache.commons.lang.UnhandledException;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandException;
 
 import java.util.logging.Handler;
@@ -14,12 +13,11 @@ import java.util.logging.LogRecord;
 import java.util.regex.Pattern;
 
 public class BugsnagGlobalLoggingHandler extends Handler {
-    private final Client client;
-    private final BuycraftPlugin plugin;
-
     private static final Pattern LISTENER = Pattern.compile("Could not pass event (.*) to plugin BuycraftX");
     private static final Pattern TASK = Pattern.compile("Plugin BuycraftX (.*) generated an exception while executing task (\\d.*)");
     private static final Pattern COMMAND = Pattern.compile("Unhandled exception executing command '(.*)' in plugin BuycraftX");
+    private final Client client;
+    private final BuycraftPlugin plugin;
 
     public BugsnagGlobalLoggingHandler(Client client, BuycraftPlugin plugin) {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin");

@@ -3,10 +3,6 @@ package net.buycraft.plugin.data.responses;
 import com.google.gson.annotations.SerializedName;
 import lombok.Value;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 @Value
 public class ServerInformation {
     private final Account account;

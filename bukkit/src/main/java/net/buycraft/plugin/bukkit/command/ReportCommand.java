@@ -1,7 +1,5 @@
 package net.buycraft.plugin.bukkit.command;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import okhttp3.CacheControl;
 import okhttp3.Request;

@@ -4,9 +4,9 @@ import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Package;
+import net.buycraft.plugin.shared.util.Node;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.tasks.SendCheckoutLinkTask;
-import net.buycraft.plugin.shared.util.Node;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -71,10 +71,10 @@ public class ListPackagesCmd implements CommandExecutor {
                     .append(Text.builder("$x".replace("$", plugin.getServerInformation().getAccount().getCurrency().getSymbol())
                             .replace("x", "" + p.getEffectivePrice())).color(TextColors.GREEN).build())
                     .onClick(TextActions.executeCallback(commandSource -> {
-                if (commandSource instanceof Player) {
-                    plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, p.getId(), (Player) commandSource));
-                }
-            })).build());
+                        if (commandSource instanceof Player) {
+                            plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, p.getId(), (Player) commandSource));
+                        }
+                    })).build());
         }
         builder.title(Text.builder(plugin.getI18n().get("sponge_listing")).color(TextColors.AQUA).build()).contents(contents).padding(Text.of("-")).sendTo(source);
     }

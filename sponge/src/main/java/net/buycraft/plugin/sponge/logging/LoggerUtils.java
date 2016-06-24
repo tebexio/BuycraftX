@@ -4,7 +4,6 @@ import com.bugsnag.Client;
 import com.bugsnag.MetaData;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import org.spongepowered.api.Sponge;
 
 import java.util.logging.Level;
 

@@ -18,15 +18,38 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 public class SendCheckoutLink implements Runnable {
+    private static final Gson gson = new Gson();
+    static NMSClassResolver nmsClassResolver = new NMSClassResolver();
     @NonNull
     private final BuycraftPlugin plugin;
     @NonNull
     private final int pkgId;
     @NonNull
     private final Player player;
-    private static final Gson gson = new Gson();
 
-    static NMSClassResolver nmsClassResolver = new NMSClassResolver();
+    private static void trySendFor17(Player player, String json) {
+        Class<?> nmsIChatBaseComponent = Reflection.getNMSClass("IChatBaseComponent");
+        Class<?> nmsChatSerializer;
+        try {
+            nmsChatSerializer = nmsClassResolver.resolve(new String[]{"ChatSerializer", "IChatBaseComponent$ChatSerializer"});
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        Class<?> nmsPacketPlayOutChat = Reflection.getNMSClass("PacketPlayOutChat");
+        try {
+            Object e = Reflection.getHandle(player);
+            Object connection = Reflection.getField(e.getClass(), "playerConnection").get(e);
+            Object serialized = Reflection.getMethod(nmsChatSerializer, "a", new Class[]{String.class}).invoke((Object) null, new Object[]{json});
+            Object packet = nmsPacketPlayOutChat.getConstructor(new Class[]{nmsIChatBaseComponent}).newInstance(new Object[]{serialized});
+
+            if (packet != null) {
+                Reflection.getMethod(connection.getClass(), "sendPacket", new Class[0]).invoke(connection, new Object[]{packet});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void run() {
@@ -55,29 +78,5 @@ public class SendCheckoutLink implements Runnable {
         }
 
         player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
-    }
-
-    private static void trySendFor17(Player player, String json) {
-        Class<?> nmsIChatBaseComponent = Reflection.getNMSClass("IChatBaseComponent");
-        Class<?> nmsChatSerializer;
-        try {
-            nmsChatSerializer = nmsClassResolver.resolve(new String[]{"ChatSerializer", "IChatBaseComponent$ChatSerializer"});
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-        Class<?> nmsPacketPlayOutChat = Reflection.getNMSClass("PacketPlayOutChat");
-        try {
-            Object e = Reflection.getHandle(player);
-            Object connection = Reflection.getField(e.getClass(), "playerConnection").get(e);
-            Object serialized = Reflection.getMethod(nmsChatSerializer, "a", new Class[]{String.class}).invoke((Object)null, new Object[]{json});
-            Object packet = nmsPacketPlayOutChat.getConstructor(new Class[]{nmsIChatBaseComponent}).newInstance(new Object[]{serialized});
-
-            if(packet != null) {
-                Reflection.getMethod(connection.getClass(), "sendPacket", new Class[0]).invoke(connection, new Object[]{packet});
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
