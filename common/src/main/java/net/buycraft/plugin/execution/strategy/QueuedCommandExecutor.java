@@ -29,7 +29,8 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
     @Override
     public void queue(ToRunQueuedCommand command) {
-        commandQueue.add(command);
+        if (!commandQueue.contains(command))
+            commandQueue.add(command);
     }
 
     @Override
