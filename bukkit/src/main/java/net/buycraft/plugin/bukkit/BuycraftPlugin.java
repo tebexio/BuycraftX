@@ -39,6 +39,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -86,11 +87,11 @@ public class BuycraftPlugin extends JavaPlugin {
         getDataFolder().mkdir();
         try {
             Path configPath = getDataFolder().toPath().resolve("config.properties");
-            if (!configPath.toFile().exists()) {
+            if (!Files.exists(configPath)) {
                 configuration.fillDefaults();
                 configuration.save(configPath);
             } else {
-                configuration.load(getDataFolder().toPath().resolve("config.properties"));
+                configuration.load(configPath);
                 configuration.fillDefaults();
             }
         } catch (IOException e) {

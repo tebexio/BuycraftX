@@ -33,6 +33,7 @@ import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -70,11 +71,11 @@ public class BuycraftPlugin extends Plugin {
         getDataFolder().mkdir();
         try {
             Path configPath = getDataFolder().toPath().resolve("config.properties");
-            if (!configPath.toFile().exists()) {
+            if (!Files.exists(configPath)) {
                 configuration.fillDefaults();
                 configuration.save(configPath);
             } else {
-                configuration.load(getDataFolder().toPath().resolve("config.properties"));
+                configuration.load(configPath);
                 configuration.fillDefaults();
             }
         } catch (IOException e) {
