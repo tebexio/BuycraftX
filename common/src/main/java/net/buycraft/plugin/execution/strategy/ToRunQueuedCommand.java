@@ -1,5 +1,6 @@
 package net.buycraft.plugin.execution.strategy;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.QueuedCommand;
@@ -8,6 +9,7 @@ import net.buycraft.plugin.data.QueuedPlayer;
 import java.util.concurrent.TimeUnit;
 
 @Value
+@EqualsAndHashCode(exclude = {"queueTime"})
 public class ToRunQueuedCommand {
     private final QueuedPlayer player;
     private final QueuedCommand command;
