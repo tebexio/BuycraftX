@@ -8,6 +8,7 @@ import net.buycraft.plugin.testutil.TestPlayer;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -46,5 +47,13 @@ public class ToRunQueuedCommandTest {
     public void canExecuteAllowOnline() throws Exception {
         platform.getTestPlayerMap().put("TestOnline", new TestPlayer(0));
         assertTrue("Command with online player is not being run", forOnline(TEST_REQUIRE_ONLINE_COMMAND).canExecute(platform));
+    }
+
+    @Test
+    public void duplicateTest() throws Exception {
+        ToRunQueuedCommand one = forOffline(TEST_INSTANT_COMMAND);
+        Thread.sleep(10);
+        ToRunQueuedCommand two = forOffline(TEST_INSTANT_COMMAND);
+        assertEquals("two identical commands are different", one, two);
     }
 }
