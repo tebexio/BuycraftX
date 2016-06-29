@@ -6,6 +6,7 @@ import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 
 import java.util.concurrent.Executors;
@@ -34,8 +35,10 @@ public abstract class StandaloneBuycraftPlatform implements IBuycraftPlatform {
         this.scheduler = executorService;
         this.placeholderManager.addPlaceholder(new NamePlaceholder());
         this.placeholderManager.addPlaceholder(new UuidPlaceholder());
-        this.commandExecutor = new QueuedCommandExecutor(this);
+        PostCompletedCommandsTask completedCommandsTask = new PostCompletedCommandsTask(this);
+        this.commandExecutor = new QueuedCommandExecutor(this, completedCommandsTask);
         scheduler.scheduleAtFixedRate(commandExecutor, 50, 50, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(completedCommandsTask, 1, 1, TimeUnit.SECONDS);
     }
 
     @Override

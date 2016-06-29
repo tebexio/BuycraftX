@@ -33,6 +33,6 @@ public class ToRunQueuedCommand {
         }
 
         Integer delay = command.getConditions().get("delay");
-        return delay == null || (delay > 0 && System.currentTimeMillis() - queueTime >= TimeUnit.SECONDS.toMillis(delay));
+        return !(delay != null && delay > 0 && System.currentTimeMillis() - queueTime < TimeUnit.SECONDS.toMillis(delay));
     }
 }

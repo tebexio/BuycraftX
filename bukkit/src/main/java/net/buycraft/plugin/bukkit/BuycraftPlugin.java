@@ -28,6 +28,7 @@ import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
@@ -142,8 +143,10 @@ public class BuycraftPlugin extends JavaPlugin {
         // Start the essential tasks.
         getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
                 configuration.isVerbose()), 20);
-        commandExecutor = new QueuedCommandExecutor(platform);
+        PostCompletedCommandsTask completedCommandsTask = new PostCompletedCommandsTask(platform);
+        commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
         getServer().getScheduler().runTaskTimer(this, (Runnable) commandExecutor, 1, 1);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, completedCommandsTask, 20, 20);
 
         // Initialize the GUIs.
         viewCategoriesGUI = new ViewCategoriesGUI(this);

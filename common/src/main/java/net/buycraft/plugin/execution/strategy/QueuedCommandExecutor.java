@@ -1,10 +1,8 @@
 package net.buycraft.plugin.execution.strategy;
 
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.platform.NoBlocking;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,10 +19,12 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
     private final IBuycraftPlatform platform;
     private final boolean blocking;
     private final Queue<ToRunQueuedCommand> commandQueue = new ConcurrentLinkedQueue<>();
+    private final PostCompletedCommandsTask completedCommandsTask;
 
-    public QueuedCommandExecutor(IBuycraftPlatform platform) {
+    public QueuedCommandExecutor(IBuycraftPlatform platform, PostCompletedCommandsTask completedCommandsTask) {
         this.platform = platform;
         this.blocking = !platform.getClass().isAnnotationPresent(NoBlocking.class);
+        this.completedCommandsTask = completedCommandsTask;
     }
 
     @Override
@@ -35,8 +35,6 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
     @Override
     public void run() {
-        final List<Integer> couldRun = new ArrayList<>();
-
         long start = System.nanoTime();
         int run = 0;
 
@@ -52,7 +50,7 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                 platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));
                 try {
                     platform.dispatchCommand(finalCommand);
-                    couldRun.add(command.getCommand().getId());
+                    completedCommandsTask.add(command.getCommand().getId());
                 } catch (Exception e) {
                     platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'. " +
                             "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, command.getPlayer().getName()), e);
@@ -64,8 +62,7 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
         }
 
         long fullTime = System.nanoTime() - start;
-        // +1ms to account for timing
-        if (fullTime > MAXIMUM_NOTIFICATION_TIME + TimeUnit.MILLISECONDS.toNanos(1)) {
+        if (fullTime > MAXIMUM_NOTIFICATION_TIME) {
             // Make the time much nicer.
             BigDecimal timeMs = new BigDecimal(fullTime).divide(new BigDecimal("1000000"), 2, BigDecimal.ROUND_CEILING);
             if (blocking) {
@@ -75,19 +72,6 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                 platform.log(Level.SEVERE, "Command execution took " + timeMs.toPlainString() + "ms to complete. " +
                         "This likely indicates an issue with one of your server's plugins, which will slow command execution.");
             }
-        }
-
-        if (!couldRun.isEmpty()) {
-            platform.executeAsync(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        platform.getApiClient().deleteCommand(couldRun);
-                    } catch (IOException | ApiException e) {
-                        platform.log(Level.SEVERE, "Unable to mark commands as completed", e);
-                    }
-                }
-            });
         }
     }
 }
