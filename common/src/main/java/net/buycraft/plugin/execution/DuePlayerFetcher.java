@@ -19,7 +19,8 @@ import java.util.logging.Level;
 public class DuePlayerFetcher implements Runnable {
     private static final int MAXIMUM_PER_PAGE = 250;
     private static final int FALLBACK_CHECK_BACK_SECS = 300;
-    private static final int MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE = 15;
+    private static final int MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE = 60;
+    private static final int DELAY_BETWEEN_PLAYERS = 500;
     private final IBuycraftPlatform platform;
     private final Map<String, QueuedPlayer> due = new HashMap<>();
     private final Lock lock = new ReentrantLock();
@@ -126,7 +127,7 @@ public class DuePlayerFetcher implements Runnable {
             platform.log(Level.INFO, String.format("Executing commands for %d online players...", processNow.size()));
             for (int i = 0; i < processNow.size(); i++) {
                 QueuedPlayer qp = processNow.get(i);
-                platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), i + 1, TimeUnit.SECONDS);
+                platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), DELAY_BETWEEN_PLAYERS * (i + 1), TimeUnit.MILLISECONDS);
             }
         }
     }
