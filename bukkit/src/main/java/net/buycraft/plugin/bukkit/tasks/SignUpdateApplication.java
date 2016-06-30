@@ -37,6 +37,10 @@ public class SignUpdateApplication implements Runnable {
     public void run() {
         for (Map.Entry<RecentPurchaseSignPosition, RecentPayment> entry : signToPurchases.entrySet()) {
             Block block = entry.getKey().getLocation().toBukkitLocation().getBlock();
+            if (block == null) {
+                // Invalid.
+                continue;
+            }
             if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN) {
                 Sign sign = (Sign) block.getState();
 
