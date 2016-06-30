@@ -33,7 +33,7 @@ public class BuycraftCommand implements CommandExecutor {
         for (Map.Entry<String, Subcommand> entry : subcommandMap.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(args[0])) {
                 String[] withoutSubcommand = Arrays.copyOfRange(args, 1, args.length);
-                subcommandMap.get(args[0]).execute(sender, withoutSubcommand);
+                entry.getValue().execute(sender, withoutSubcommand);
                 return true;
             }
         }
