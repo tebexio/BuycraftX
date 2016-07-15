@@ -11,11 +11,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class BukkitBuycraftPlatform implements IBuycraftPlatform {
+    private static final int MAXIMUM_USABLE_INVENTORY_SIZE = 36;
     private final BuycraftPlugin plugin;
 
     @Override
@@ -72,7 +74,15 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
             return -1;
 
         int s = 0;
-        for (ItemStack stack : player1.getInventory().getContents()) {
+
+        ItemStack[] contents = player1.getInventory().getContents();
+        if (contents.length > MAXIMUM_USABLE_INVENTORY_SIZE) {
+            // Spigot 1.9 and above merged regular inventory space with armor space. BuycraftX is only interested in
+            // inventory space.
+            contents = Arrays.copyOfRange(contents, 0, MAXIMUM_USABLE_INVENTORY_SIZE);
+        }
+
+        for (ItemStack stack : contents) {
             if (stack == null)
                 s++;
         }
