@@ -93,6 +93,8 @@ public class BuycraftPlugin {
     @Getter
     private BuycraftI18n i18n;
 
+    private PostCompletedCommandsTask completedCommandsTask;
+
     @Listener
     public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
         platform = new SpongeBuycraftPlatform(this);
@@ -159,7 +161,7 @@ public class BuycraftPlugin {
         placeholderManager.addPlaceholder(new NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
         platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
-        PostCompletedCommandsTask completedCommandsTask = new PostCompletedCommandsTask(platform);
+        completedCommandsTask = new PostCompletedCommandsTask(platform);
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(1).delayTicks(1).execute((Runnable) commandExecutor).submit(this);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).async().execute(completedCommandsTask).submit(this);
@@ -209,6 +211,7 @@ public class BuycraftPlugin {
         } catch (IOException e) {
             logger.error("Can't save purchase signs, continuing anyway");
         }
+        completedCommandsTask.flush();
     }
 
     private CommandSpec buildCommands() {

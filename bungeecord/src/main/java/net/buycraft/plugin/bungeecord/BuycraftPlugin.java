@@ -62,6 +62,7 @@ public class BuycraftPlugin extends Plugin {
     private CommandExecutor commandExecutor;
     @Getter
     private BuycraftI18n i18n;
+    private PostCompletedCommandsTask completedCommandsTask;
 
     @Override
     public void onEnable() {
@@ -153,7 +154,7 @@ public class BuycraftPlugin extends Plugin {
 
         // Queueing tasks.
         getProxy().getScheduler().schedule(this, duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
-        PostCompletedCommandsTask completedCommandsTask = new PostCompletedCommandsTask(platform);
+        completedCommandsTask = new PostCompletedCommandsTask(platform);
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
         getProxy().getScheduler().schedule(this, completedCommandsTask, 1, 1, TimeUnit.SECONDS);
         getProxy().getScheduler().schedule(this, (Runnable) commandExecutor, 50, 50, TimeUnit.MILLISECONDS);
@@ -197,6 +198,11 @@ public class BuycraftPlugin extends Plugin {
         } catch (InterruptedException | ExecutionException e) {
             getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
         }
+    }
+
+    @Override
+    public void onDisable() {
+        completedCommandsTask.flush();
     }
 
     private void runTaskToAppeaseBungeeSecurityManager(Callable<Void> runnable) throws ExecutionException {

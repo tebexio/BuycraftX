@@ -77,6 +77,7 @@ public class BuycraftPlugin extends JavaPlugin {
     private CommandExecutor commandExecutor;
     @Getter
     private BuycraftI18n i18n;
+    private PostCompletedCommandsTask completedCommandsTask;
 
     @Override
     public void onEnable() {
@@ -143,7 +144,7 @@ public class BuycraftPlugin extends JavaPlugin {
         // Start the essential tasks.
         getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
                 configuration.isVerbose()), 20);
-        PostCompletedCommandsTask completedCommandsTask = new PostCompletedCommandsTask(platform);
+        completedCommandsTask = new PostCompletedCommandsTask(platform);
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
         getServer().getScheduler().runTaskTimer(this, (Runnable) commandExecutor, 1, 1);
         getServer().getScheduler().runTaskTimerAsynchronously(this, completedCommandsTask, 20, 20);
@@ -230,6 +231,7 @@ public class BuycraftPlugin extends JavaPlugin {
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Can't save buy now signs, continuing anyway", e);
         }
+        completedCommandsTask.flush();
     }
 
     public void saveConfiguration() throws IOException {

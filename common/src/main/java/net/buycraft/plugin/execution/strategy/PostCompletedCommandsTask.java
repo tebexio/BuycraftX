@@ -1,5 +1,6 @@
 package net.buycraft.plugin.execution.strategy;
 
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
@@ -39,5 +40,18 @@ public class PostCompletedCommandsTask implements Runnable {
 
     public void add(Integer id) {
         completed.add(id);
+    }
+
+    public void flush() {
+        if (!completed.isEmpty()) {
+            for (List<Integer> list : Lists.partition(new ArrayList<>(completed), MAXIMUM_COMMANDS_TO_POST)) {
+                try {
+                    platform.getApiClient().deleteCommand(list);
+                } catch (IOException | ApiException e) {
+                    platform.log(Level.SEVERE, "Unable to mark commands as completed", e);
+                    break;
+                }
+            }
+        }
     }
 }
