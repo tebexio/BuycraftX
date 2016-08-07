@@ -47,7 +47,7 @@ public class SignUpdater implements Runnable {
 
         Map<RecentPurchaseSignPosition, RecentPayment> signToPurchases = new HashMap<>();
         for (RecentPurchaseSignPosition sign : signs) {
-            if (sign.getPosition() > payments.size()) {
+            if (sign.getPosition() >= payments.size()) {
                 signToPurchases.put(sign, null);
             }
 
