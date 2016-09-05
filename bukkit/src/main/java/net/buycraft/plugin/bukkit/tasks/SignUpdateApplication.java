@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignPosition;
 import net.buycraft.plugin.data.RecentPayment;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.block.Block;
@@ -36,7 +37,12 @@ public class SignUpdateApplication implements Runnable {
     @Override
     public void run() {
         for (Map.Entry<RecentPurchaseSignPosition, RecentPayment> entry : signToPurchases.entrySet()) {
-            Block block = entry.getKey().getLocation().toBukkitLocation().getBlock();
+            Location location = entry.getKey().getLocation().toBukkitLocation();
+            if (location.getWorld() == null) {
+                // Invalid (no world).
+                continue;
+            }
+            Block block = location.getBlock();
             if (block == null) {
                 // Invalid.
                 continue;
