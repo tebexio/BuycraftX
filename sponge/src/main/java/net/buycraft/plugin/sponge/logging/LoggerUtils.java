@@ -31,6 +31,7 @@ public class LoggerUtils {
                     }
                     if (exception.getReceivedResponse() != null) {
                         data.put("received_response", exception.getReceivedResponse().toString());
+                        data.put("received_headers", exception.getReceivedResponse().headers().toString());
                     }
                     if (exception.getResponseBody() != null) {
                         data.put("received_body", exception.getResponseBody());
