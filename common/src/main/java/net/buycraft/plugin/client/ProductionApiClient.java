@@ -41,14 +41,15 @@ public class ProductionApiClient implements ApiClient {
     }
 
     private ApiException handleError(Response response, ResponseBody body) throws IOException {
+        String in = body.string();
         if (!Objects.equals(response.header("Content-Type"), "application/json")) {
-            return new ApiException("Unexpected error response: " + body.source().readString(32, StandardCharsets.UTF_8));
+            return new ApiException("Unexpected error response", response.request(), response, in);
         }
-        BuycraftError error = gson.fromJson(body.charStream(), BuycraftError.class);
+        BuycraftError error = gson.fromJson(in, BuycraftError.class);
         if (error != null) {
-            return new ApiException(error.getErrorMessage());
+            return new ApiException(error.getErrorMessage(), response.request(), response, in);
         } else {
-            return new ApiException("Unknown error occurred whilst deserializing error object.");
+            return new ApiException("Unknown error occurred whilst deserializing error object.", response.request(), response, in);
         }
     }
 

@@ -4,6 +4,7 @@ import com.bugsnag.Client;
 import com.bugsnag.MetaData;
 import com.google.common.base.Preconditions;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.client.ApiException;
 import org.apache.commons.lang.UnhandledException;
 import org.bukkit.command.CommandException;
 
@@ -58,6 +59,18 @@ public class BugsnagGlobalLoggingHandler extends Handler {
             data.put("account_id", plugin.getServerInformation().getAccount().getId());
             data.put("server_id", plugin.getServerInformation().getServer().getId());
             data.put("platform", "bukkit");
+            if (record.getThrown() instanceof ApiException) {
+                ApiException exception = (ApiException) record.getThrown();
+                if (exception.getSentRequest() != null) {
+                    data.put("request_sent", exception.getSentRequest().toString());
+                }
+                if (exception.getReceivedResponse() != null) {
+                    data.put("received_response", exception.getReceivedResponse().toString());
+                }
+                if (exception.getResponseBody() != null) {
+                    data.put("received_body", exception.getResponseBody());
+                }
+            }
         }
 
         if (record.getLevel() == Level.SEVERE) {
