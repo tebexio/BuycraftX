@@ -28,6 +28,11 @@ public class BugsnagLoggingHandler extends Handler {
             return;
         }
 
+        // BungeeCord logs this message if it can't execute a command.
+        if (record.getMessage().equals("Error in dispatching command")) {
+            return;
+        }
+
         if (PLUGIN_ERROR.matcher(record.getMessage()).find()) {
             return;
         }
