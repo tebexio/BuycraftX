@@ -32,31 +32,10 @@ public class BugsnagLoggingHandler extends Handler {
             return;
         }
 
-        final MetaData data = new MetaData();
-        if (plugin.getServerInformation() != null) {
-            data.put("account_id", plugin.getServerInformation().getAccount().getId());
-            data.put("server_id", plugin.getServerInformation().getServer().getId());
-            data.put("platform", "bukkit");
-
-            if (record.getThrown() instanceof ApiException) {
-                ApiException exception = (ApiException) record.getThrown();
-                if (exception.getSentRequest() != null) {
-                    data.put("request_sent", exception.getSentRequest().toString());
-                }
-                if (exception.getReceivedResponse() != null) {
-                    data.put("received_response", exception.getReceivedResponse().toString());
-                    data.put("received_headers", exception.getReceivedResponse().headers().toString());
-                }
-                if (exception.getResponseBody() != null) {
-                    data.put("received_body", exception.getResponseBody());
-                }
-            }
-        }
-
         if (record.getLevel() == Level.SEVERE) {
-            client.notify(record.getThrown(), "error", data);
+            client.notify(record.getThrown(), "error");
         } else if (record.getLevel() == Level.WARNING) {
-            client.notify(record.getThrown(), "warning", data);
+            client.notify(record.getThrown(), "warning");
         }
     }
 

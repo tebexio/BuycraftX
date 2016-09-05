@@ -20,7 +20,6 @@ import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.sponge.command.*;
-import net.buycraft.plugin.sponge.logging.BugsnagNilLogger;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignStorage;
@@ -30,6 +29,8 @@ import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import net.buycraft.plugin.sponge.util.VersionCheck;
+import net.buycraft.plugin.util.BugsnagNilLogger;
+import net.buycraft.plugin.util.BuycraftBeforeNotify;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -143,6 +144,8 @@ public class BuycraftPlugin {
         Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
         bugsnagClient.setAppVersion(curVersion);
         bugsnagClient.setLogger(new BugsnagNilLogger());
+        bugsnagClient.addBeforeNotify(new BuycraftBeforeNotify());
+        bugsnagClient.setProjectPackages("net.buycraft.plugin");
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 
         String serverKey = configuration.getServerKey();

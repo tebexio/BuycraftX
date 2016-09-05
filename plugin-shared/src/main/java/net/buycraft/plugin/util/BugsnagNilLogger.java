@@ -1,4 +1,4 @@
-package net.buycraft.plugin.bukkit.logging;
+package net.buycraft.plugin.util;
 
 import com.bugsnag.Logger;
 
