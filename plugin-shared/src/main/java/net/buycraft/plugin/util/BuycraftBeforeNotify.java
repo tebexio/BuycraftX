@@ -23,14 +23,14 @@ public class BuycraftBeforeNotify implements BeforeNotify {
         if (error.getException() instanceof ApiException) {
             ApiException exception = (ApiException) error.getException();
             if (exception.getSentRequest() != null) {
-                error.addToTab("http", "request_sent", exception.getSentRequest().toString());
+                error.addToTab("http", "requestSent", exception.getSentRequest().toString());
             }
             if (exception.getReceivedResponse() != null) {
-                error.addToTab("http", "received_response", exception.getReceivedResponse().toString());
-                error.addToTab("http", "received_headers", exception.getReceivedResponse().headers().toString());
+                error.addToTab("http", "receivedResponse", exception.getReceivedResponse().toString());
+                error.addToTab("http", "receivedHeaders", exception.getReceivedResponse().headers().toString());
             }
             if (exception.getResponseBody() != null) {
-                error.addToTab("http", "received_body", exception.getResponseBody());
+                error.addToTab("http", "receivedBody", exception.getResponseBody());
             }
         }
 

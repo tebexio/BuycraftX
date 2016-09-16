@@ -18,6 +18,7 @@ import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
+import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
@@ -45,6 +46,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
+import java.net.ProxySelector;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -126,6 +128,7 @@ public class BuycraftPlugin {
                 .readTimeout(3, TimeUnit.SECONDS)
                 .cache(new Cache(baseDirectory.resolve("cache").toFile(), 1024 * 1024 * 10))
                 .dns(new Ipv4PreferDns())
+                .proxySelector(ProxySelector.getDefault() == null ? FakeProxySelector.INSTANCE : ProxySelector.getDefault())
                 .build();
 
         // Check for latest version.
@@ -146,6 +149,7 @@ public class BuycraftPlugin {
         bugsnagClient.setLogger(new BugsnagNilLogger());
         bugsnagClient.addBeforeNotify(new BuycraftBeforeNotify());
         bugsnagClient.setProjectPackages("net.buycraft.plugin");
+        bugsnagClient.addToTab("app", "minecraftPlatform", "sponge");
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 
         String serverKey = configuration.getServerKey();

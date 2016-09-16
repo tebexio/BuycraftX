@@ -30,6 +30,7 @@ import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
+import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.BugsnagNilLogger;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
@@ -40,6 +41,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ProxySelector;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
@@ -110,7 +112,7 @@ public class BuycraftPlugin extends JavaPlugin {
         bugsnagClient.setProjectPackages("net.buycraft.plugin");
         bugsnagClient.setLogger(new BugsnagNilLogger());
         bugsnagClient.addBeforeNotify(new BuycraftBeforeNotify());
-        bugsnagClient.addToTab("app", "minecraft_platform", "bukkit");
+        bugsnagClient.addToTab("app", "minecraftPlatform", "bukkit");
         Bukkit.getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
 
         // Initialize API client.
@@ -120,6 +122,7 @@ public class BuycraftPlugin extends JavaPlugin {
                 .readTimeout(3, TimeUnit.SECONDS)
                 .cache(new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10))
                 .dns(new Ipv4PreferDns())
+                .proxySelector(ProxySelector.getDefault() == null ? FakeProxySelector.INSTANCE : ProxySelector.getDefault())
                 .build();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {

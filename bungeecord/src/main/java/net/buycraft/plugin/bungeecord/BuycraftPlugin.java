@@ -24,6 +24,7 @@ import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
+import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.BugsnagNilLogger;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
@@ -34,6 +35,7 @@ import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ProxySelector;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -118,6 +120,7 @@ public class BuycraftPlugin extends Plugin {
             bugsnagClient.setLogger(new BugsnagNilLogger());
             bugsnagClient.setProjectPackages("net.buycraft.plugin");
             bugsnagClient.addBeforeNotify(new BuycraftBeforeNotify());
+            bugsnagClient.addToTab("app", "minecraftPlatform", "bungeecord");
             getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
         } catch (InterruptedException | ExecutionException e) {
             getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
@@ -130,6 +133,7 @@ public class BuycraftPlugin extends Plugin {
                 .dispatcher(new Dispatcher(getExecutorService()))
                 .cache(cache)
                 .dns(new Ipv4PreferDns())
+                .proxySelector(ProxySelector.getDefault() == null ? FakeProxySelector.INSTANCE : ProxySelector.getDefault())
                 .build();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
