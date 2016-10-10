@@ -10,6 +10,8 @@ import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.EmptyInventory;
+import org.spongepowered.api.item.inventory.Inventory;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +75,7 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
         if (!player1.isPresent()) {
             return -1;
         } else {
-            return player1.get().getInventory().query(ItemTypes.NONE).size();
+            return Math.max(0, 36 - player1.get().getInventory().size());
         }
     }
 
