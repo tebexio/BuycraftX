@@ -5,6 +5,7 @@ import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.tasks.SignUpdateApplication;
 import net.buycraft.plugin.bukkit.tasks.SignUpdater;
 import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,7 +39,7 @@ public class RecentPurchaseSignListener implements Listener {
 
         int pos;
         try {
-            pos = Integer.parseInt(event.getLine(1));
+            pos = Integer.parseInt(StringUtils.trimToEmpty(event.getLine(1)));
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             event.getPlayer().sendMessage(ChatColor.RED + "The second line must be a number.");
             return;
