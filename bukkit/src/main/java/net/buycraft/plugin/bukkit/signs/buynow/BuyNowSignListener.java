@@ -4,7 +4,7 @@ import lombok.Getter;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.tasks.BuyNowSignUpdater;
 import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
-import net.buycraft.plugin.bukkit.tasks.SignUpdateApplication;
+import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateApplication;
 import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
 import net.buycraft.plugin.data.Package;
 import org.bukkit.Bukkit;
@@ -130,7 +130,7 @@ public class BuyNowSignListener implements Listener {
             return;
         }
 
-        for (BlockFace face : SignUpdateApplication.FACES) {
+        for (BlockFace face : RecentPurchaseSignUpdateApplication.FACES) {
             Location onFace = event.getBlock().getRelative(face).getLocation();
 
             if (plugin.getBuyNowSignStorage().containsLocation(onFace)) {

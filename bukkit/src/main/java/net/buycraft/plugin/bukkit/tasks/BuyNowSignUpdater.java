@@ -13,6 +13,7 @@ import org.bukkit.block.Sign;
 
 import java.text.NumberFormat;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 
 @RequiredArgsConstructor
@@ -45,14 +46,12 @@ public class BuyNowSignUpdater implements Runnable {
                 continue;
             }
 
-            NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-            format.setCurrency(Currency.getInstance(plugin.getServerInformation().getAccount().getCurrency().getIso4217()));
-
+            Currency currency = Currency.getInstance(plugin.getServerInformation().getAccount().getCurrency().getIso4217());
             Sign worldSign = (Sign) b.getState();
-            worldSign.setLine(0, ChatColor.BLUE + "[Package]");
-            worldSign.setLine(1, StringUtils.abbreviate(p.getName(), 16));
-            worldSign.setLine(2, format.format(p.getEffectivePrice()));
-            worldSign.setLine(3, "");
+            List<String> lines = plugin.getBuyNowSignLayout().format(currency, p);
+            for (int i = 0; i < 4; i++) {
+                worldSign.setLine(i, ChatColor.translateAlternateColorCodes('&', i >= lines.size() ? "" : lines.get(i)));
+            }
             worldSign.update();
         }
     }

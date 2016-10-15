@@ -2,7 +2,7 @@ package net.buycraft.plugin.bukkit.command;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.tasks.SignUpdater;
+import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -28,7 +28,7 @@ public class SignUpdateSubcommand implements Subcommand {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new RecentPurchaseSignUpdateFetcher(plugin));
         sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("sign_update_queued"));
     }
 

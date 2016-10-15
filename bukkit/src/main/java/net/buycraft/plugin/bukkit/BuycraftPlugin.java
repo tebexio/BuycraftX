@@ -14,7 +14,7 @@ import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
-import net.buycraft.plugin.bukkit.tasks.SignUpdater;
+import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
 import net.buycraft.plugin.bukkit.util.AnalyticsUtil;
 import net.buycraft.plugin.bukkit.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
@@ -30,6 +30,8 @@ import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
+import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
+import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.BugsnagNilLogger;
@@ -42,8 +44,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.net.ProxySelector;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -79,6 +84,11 @@ public class BuycraftPlugin extends JavaPlugin {
     private CommandExecutor commandExecutor;
     @Getter
     private BuycraftI18n i18n;
+    @Getter
+    private BuyNowSignLayout buyNowSignLayout = BuyNowSignLayout.DEFAULT;
+    @Getter
+    private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
+    @Getter
     private PostCompletedCommandsTask completedCommandsTask;
     private Client bugsnagClient;
 
@@ -194,14 +204,38 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("report", new ReportCommand(this));
         getCommand("buycraft").setExecutor(command);
 
-        // Initialize sign data and listener.
+        // Initialize sign layouts.
+        try {
+            Path signLayoutDirectory = getDataFolder().toPath().resolve("sign_layouts");
+            try {
+                Files.createDirectory(signLayoutDirectory);
+            } catch (FileAlreadyExistsException ignored) {
+            }
+
+            Path rpPath = signLayoutDirectory.resolve("recentpurchase.txt");
+            Path bnPath = signLayoutDirectory.resolve("buynow.txt");
+
+            try {
+                Files.copy(getResource("sign_layouts/recentpurchase.txt"), rpPath);
+            } catch (FileAlreadyExistsException ignored) {}
+            try {
+                Files.copy(getResource("sign_layouts/buynow.txt"), bnPath);
+            } catch (FileAlreadyExistsException ignored) {}
+
+            recentPurchaseSignLayout = new RecentPurchaseSignLayout(Files.readAllLines(rpPath, StandardCharsets.UTF_8));
+            buyNowSignLayout = new BuyNowSignLayout(Files.readAllLines(bnPath, StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Unable to load sign layouts", e);
+        }
+
+        // Initialize recent purchase sign data and listener.
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
             recentPurchaseSignStorage.load(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Can't load purchase signs, continuing anyway");
         }
-        getServer().getScheduler().runTaskTimerAsynchronously(this, new SignUpdater(this), 20, 3600 * 15);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new RecentPurchaseSignUpdateFetcher(this), 20, 3600 * 15);
         getServer().getPluginManager().registerEvents(new RecentPurchaseSignListener(this), this);
 
         // Initialize purchase signs.

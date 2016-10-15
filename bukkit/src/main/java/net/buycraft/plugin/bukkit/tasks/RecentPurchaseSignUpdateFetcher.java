@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
-public class SignUpdater implements Runnable {
+public class RecentPurchaseSignUpdateFetcher implements Runnable {
     private final BuycraftPlugin plugin;
 
     @Override
@@ -54,6 +54,6 @@ public class SignUpdater implements Runnable {
             signToPurchases.put(sign, payments.get(sign.getPosition() - 1));
         }
 
-        Bukkit.getScheduler().runTask(plugin, new SignUpdateApplication(plugin, signToPurchases));
+        Bukkit.getScheduler().runTask(plugin, new RecentPurchaseSignUpdateApplication(plugin, signToPurchases));
     }
 }

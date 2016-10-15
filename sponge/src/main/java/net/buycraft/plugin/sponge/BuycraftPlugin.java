@@ -18,6 +18,7 @@ import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
+import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.sponge.command.*;
@@ -47,10 +48,12 @@ import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
 import java.net.ProxySelector;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
 public class BuycraftPlugin {
@@ -92,6 +95,9 @@ public class BuycraftPlugin {
     @Inject
     @ConfigDir(sharedRoot = false)
     private Path baseDirectory;
+
+    @Getter
+    private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
 
     @Getter
     private BuycraftI18n i18n;
@@ -185,6 +191,24 @@ public class BuycraftPlugin {
             recentPurchaseSignStorage.load(baseDirectory.resolve("purchase_signs.json"));
         } catch (IOException e) {
             logger.warn("Can't load purchase signs, continuing anyway", e);
+        }
+
+        try {
+            Path signLayoutDirectory = baseDirectory.resolve("sign_layouts");
+            try {
+                Files.createDirectory(signLayoutDirectory);
+            } catch (FileAlreadyExistsException ignored) {
+            }
+
+            Path rpPath = signLayoutDirectory.resolve("recentpurchase.txt");
+            try {
+                Files.copy(getClass().getClassLoader().getResourceAsStream("sign_layouts/recentpurchase.txt"), rpPath);
+            } catch (FileAlreadyExistsException ignored) {
+            }
+
+            recentPurchaseSignLayout = new RecentPurchaseSignLayout(Files.readAllLines(rpPath, StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            getLogger().error("Unable to load sign layouts", e);
         }
 
         Sponge.getScheduler().createTaskBuilder()

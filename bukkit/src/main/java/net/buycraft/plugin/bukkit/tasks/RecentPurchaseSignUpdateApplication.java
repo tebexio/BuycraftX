@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignPosition;
 import net.buycraft.plugin.data.RecentPayment;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
@@ -14,11 +15,12 @@ import org.bukkit.block.Skull;
 
 import java.text.NumberFormat;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class SignUpdateApplication implements Runnable {
+public class RecentPurchaseSignUpdateApplication implements Runnable {
     public static final BlockFace[] FACES = {BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
     private static final String UNKNOWN_USERNAME = "MHF_Question";
     private final BuycraftPlugin plugin;
@@ -51,15 +53,10 @@ public class SignUpdateApplication implements Runnable {
                 Sign sign = (Sign) block.getState();
 
                 if (entry.getValue() != null) {
-                    sign.setLine(0, "");
-                    sign.setLine(1, entry.getValue().getPlayer().getName());
-
-                    // TODO: Make this better!
-                    NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
-                    format.setCurrency(Currency.getInstance(entry.getValue().getCurrency().getIso4217()));
-
-                    sign.setLine(2, format.format(entry.getValue().getAmount()));
-                    sign.setLine(3, "");
+                    List<String> lines = plugin.getRecentPurchaseSignLayout().format(entry.getValue());
+                    for (int i = 0; i < 4; i++) {
+                        sign.setLine(i, ChatColor.translateAlternateColorCodes('&', i >= lines.size() ? "" : lines.get(i)));
+                    }
                 } else {
                     for (int i = 0; i < 4; i++) {
                         sign.setLine(i, "");

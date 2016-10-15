@@ -2,8 +2,8 @@ package net.buycraft.plugin.bukkit.signs.purchases;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.tasks.SignUpdateApplication;
-import net.buycraft.plugin.bukkit.tasks.SignUpdater;
+import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateApplication;
+import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
 import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -63,7 +63,7 @@ public class RecentPurchaseSignListener implements Listener {
             event.setLine(i, "");
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new SignUpdater(plugin));
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new RecentPurchaseSignUpdateFetcher(plugin));
     }
 
     @EventHandler
@@ -82,7 +82,7 @@ public class RecentPurchaseSignListener implements Listener {
             return;
         }
 
-        for (BlockFace face : SignUpdateApplication.FACES) {
+        for (BlockFace face : RecentPurchaseSignUpdateApplication.FACES) {
             Location onFace = event.getBlock().getRelative(face).getLocation();
             if (plugin.getRecentPurchaseSignStorage().containsLocation(onFace)) {
                 if (!event.getPlayer().hasPermission("buycraft.admin")) {
