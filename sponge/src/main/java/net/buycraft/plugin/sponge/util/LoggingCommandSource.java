@@ -11,12 +11,12 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextElement;
+import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.Tristate;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class LoggingCommandSource implements ConsoleSource {
     @Getter
@@ -25,6 +25,11 @@ public class LoggingCommandSource implements ConsoleSource {
     @Override
     public String getName() {
         return "CONSOLE^BC";
+    }
+
+    @Override
+    public Locale getLocale() {
+        return null;
     }
 
     @Override
@@ -40,6 +45,30 @@ public class LoggingCommandSource implements ConsoleSource {
     @Override
     public void sendMessage(Text text) {
         output.addLine(text.toPlain());
+    }
+
+    @Override
+    public void sendMessages(Text... messages) {
+        for (Text text : messages) {
+            output.addLine(text.toPlain());
+        }
+    }
+
+    @Override
+    public void sendMessages(Iterable<Text> messages) {
+        for (Text text : messages) {
+            output.addLine(text.toPlain());
+        }
+    }
+
+    @Override
+    public void sendMessage(TextTemplate template) {
+        sendMessage(template.toText());
+    }
+
+    @Override
+    public void sendMessage(TextTemplate template, Map<String, TextElement> parameters) {
+        sendMessage(template.apply(parameters).toText());
     }
 
     @Override
@@ -78,8 +107,18 @@ public class LoggingCommandSource implements ConsoleSource {
     }
 
     @Override
+    public boolean hasPermission(String permission) {
+        return true;
+    }
+
+    @Override
     public Tristate getPermissionValue(Set<Context> set, String s) {
         return Tristate.TRUE;
+    }
+
+    @Override
+    public boolean isChildOf(Subject parent) {
+        return true;
     }
 
     @Override
@@ -88,7 +127,22 @@ public class LoggingCommandSource implements ConsoleSource {
     }
 
     @Override
+    public List<Subject> getParents() {
+        return ImmutableList.of();
+    }
+
+    @Override
     public List<Subject> getParents(Set<Context> set) {
         return ImmutableList.of();
+    }
+
+    @Override
+    public Optional<String> getOption(Set<Context> contexts, String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getOption(String key) {
+        return Optional.empty();
     }
 }
