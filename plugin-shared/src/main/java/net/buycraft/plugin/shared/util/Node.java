@@ -20,10 +20,9 @@ public class Node {
     private List<Package> packages;
     @Getter
     private String title;
-    @Getter
-    private Optional<Node> parent;
+    private Node parent;
 
-    public Node(List<Category> subcategories, List<Package> packages, String title, Optional parent) {
+    public Node(List<Category> subcategories, List<Package> packages, String title, Node parent) {
         this.subcategories = subcategories;
         this.packages = packages;
         this.title = title;
@@ -31,7 +30,10 @@ public class Node {
     }
 
     public Node getChild(Category subcategory) {
-        return new Node(subcategory.getSubcategories(), subcategory.getPackages(), subcategory.getName(), Optional.of(this));
+        return new Node(subcategory.getSubcategories(), subcategory.getPackages(), subcategory.getName(), this);
     }
 
+    public Optional<Node> getParent() {
+        return Optional.fromNullable(parent);
+    }
 }

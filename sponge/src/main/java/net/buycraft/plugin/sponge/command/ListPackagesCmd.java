@@ -1,6 +1,7 @@
 package net.buycraft.plugin.sponge.command;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Package;
@@ -42,28 +43,19 @@ public class ListPackagesCmd implements CommandExecutor {
             return CommandResult.success();
         }
 
-        try {
-            sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), new ArrayList<Package>(),
-                    plugin.getI18n().get("categories"), Optional
-                    .absent()), sender);
-        } catch (IOException | ApiException e) {
-            e.printStackTrace();
-        }
+        sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), ImmutableList.of(),
+                plugin.getI18n().get("categories"), null), sender);
 
         return CommandResult.success();
     }
 
-    private void sendPaginatedMessage(Node node, CommandSource source) throws IOException, ApiException {
+    private void sendPaginatedMessage(Node node, CommandSource source) {
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         PaginationList.Builder builder = paginationService.builder();
         List<Text> contents = node.getSubcategories().stream()
                 .map(category -> Text.builder("> " + category.getName()).color(TextColors.GRAY).onClick(TextActions.executeCallback(commandSource -> {
                     if (commandSource instanceof Player) {
-                        try {
-                            sendPaginatedMessage(node.getChild(category), source);
-                        } catch (IOException | ApiException e) {
-                            e.printStackTrace();
-                        }
+                        sendPaginatedMessage(node.getChild(category), source);
                     }
                 })).build()).collect(Collectors.toList());
         for (Package p : node.getPackages()) {
