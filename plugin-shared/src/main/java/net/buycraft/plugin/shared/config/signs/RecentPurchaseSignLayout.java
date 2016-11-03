@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 public class RecentPurchaseSignLayout {
     public static final RecentPurchaseSignLayout DEFAULT = new RecentPurchaseSignLayout(ImmutableList.of(

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 public class BuyNowSignLayout {
     public static final BuyNowSignLayout DEFAULT = new BuyNowSignLayout(ImmutableList.of(

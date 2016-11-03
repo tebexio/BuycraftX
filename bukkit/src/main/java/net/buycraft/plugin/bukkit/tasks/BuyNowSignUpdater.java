@@ -4,17 +4,14 @@ import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.signs.buynow.SavedBuyNowSign;
 import net.buycraft.plugin.data.Package;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 public class BuyNowSignUpdater implements Runnable {

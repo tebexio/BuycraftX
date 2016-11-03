@@ -4,9 +4,7 @@ import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.platform.NoBlocking;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;

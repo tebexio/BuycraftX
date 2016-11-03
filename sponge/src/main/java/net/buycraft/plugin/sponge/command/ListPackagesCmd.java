@@ -1,9 +1,7 @@
 package net.buycraft.plugin.sponge.command;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.shared.util.Node;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
@@ -21,8 +19,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

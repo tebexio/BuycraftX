@@ -1,10 +1,8 @@
 package net.buycraft.plugin.bukkit.logging;
 
 import com.bugsnag.Client;
-import com.bugsnag.MetaData;
 import com.google.common.base.Preconditions;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.client.ApiException;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;

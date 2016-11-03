@@ -9,9 +9,6 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.EmptyInventory;
-import org.spongepowered.api.item.inventory.Inventory;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
