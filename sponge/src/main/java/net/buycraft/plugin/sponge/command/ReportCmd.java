@@ -47,13 +47,7 @@ public class ReportCmd implements CommandExecutor {
         String serverVersion = Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN");
         String serverIP = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getHostName() : "?";
         int serverPort = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getPort() : -1;
-        String buycraftVersion = "Unknown.";
-        for (Field f : plugin.getClass().getFields()) {
-            Plugin plugin = f.getAnnotation(Plugin.class);
-            if (plugin != null) {
-                buycraftVersion = plugin.version();
-            }
-        }
+        String buycraftVersion = BuycraftPlugin.class.getAnnotation(Plugin.class).version();
 
         writer.println("### Server Information ###");
         writer.println("Report generated on " + date);

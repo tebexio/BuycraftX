@@ -156,7 +156,7 @@ public class BuycraftPlugin {
         bugsnagClient.addCallback(new BuycraftBeforeNotify());
         bugsnagClient.setAppType("sponge");
         bugsnagClient.addCallback(report -> {
-            report.setAppInfo("serverVersion", Sponge.getGame().getPlatform().getImplementation().toString());
+            report.setAppInfo("serverVersion", Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN"));
             if (serverInformation != null) {
                 report.addToTab("user", "account_id", serverInformation.getAccount().getId());
                 report.addToTab("user", "server_id", serverInformation.getServer().getId());
