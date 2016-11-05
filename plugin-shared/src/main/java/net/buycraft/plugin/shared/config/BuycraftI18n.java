@@ -29,10 +29,10 @@ public class BuycraftI18n {
     }
 
     public String get(String message, Object... params) {
-        if (userBundle != null && userBundle.containsKey(message)) {
-            return MessageFormat.format(userBundle.getString(message), params);
-        } else {
-            return MessageFormat.format(bundle.getString(message), params);
-        }
+        return MessageFormat.format(getBundleFor(message).getString(message), params);
+    }
+
+    public ResourceBundle getBundleFor(String message) {
+        return userBundle != null && userBundle.containsKey(message) ? userBundle : bundle;
     }
 }

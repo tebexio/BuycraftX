@@ -39,10 +39,11 @@ public class CategoryViewGUI {
     }
 
     public GUIImpl getFirstPage(Category category) {
-        if (!categoryMenus.containsKey(category.getId()))
+        List<GUIImpl> guis = categoryMenus.get(category.getId());
+        if (guis == null)
             return null;
 
-        return Iterables.getFirst(categoryMenus.get(category.getId()), null);
+        return Iterables.getFirst(guis, null);
     }
 
     public void update() {
@@ -65,14 +66,15 @@ public class CategoryViewGUI {
             }
         }
 
-        Map<Integer, List<GUIImpl>> prune = new HashMap<>(categoryMenus);
-        prune.keySet().removeAll(foundIds);
-        for (List<GUIImpl> guis : prune.values()) {
-            for (GUIImpl gui : guis) {
-                gui.destroy();
+        for (Iterator<Map.Entry<Integer, List<GUIImpl>>> it = categoryMenus.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<Integer, List<GUIImpl>> next = it.next();
+            if (!foundIds.contains(next.getKey())) {
+                for (GUIImpl gui : next.getValue()) {
+                    gui.destroy();
+                }
+                it.remove();
             }
         }
-        categoryMenus.keySet().retainAll(foundIds);
 
         for (Category category : listing.getCategories()) {
             doUpdate(null, category);
