@@ -154,14 +154,12 @@ public class BuycraftPlugin {
         bugsnagClient.setAppVersion(MAGIC_VERSION);
         bugsnagClient.setProjectPackages("net.buycraft.plugin");
         bugsnagClient.addCallback(new BuycraftBeforeNotify());
-        bugsnagClient.setAppType("bukkit");
-        bugsnagClient.addCallback(new Callback() {
-            @Override
-            public void beforeNotify(Report report) {
-                if (serverInformation != null) {
-                    report.addToTab("user", "account_id", serverInformation.getAccount().getId());
-                    report.addToTab("user", "server_id", serverInformation.getServer().getId());
-                }
+        bugsnagClient.setAppType("sponge");
+        bugsnagClient.addCallback(report -> {
+            report.setAppInfo("serverVersion", Sponge.getGame().getPlatform().getImplementation().toString());
+            if (serverInformation != null) {
+                report.addToTab("user", "account_id", serverInformation.getAccount().getId());
+                report.addToTab("user", "server_id", serverInformation.getServer().getId());
             }
         });
         loggerUtils = new LoggerUtils(this, bugsnagClient);

@@ -124,6 +124,7 @@ public class BuycraftPlugin extends Plugin {
             bugsnagClient.addCallback(new Callback() {
                 @Override
                 public void beforeNotify(Report report) {
+                    report.setAppInfo("serverVersion", getProxy().getVersion());
                     if (serverInformation != null) {
                         report.addToTab("user", "account_id", serverInformation.getAccount().getId());
                         report.addToTab("user", "server_id", serverInformation.getServer().getId());
