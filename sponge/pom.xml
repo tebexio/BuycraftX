@@ -40,10 +40,6 @@
                             <shadedPattern>net.buycraft.plugin.internal.bugsnag</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.google.gson</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.gson</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>okhttp3</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.okhttp3</shadedPattern>
                         </relocation>
@@ -54,10 +50,6 @@
                         <relocation>
                             <pattern>com.fasterxml.jackson</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.jackson</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.slf4j</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.slf4j</shadedPattern>
                         </relocation>
                     </relocations>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
