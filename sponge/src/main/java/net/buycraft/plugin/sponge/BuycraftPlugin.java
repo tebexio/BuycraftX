@@ -1,6 +1,8 @@
 package net.buycraft.plugin.sponge;
 
-import com.bugsnag.Client;
+import com.bugsnag.Bugsnag;
+import com.bugsnag.Report;
+import com.bugsnag.callbacks.Callback;
 import com.google.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +33,6 @@ import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import net.buycraft.plugin.sponge.util.VersionCheck;
-import net.buycraft.plugin.util.BugsnagNilLogger;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -149,12 +150,20 @@ public class BuycraftPlugin {
             Sponge.getEventManager().registerListeners(this, check);
         }
 
-        Client bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
-        bugsnagClient.setAppVersion(curVersion);
-        bugsnagClient.setLogger(new BugsnagNilLogger());
-        bugsnagClient.addBeforeNotify(new BuycraftBeforeNotify());
+        Bugsnag bugsnagClient = new Bugsnag("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnagClient.setAppVersion(MAGIC_VERSION);
         bugsnagClient.setProjectPackages("net.buycraft.plugin");
-        bugsnagClient.addToTab("app", "minecraftPlatform", "sponge");
+        bugsnagClient.addCallback(new BuycraftBeforeNotify());
+        bugsnagClient.setAppType("bukkit");
+        bugsnagClient.addCallback(new Callback() {
+            @Override
+            public void beforeNotify(Report report) {
+                if (serverInformation != null) {
+                    report.addToTab("user", "account_id", serverInformation.getAccount().getId());
+                    report.addToTab("user", "server_id", serverInformation.getServer().getId());
+                }
+            }
+        });
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 
         String serverKey = configuration.getServerKey();

@@ -1,7 +1,7 @@
 package net.buycraft.plugin.bungeecord.logging;
 
-import com.bugsnag.Client;
-import com.bugsnag.MetaData;
+import com.bugsnag.Bugsnag;
+import com.bugsnag.Severity;
 import com.google.common.base.Preconditions;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
@@ -14,10 +14,10 @@ import java.util.regex.Pattern;
 public class BugsnagLoggingHandler extends Handler {
     private static final Pattern PLUGIN_ERROR = Pattern.compile("Could not dispatch command '(.*)' for player '(.*)'\\. " +
             "This is typically a plugin error, not an issue with BuycraftX\\.");
-    private final Client client;
+    private final Bugsnag client;
     private final BuycraftPlugin plugin;
 
-    public BugsnagLoggingHandler(Client client, BuycraftPlugin plugin) {
+    public BugsnagLoggingHandler(Bugsnag client, BuycraftPlugin plugin) {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin");
         this.client = Preconditions.checkNotNull(client, "client");
     }
@@ -37,30 +37,12 @@ public class BugsnagLoggingHandler extends Handler {
             return;
         }
 
-        final MetaData data = new MetaData();
-        if (plugin.getServerInformation() != null) {
-            data.put("account_id", plugin.getServerInformation().getAccount().getId());
-            data.put("server_id", plugin.getServerInformation().getServer().getId());
-            data.put("platform", "bungeecord");
-            if (record.getThrown() instanceof ApiException) {
-                ApiException exception = (ApiException) record.getThrown();
-                if (exception.getSentRequest() != null) {
-                    data.put("request_sent", exception.getSentRequest().toString());
-                }
-                if (exception.getReceivedResponse() != null) {
-                    data.put("received_response", exception.getReceivedResponse().toString());
-                    data.put("received_headers", exception.getReceivedResponse().headers().toString());
-                }
-                if (exception.getResponseBody() != null) {
-                    data.put("received_body", exception.getResponseBody());
-                }
-            }
-        }
-
         if (record.getLevel() == Level.SEVERE) {
-            client.notify(record.getThrown(), "error", data);
+            client.notify(client.buildReport(record.getThrown())
+                    .setSeverity(Severity.ERROR));
         } else if (record.getLevel() == Level.WARNING) {
-            client.notify(record.getThrown(), "warning", data);
+            client.notify(client.buildReport(record.getThrown())
+                    .setSeverity(Severity.WARNING));
         }
     }
 

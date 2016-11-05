@@ -40,11 +40,11 @@
                     <relocations>
                         <relocation>
                             <pattern>com.bugsnag</pattern>
-                            <shadedPattern>net.buycraft.plugin.bukkit.internal.bugsnag</shadedPattern>
+                            <shadedPattern>net.buycraft.plugin.internal.bugsnag</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.gson</pattern>
-                            <shadedPattern>net.buycraft.plugin.bukkit.internal.gson</shadedPattern>
+                            <shadedPattern>net.buycraft.plugin.internal.gson</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okhttp3</pattern>
@@ -55,8 +55,12 @@
                             <shadedPattern>net.buycraft.plugin.internal.okio</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>org.json</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.orgjson</shadedPattern>
+                            <pattern>com.fasterxml.jackson</pattern>
+                            <shadedPattern>net.buycraft.plugin.internal.jackson</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>net.buycraft.plugin.internal.slf4j</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -86,9 +90,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.0.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.21</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

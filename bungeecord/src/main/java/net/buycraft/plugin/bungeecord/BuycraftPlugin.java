@@ -1,6 +1,8 @@
 package net.buycraft.plugin.bungeecord;
 
-import com.bugsnag.Client;
+import com.bugsnag.Bugsnag;
+import com.bugsnag.Report;
+import com.bugsnag.callbacks.Callback;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -26,7 +28,6 @@ import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
-import net.buycraft.plugin.util.BugsnagNilLogger;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
@@ -107,21 +108,29 @@ public class BuycraftPlugin extends Plugin {
 
         // Set up Bugsnag.
         // Hack due to SecurityManager shenanigans.
-        FutureTask<Client> clientInit = new FutureTask<>(new Callable<Client>() {
+        FutureTask<Bugsnag> clientInit = new FutureTask<>(new Callable<Bugsnag>() {
             @Override
-            public Client call() throws Exception {
-                return new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+            public Bugsnag call() throws Exception {
+                return new Bugsnag("cac4ea0fdbe89b5004d8ab8d5409e594", false);
             }
         });
         getProxy().getScheduler().runAsync(this, clientInit);
         try {
-            Client bugsnagClient = clientInit.get();
+            Bugsnag bugsnagClient = clientInit.get();
             bugsnagClient.setAppVersion(getDescription().getVersion());
-            bugsnagClient.setLogger(new BugsnagNilLogger());
             bugsnagClient.setProjectPackages("net.buycraft.plugin");
-            bugsnagClient.addBeforeNotify(new BuycraftBeforeNotify());
-            bugsnagClient.addToTab("app", "minecraftPlatform", "bungeecord");
-            getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
+            bugsnagClient.addCallback(new BuycraftBeforeNotify());
+            bugsnagClient.setAppType("bungeecord");
+            bugsnagClient.addCallback(new Callback() {
+                @Override
+                public void beforeNotify(Report report) {
+                    if (serverInformation != null) {
+                        report.addToTab("user", "account_id", serverInformation.getAccount().getId());
+                        report.addToTab("user", "server_id", serverInformation.getServer().getId());
+                    }
+                }
+            });
+            getProxy().getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
         } catch (InterruptedException | ExecutionException e) {
             getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
         }

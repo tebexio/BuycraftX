@@ -7,7 +7,6 @@ import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;

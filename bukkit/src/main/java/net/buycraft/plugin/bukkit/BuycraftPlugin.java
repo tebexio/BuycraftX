@@ -1,6 +1,8 @@
 package net.buycraft.plugin.bukkit;
 
-import com.bugsnag.Client;
+import com.bugsnag.Bugsnag;
+import com.bugsnag.Report;
+import com.bugsnag.callbacks.Callback;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -34,7 +36,6 @@ import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
-import net.buycraft.plugin.util.BugsnagNilLogger;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -89,7 +90,7 @@ public class BuycraftPlugin extends JavaPlugin {
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
     @Getter
     private PostCompletedCommandsTask completedCommandsTask;
-    private Client bugsnagClient;
+    private Bugsnag bugsnagClient;
 
     @Override
     public void onEnable() {
@@ -116,12 +117,20 @@ public class BuycraftPlugin extends JavaPlugin {
 
         i18n = configuration.createI18n();
 
-        bugsnagClient = new Client("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnagClient = new Bugsnag("cac4ea0fdbe89b5004d8ab8d5409e594", false);
         bugsnagClient.setAppVersion(getDescription().getVersion());
         bugsnagClient.setProjectPackages("net.buycraft.plugin");
-        bugsnagClient.setLogger(new BugsnagNilLogger());
-        bugsnagClient.addBeforeNotify(new BuycraftBeforeNotify());
-        bugsnagClient.addToTab("app", "minecraftPlatform", "bukkit");
+        bugsnagClient.addCallback(new BuycraftBeforeNotify());
+        bugsnagClient.setAppType("bukkit");
+        bugsnagClient.addCallback(new Callback() {
+            @Override
+            public void beforeNotify(Report report) {
+                if (serverInformation != null) {
+                    report.addToTab("user", "account_id", serverInformation.getAccount().getId());
+                    report.addToTab("user", "server_id", serverInformation.getServer().getId());
+                }
+            }
+        });
         Bukkit.getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
 
         // Initialize API client.
@@ -216,10 +225,12 @@ public class BuycraftPlugin extends JavaPlugin {
 
             try {
                 Files.copy(getResource("sign_layouts/recentpurchase.txt"), rpPath);
-            } catch (FileAlreadyExistsException ignored) {}
+            } catch (FileAlreadyExistsException ignored) {
+            }
             try {
                 Files.copy(getResource("sign_layouts/buynow.txt"), bnPath);
-            } catch (FileAlreadyExistsException ignored) {}
+            } catch (FileAlreadyExistsException ignored) {
+            }
 
             recentPurchaseSignLayout = new RecentPurchaseSignLayout(Files.readAllLines(rpPath, StandardCharsets.UTF_8));
             buyNowSignLayout = new BuyNowSignLayout(Files.readAllLines(bnPath, StandardCharsets.UTF_8));
@@ -288,8 +299,5 @@ public class BuycraftPlugin extends JavaPlugin {
             getLogger().log(Level.WARNING, "If you are sure you have understood and verified that this has been set up, set " +
                     "is-bungeecord=true in your BuycraftX config.properties.");
         }
-
-        bugsnagClient.addToTab("user", "account_id", serverInformation.getAccount().getId());
-        bugsnagClient.addToTab("user", "server_id", serverInformation.getServer().getId());
     }
 }
