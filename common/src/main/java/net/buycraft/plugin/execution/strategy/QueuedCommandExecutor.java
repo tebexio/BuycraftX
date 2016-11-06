@@ -4,8 +4,7 @@ import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.platform.NoBlocking;
 
 import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -16,7 +15,7 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
     private final IBuycraftPlatform platform;
     private final boolean blocking;
-    private final Queue<ToRunQueuedCommand> commandQueue = new ConcurrentLinkedQueue<>();
+    private final Set<ToRunQueuedCommand> commandQueue = new LinkedHashSet<>();
     private final PostCompletedCommandsTask completedCommandsTask;
 
     public QueuedCommandExecutor(IBuycraftPlatform platform, PostCompletedCommandsTask completedCommandsTask) {
@@ -27,35 +26,38 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
     @Override
     public void queue(ToRunQueuedCommand command) {
-        if (!commandQueue.contains(command))
+        synchronized (commandQueue) {
             commandQueue.add(command);
+        }
     }
 
     @Override
     public void run() {
-        long start = System.nanoTime();
-        int run = 0;
-
-        for (Iterator<ToRunQueuedCommand> it = commandQueue.iterator(); it.hasNext(); ) {
-            if (blocking && run >= RUN_MAX_COMMANDS_BLOCKING) {
-                break; // We have run too many commands, run more later
-            }
-
-            ToRunQueuedCommand command = it.next();
-            if (command.canExecute(platform)) {
-                // Run the command now.
-                String finalCommand = platform.getPlaceholderManager().doReplace(command.getPlayer(), command.getCommand());
-                platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));
-                try {
-                    platform.dispatchCommand(finalCommand);
-                    completedCommandsTask.add(command.getCommand().getId());
-                } catch (Exception e) {
-                    platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'. " +
-                            "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, command.getPlayer().getName()), e);
+        List<ToRunQueuedCommand> runThisTick = new ArrayList<>();
+        synchronized (commandQueue) {
+            for (Iterator<ToRunQueuedCommand> it = commandQueue.iterator(); it.hasNext(); ) {
+                ToRunQueuedCommand command = it.next();
+                if (command.canExecute(platform)) {
+                    runThisTick.add(command);
+                    it.remove();
                 }
 
-                it.remove();
-                run++;
+                if (blocking && runThisTick.size() >= RUN_MAX_COMMANDS_BLOCKING) {
+                    break;
+                }
+            }
+        }
+
+        long start = System.nanoTime();
+        for (ToRunQueuedCommand command : runThisTick) {
+            String finalCommand = platform.getPlaceholderManager().doReplace(command.getPlayer(), command.getCommand());
+            platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));
+            try {
+                platform.dispatchCommand(finalCommand);
+                completedCommandsTask.add(command.getCommand().getId());
+            } catch (Exception e) {
+                platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'. " +
+                        "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, command.getPlayer().getName()), e);
             }
         }
 
