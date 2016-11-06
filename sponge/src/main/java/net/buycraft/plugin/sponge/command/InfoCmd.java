@@ -49,7 +49,7 @@ public class InfoCmd implements CommandExecutor {
                     Text.builder(plugin.getI18n().get("information_sponge_server") + " ").color(TextColors.GRAY).append(server).build(),
                     Text.builder(plugin.getI18n().get("information_currency", plugin.getServerInformation().getAccount().getCurrency().getIso4217()))
                             .color(TextColors.GRAY).build(),
-                    Text.builder(plugin.getI18n().get("information_sponge_domain") + " ").color(TextColors.GRAY).append(webstore).build()
+                    Text.builder(plugin.getI18n().get("information_domain", "")).color(TextColors.GRAY).append(webstore).build()
             );
         } catch (MalformedURLException e) {
             e.printStackTrace();
