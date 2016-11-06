@@ -20,12 +20,16 @@ public class LoggerUtils {
         if (level == Level.INFO) {
             plugin.getLogger().info(message, e);
         } else if (level == Level.WARNING) {
-            bugsnagClient.notify(bugsnagClient.buildReport(e)
-                    .setSeverity(Severity.WARNING));
+            if (e != null) {
+                bugsnagClient.notify(bugsnagClient.buildReport(e)
+                        .setSeverity(Severity.WARNING));
+            }
             plugin.getLogger().warn(message, e);
         } else if (level == Level.SEVERE) {
-            bugsnagClient.notify(bugsnagClient.buildReport(e)
-                    .setSeverity(Severity.ERROR));
+            if (e != null) {
+                bugsnagClient.notify(bugsnagClient.buildReport(e)
+                        .setSeverity(Severity.ERROR));
+            }
             plugin.getLogger().error(message, e);
         }
     }
