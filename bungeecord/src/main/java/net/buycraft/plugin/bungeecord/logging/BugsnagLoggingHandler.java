@@ -37,6 +37,18 @@ public class BugsnagLoggingHandler extends Handler {
             return;
         }
 
+        boolean relevant = false;
+        for (StackTraceElement element : record.getThrown().getStackTrace()) {
+            if (element.getClassName().startsWith("net.buycraft.plugin")) {
+                relevant = true;
+                break;
+            }
+        }
+
+        if (!relevant) {
+            return;
+        }
+
         if (record.getLevel() == Level.SEVERE) {
             client.notify(client.buildReport(record.getThrown())
                     .setSeverity(Severity.ERROR));
