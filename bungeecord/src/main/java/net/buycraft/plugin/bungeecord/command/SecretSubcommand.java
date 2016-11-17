@@ -10,6 +10,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class SecretSubcommand implements Subcommand {
@@ -34,6 +35,7 @@ public class SecretSubcommand implements Subcommand {
                 try {
                     plugin.updateInformation(client);
                 } catch (IOException | ApiException e) {
+                    plugin.getLogger().log(Level.SEVERE, "Unable to verify secret", e);
                     sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_does_not_work"));
                     return;
                 }

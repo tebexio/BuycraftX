@@ -16,6 +16,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 @AllArgsConstructor
 public class SecretCmd implements CommandExecutor {
@@ -38,6 +39,7 @@ public class SecretCmd implements CommandExecutor {
                         try {
                             plugin.updateInformation(client);
                         } catch (IOException | ApiException e) {
+                            plugin.getLogger().error("Unable to verify secret", e);
                             src.sendMessage(Text.builder(plugin.getI18n().get("secret_does_not_work")).color(TextColors.RED).build());
                             return;
                         }
