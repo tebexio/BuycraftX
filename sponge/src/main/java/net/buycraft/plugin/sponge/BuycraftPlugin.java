@@ -54,6 +54,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
 public class BuycraftPlugin {
@@ -298,7 +299,7 @@ public class BuycraftPlugin {
             getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
                     " you may experience issues with packages not applying.");
-            getLogger().warn("If you are sure you have understood and verified that this has been set up, set " +
+            getLogger().warn("If you have verified that your set up is correct, you can suppress this message by setging " +
                     "is-bungeecord=true in your BuycraftX config.properties.");
         }
     }
