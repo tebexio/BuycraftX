@@ -299,7 +299,7 @@ public class BuycraftPlugin {
             getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
                     " you may experience issues with packages not applying.");
-            getLogger().warn("If you have verified that your set up is correct, you can suppress this message by setging " +
+            getLogger().warn("If you have verified that your set up is correct, you can suppress this message by setting " +
                     "is-bungeecord=true in your BuycraftX config.properties.");
         }
     }
