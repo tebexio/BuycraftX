@@ -64,15 +64,16 @@ public class ViewCategoriesGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        final Player player = (Player) event.getWhoClicked();
         Inventory clickedInventory = GUIUtil.getClickedInventory(event);
 
         if (clickedInventory != null && Objects.equals(inventory, clickedInventory)) {
             event.setCancelled(true);
+
+            if (!(event.getWhoClicked() instanceof Player)) {
+                return;
+            }
+
+            final Player player = (Player) event.getWhoClicked();
 
             Listing listing = plugin.getListingUpdateTask().getListing();
             if (listing == null) {
