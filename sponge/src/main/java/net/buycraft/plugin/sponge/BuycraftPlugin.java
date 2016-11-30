@@ -20,6 +20,7 @@ import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
+import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
@@ -28,7 +29,6 @@ import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
-import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import net.buycraft.plugin.sponge.util.VersionCheck;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -205,7 +205,15 @@ public class BuycraftPlugin {
             Sponge.getScheduler().createTaskBuilder()
                     .delay(0, TimeUnit.SECONDS)
                     .interval(1, TimeUnit.DAYS)
-                    .execute(() -> AnalyticsUtil.postServerInformation(this))
+                    .execute(() -> {
+                        try {
+                            AnalyticsSend.postServerInformation(httpClient, configuration.getServerKey(), "sponge",
+                                    Sponge.getPlatform().getMinecraftVersion().getName(), getClass().getAnnotation(Plugin.class).version(),
+                                    Sponge.getServer().getOnlineMode());
+                        } catch (IOException e) {
+                            getLogger().warn("Can't send analytics", e);
+                        }
+                    })
                     .submit(this);
         }
 

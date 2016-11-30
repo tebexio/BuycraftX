@@ -5,7 +5,9 @@ import lombok.experimental.UtilityClass;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 @UtilityClass
 public class AnalyticsSend {
@@ -21,5 +23,26 @@ public class AnalyticsSend {
                 throw new IOException("Error whilst sending analytics (" + response.code() + "): " + body.string());
             }
         }
+    }
+
+    public static void postServerInformation(OkHttpClient client, String serverKey, String platform,
+                                             String platformVersion, String pluginVersion, boolean onlineMode) throws IOException {
+        Map<String, Object> serverData = new LinkedHashMap<>();
+        Map<String, Object> pluginData = new LinkedHashMap<>();
+
+        // Server data
+        serverData.put("platform", platform);
+        serverData.put("platform_version", platformVersion);
+        serverData.put("online_mode", onlineMode);
+
+        // Plugin data
+        pluginData.put("version", platformVersion);
+
+        // Combine and send to Buycraft
+        Map<String, Object> keenData = new LinkedHashMap<>();
+        keenData.put("server", serverData);
+        keenData.put("plugin", pluginData);
+
+        AnalyticsSend.sendAnalytics(client, serverKey, keenData);
     }
 }

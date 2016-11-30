@@ -15,7 +15,6 @@ import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
 import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
-import net.buycraft.plugin.bukkit.util.AnalyticsUtil;
 import net.buycraft.plugin.bukkit.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
@@ -34,6 +33,7 @@ import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
+import net.buycraft.plugin.shared.util.AnalyticsSend;
 import okhttp3.OkHttpClient;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -122,7 +122,7 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Initialize API client.
         httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
-        String serverKey = configuration.getServerKey();
+        final String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
@@ -243,7 +243,16 @@ public class BuycraftPlugin extends JavaPlugin {
             getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
                 @Override
                 public void run() {
-                    AnalyticsUtil.postServerInformation(BuycraftPlugin.this);
+                    String fullPlatformVersion = getServer().getVersion();
+                    int start = fullPlatformVersion.indexOf("(MC:");
+                    String pv = fullPlatformVersion.substring(start + 5, fullPlatformVersion.length() - 1);
+
+                    try {
+                        AnalyticsSend.postServerInformation(httpClient, serverKey, "bukkit",
+                                pv, getDescription().getVersion(), getServer().getOnlineMode());
+                    } catch (IOException e) {
+                        getLogger().log(Level.WARNING, "Can't send analytics", e);
+                    }
                 }
             }, 0, 20 * TimeUnit.DAYS.toSeconds(1));
         }

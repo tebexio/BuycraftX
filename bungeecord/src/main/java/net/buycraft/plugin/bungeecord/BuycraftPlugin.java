@@ -9,7 +9,6 @@ import net.buycraft.plugin.bungeecord.command.ForceCheckSubcommand;
 import net.buycraft.plugin.bungeecord.command.InformationSubcommand;
 import net.buycraft.plugin.bungeecord.command.ReportCommand;
 import net.buycraft.plugin.bungeecord.command.SecretSubcommand;
-import net.buycraft.plugin.bungeecord.util.AnalyticsUtil;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
@@ -26,6 +25,7 @@ import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
+import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
 import okhttp3.Dispatcher;
@@ -128,7 +128,7 @@ public class BuycraftPlugin extends Plugin {
                 .cache(cache)
                 .dispatcher(new Dispatcher(getExecutorService()))
                 .build();
-        String serverKey = configuration.getServerKey();
+        final String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
@@ -193,7 +193,12 @@ public class BuycraftPlugin extends Plugin {
             getProxy().getScheduler().schedule(this, new Runnable() {
                 @Override
                 public void run() {
-                    AnalyticsUtil.postServerInformation(BuycraftPlugin.this);
+                    try {
+                        AnalyticsSend.postServerInformation(httpClient, serverKey, "bungeecord",
+                                getProxy().getVersion(), getDescription().getVersion(), getProxy().getConfig().isOnlineMode());
+                    } catch (IOException e) {
+                        getLogger().log(Level.WARNING, "Can't send analytics", e);
+                    }
                 }
             }, 0, 1, TimeUnit.DAYS);
         }
