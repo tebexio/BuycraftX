@@ -1,4 +1,4 @@
-package net.buycraft.plugin.util;
+package net.buycraft.plugin.shared.logging;
 
 import com.bugsnag.Report;
 import com.bugsnag.callbacks.Callback;
