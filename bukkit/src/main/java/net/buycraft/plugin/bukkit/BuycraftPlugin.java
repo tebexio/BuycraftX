@@ -133,7 +133,7 @@ public class BuycraftPlugin extends JavaPlugin {
             ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
-            } catch (IOException | ApiException e) {
+            } catch (Exception e) {
                 getLogger().severe(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;

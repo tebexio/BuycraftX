@@ -36,7 +36,7 @@ public class SecretSubcommand implements Subcommand {
                 ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
                 try {
                     plugin.updateInformation(client);
-                } catch (IOException | ApiException e) {
+                } catch (Exception e) {
                     plugin.getLogger().log(Level.SEVERE, "Unable to verify secret", e);
                     sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_does_not_work"));
                     return;
