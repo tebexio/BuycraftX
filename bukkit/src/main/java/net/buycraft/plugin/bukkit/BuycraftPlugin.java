@@ -10,7 +10,6 @@ import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.GUIUtil;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
-import net.buycraft.plugin.bukkit.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
@@ -34,6 +33,7 @@ import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
+import net.buycraft.plugin.shared.logging.BugsnagHandler;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
@@ -132,7 +132,7 @@ public class BuycraftPlugin extends JavaPlugin {
                 }
             }
         });
-        getServer().getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
+        getServer().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
 
         // Initialize API client.
         httpClient = new OkHttpClient.Builder()

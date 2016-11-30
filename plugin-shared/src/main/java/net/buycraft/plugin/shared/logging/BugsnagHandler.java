@@ -1,23 +1,20 @@
-package net.buycraft.plugin.bukkit.logging;
+package net.buycraft.plugin.shared.logging;
 
 import com.bugsnag.Bugsnag;
 import com.bugsnag.Severity;
 import com.google.common.base.Preconditions;
-import net.buycraft.plugin.bukkit.BuycraftPlugin;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.regex.Pattern;
 
-public class BugsnagLoggingHandler extends Handler {
-    private static final Pattern PLUGIN_ERROR = Pattern.compile("Could not dispatch command '(.*)' for player '(.*)'\\. " +
+public class BugsnagHandler extends Handler {
+    private static final Pattern BUYCRAFT_COMMAND_ERROR = Pattern.compile("Could not dispatch command '(.*)' for player '(.*)'\\. " +
             "This is typically a plugin error, not an issue with BuycraftX\\.");
     private final Bugsnag client;
-    private final BuycraftPlugin plugin;
 
-    public BugsnagLoggingHandler(Bugsnag client, BuycraftPlugin plugin) {
-        this.plugin = Preconditions.checkNotNull(plugin, "plugin");
+    public BugsnagHandler(Bugsnag client) {
         this.client = Preconditions.checkNotNull(client, "client");
     }
 
@@ -27,7 +24,13 @@ public class BugsnagLoggingHandler extends Handler {
             return;
         }
 
-        if (PLUGIN_ERROR.matcher(record.getMessage()).find()) {
+        // BungeeCord logs this message if it can't execute a command.
+        if (record.getMessage().equals("Error in dispatching command")) {
+            return;
+        }
+
+        // Buycraft logs this message if an exception is raised while trying to run a command.
+        if (BUYCRAFT_COMMAND_ERROR.matcher(record.getMessage()).find()) {
             return;
         }
 

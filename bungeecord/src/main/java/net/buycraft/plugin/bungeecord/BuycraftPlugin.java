@@ -10,7 +10,6 @@ import net.buycraft.plugin.bungeecord.command.ForceCheckSubcommand;
 import net.buycraft.plugin.bungeecord.command.InformationSubcommand;
 import net.buycraft.plugin.bungeecord.command.ReportCommand;
 import net.buycraft.plugin.bungeecord.command.SecretSubcommand;
-import net.buycraft.plugin.bungeecord.logging.BugsnagLoggingHandler;
 import net.buycraft.plugin.bungeecord.util.AnalyticsUtil;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
@@ -26,6 +25,7 @@ import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
+import net.buycraft.plugin.shared.logging.BugsnagHandler;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
@@ -131,7 +131,7 @@ public class BuycraftPlugin extends Plugin {
                     }
                 }
             });
-            getProxy().getLogger().addHandler(new BugsnagLoggingHandler(bugsnagClient, this));
+            getProxy().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
         } catch (InterruptedException | ExecutionException e) {
             getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
         }
