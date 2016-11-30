@@ -34,25 +34,25 @@ public class BugsnagHandler extends Handler {
             return;
         }
 
-        boolean relevant = false;
-        for (StackTraceElement element : record.getThrown().getStackTrace()) {
-            if (element.getClassName().startsWith("net.buycraft.plugin")) {
-                relevant = true;
-                break;
+        if (isRelevant(record.getThrown()) || isRelevant(record.getThrown().getCause())) {
+            if (record.getLevel() == Level.SEVERE) {
+                client.notify(client.buildReport(record.getThrown())
+                        .setSeverity(Severity.ERROR));
+            } else if (record.getLevel() == Level.WARNING) {
+                client.notify(client.buildReport(record.getThrown())
+                        .setSeverity(Severity.WARNING));
             }
         }
+    }
 
-        if (!relevant) {
-            return;
+    private boolean isRelevant(Throwable throwable) {
+        if (throwable == null) return false;
+        for (StackTraceElement element : throwable.getStackTrace()) {
+            if (element.getClassName().startsWith("net.buycraft.plugin")) {
+                return true;
+            }
         }
-
-        if (record.getLevel() == Level.SEVERE) {
-            client.notify(client.buildReport(record.getThrown())
-                    .setSeverity(Severity.ERROR));
-        } else if (record.getLevel() == Level.WARNING) {
-            client.notify(client.buildReport(record.getThrown())
-                    .setSeverity(Severity.WARNING));
-        }
+        return false;
     }
 
     @Override

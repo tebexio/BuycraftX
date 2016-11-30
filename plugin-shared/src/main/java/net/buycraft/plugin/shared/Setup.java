@@ -6,6 +6,7 @@ import com.bugsnag.callbacks.Callback;
 import com.google.common.base.Supplier;
 import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.data.responses.ServerInformation;
+import net.buycraft.plugin.shared.logging.OkHttpBugsnagDelivery;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.util.BuycraftBeforeNotify;
@@ -18,9 +19,10 @@ import java.util.concurrent.TimeUnit;
 
 @UtilityClass
 public class Setup {
-    public static Bugsnag bugsnagClient(String platform, String version, final String serverVersion,
+    public static Bugsnag bugsnagClient(OkHttpClient client, String platform, String version, final String serverVersion,
                                         final Supplier<ServerInformation> serverInformation) {
         Bugsnag bugsnag = new Bugsnag("cac4ea0fdbe89b5004d8ab8d5409e594", false);
+        bugsnag.setDelivery(new OkHttpBugsnagDelivery(client));
         bugsnag.setAppVersion(version);
         bugsnag.setProjectPackages("net.buycraft.plugin");
         bugsnag.addCallback(new BuycraftBeforeNotify());

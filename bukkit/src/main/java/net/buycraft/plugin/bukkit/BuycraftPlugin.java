@@ -114,7 +114,8 @@ public class BuycraftPlugin extends JavaPlugin {
 
         i18n = configuration.createI18n();
 
-        bugsnagClient = Setup.bugsnagClient("bukkit", getDescription().getVersion(),
+        httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
+        bugsnagClient = Setup.bugsnagClient(httpClient, "bukkit", getDescription().getVersion(),
                 getServer().getBukkitVersion(), new Supplier<ServerInformation>() {
                     @Override
                     public ServerInformation get() {
@@ -124,7 +125,6 @@ public class BuycraftPlugin extends JavaPlugin {
         getServer().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
 
         // Initialize API client.
-        httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
         final String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");

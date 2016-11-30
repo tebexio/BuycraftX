@@ -138,7 +138,7 @@ public class BuycraftPlugin {
         }
 
         String implVersion = Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN");
-        Bugsnag bugsnagClient = Setup.bugsnagClient("sponge", curVersion,
+        Bugsnag bugsnagClient = Setup.bugsnagClient(httpClient, "sponge", curVersion,
                 implVersion, this::getServerInformation);
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 

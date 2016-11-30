@@ -85,29 +85,6 @@ public class BuycraftPlugin extends Plugin {
 
         i18n = configuration.createI18n();
 
-        // Set up Bugsnag.
-        // Hack due to SecurityManager shenanigans.
-        FutureTask<Bugsnag> clientInit = new FutureTask<>(new Callable<Bugsnag>() {
-            @Override
-            public Bugsnag call() throws Exception {
-                return Setup.bugsnagClient("bungeecord", getDescription().getVersion(),
-                        getProxy().getVersion(), new Supplier<ServerInformation>() {
-                            @Override
-                            public ServerInformation get() {
-                                return getServerInformation();
-                            }
-                        });
-            }
-        });
-        getProxy().getScheduler().runAsync(this, clientInit);
-        try {
-            Bugsnag bugsnagClient = clientInit.get();
-            getProxy().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
-        } catch (InterruptedException | ExecutionException e) {
-            getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
-        }
-
-        // Initialize API client.
         // This has to be done partially async due to the SecurityManager.
         FutureTask<Cache> cacheFutureTask = new FutureTask<>(new Callable<Cache>() {
             @Override
@@ -128,6 +105,30 @@ public class BuycraftPlugin extends Plugin {
                 .cache(cache)
                 .dispatcher(new Dispatcher(getExecutorService()))
                 .build();
+
+        // Set up Bugsnag.
+        // Hack due to SecurityManager shenanigans.
+        FutureTask<Bugsnag> clientInit = new FutureTask<>(new Callable<Bugsnag>() {
+            @Override
+            public Bugsnag call() throws Exception {
+                return Setup.bugsnagClient(httpClient, "bungeecord", getDescription().getVersion(),
+                        getProxy().getVersion(), new Supplier<ServerInformation>() {
+                            @Override
+                            public ServerInformation get() {
+                                return getServerInformation();
+                            }
+                        });
+            }
+        });
+        getProxy().getScheduler().runAsync(this, clientInit);
+        try {
+            Bugsnag bugsnagClient = clientInit.get();
+            getProxy().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
+        } catch (InterruptedException | ExecutionException e) {
+            getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
+        }
+
+        // Initialize API client.
         final String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
