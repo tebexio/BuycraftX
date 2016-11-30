@@ -13,7 +13,8 @@ import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignStorage;
-import net.buycraft.plugin.bukkit.tasks.ListingUpdateTask;
+import net.buycraft.plugin.bukkit.tasks.BuyNowSignUpdater;
+import net.buycraft.plugin.bukkit.tasks.GUIUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
 import net.buycraft.plugin.bukkit.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
@@ -33,8 +34,10 @@ import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
+import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import okhttp3.OkHttpClient;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -164,7 +167,13 @@ public class BuycraftPlugin extends JavaPlugin {
         categoryViewGUI = new CategoryViewGUI(this);
 
         // Update listing.
-        listingUpdateTask = new ListingUpdateTask(this);
+        listingUpdateTask = new ListingUpdateTask(platform, new Runnable() {
+            @Override
+            public void run() {
+                Bukkit.getScheduler().runTask(BuycraftPlugin.this, new GUIUpdateTask(BuycraftPlugin.this));
+                Bukkit.getScheduler().runTask(BuycraftPlugin.this, new BuyNowSignUpdater(BuycraftPlugin.this));
+            }
+        });
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             try {

@@ -20,6 +20,7 @@ import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
+import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
@@ -27,7 +28,6 @@ import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignStorage;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignStorage;
-import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.VersionCheck;
 import okhttp3.OkHttpClient;
@@ -162,7 +162,7 @@ public class BuycraftPlugin {
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(1).delayTicks(1).execute((Runnable) commandExecutor).submit(this);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).async().execute(completedCommandsTask).submit(this);
-        listingUpdateTask = new ListingUpdateTask(this);
+        listingUpdateTask = new ListingUpdateTask(platform, null);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run();
