@@ -41,6 +41,7 @@ public class VersionUtil {
         int[] numOne = new int[verLen];
         int[] numTwo = new int[verLen];
 
+        // We expect integers only
         for (int i = 0; i < componentsOne.length; i++) {
             numOne[i] = Integer.parseInt(componentsOne[i]);
         }
@@ -48,11 +49,7 @@ public class VersionUtil {
             numTwo[i] = Integer.parseInt(componentsTwo[i]);
         }
 
-        // Quick exclusion check.
-        if (Arrays.equals(numOne, numTwo)) {
-            return false;
-        }
-
+        // Compare the versions
         for (int i = 0; i < numOne.length; i++) {
             if (numTwo[i] == numOne[i])
                 continue;
