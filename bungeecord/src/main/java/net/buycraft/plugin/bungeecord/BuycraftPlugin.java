@@ -1,8 +1,7 @@
 package net.buycraft.plugin.bungeecord;
 
 import com.bugsnag.Bugsnag;
-import com.bugsnag.Report;
-import com.bugsnag.callbacks.Callback;
+import com.google.common.base.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -23,12 +22,10 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
-import net.buycraft.plugin.shared.util.FakeProxySelector;
-import net.buycraft.plugin.shared.util.Ipv4PreferDns;
-import net.buycraft.plugin.util.BuycraftBeforeNotify;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
 import okhttp3.Dispatcher;
@@ -36,7 +33,6 @@ import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ProxySelector;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -89,6 +85,28 @@ public class BuycraftPlugin extends Plugin {
 
         i18n = configuration.createI18n();
 
+        // Set up Bugsnag.
+        // Hack due to SecurityManager shenanigans.
+        FutureTask<Bugsnag> clientInit = new FutureTask<>(new Callable<Bugsnag>() {
+            @Override
+            public Bugsnag call() throws Exception {
+                return Setup.bugsnagClient("bungeecord", getDescription().getVersion(),
+                        getProxy().getVersion(), new Supplier<ServerInformation>() {
+                            @Override
+                            public ServerInformation get() {
+                                return getServerInformation();
+                            }
+                        });
+            }
+        });
+        getProxy().getScheduler().runAsync(this, clientInit);
+        try {
+            Bugsnag bugsnagClient = clientInit.get();
+            getProxy().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
+        } catch (InterruptedException | ExecutionException e) {
+            getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
+        }
+
         // Initialize API client.
         // This has to be done partially async due to the SecurityManager.
         FutureTask<Cache> cacheFutureTask = new FutureTask<>(new Callable<Cache>() {
@@ -106,44 +124,9 @@ public class BuycraftPlugin extends Plugin {
             cache = null;
         }
 
-        // Set up Bugsnag.
-        // Hack due to SecurityManager shenanigans.
-        FutureTask<Bugsnag> clientInit = new FutureTask<>(new Callable<Bugsnag>() {
-            @Override
-            public Bugsnag call() throws Exception {
-                return new Bugsnag("cac4ea0fdbe89b5004d8ab8d5409e594", false);
-            }
-        });
-        getProxy().getScheduler().runAsync(this, clientInit);
-        try {
-            Bugsnag bugsnagClient = clientInit.get();
-            bugsnagClient.setAppVersion(getDescription().getVersion());
-            bugsnagClient.setProjectPackages("net.buycraft.plugin");
-            bugsnagClient.addCallback(new BuycraftBeforeNotify());
-            bugsnagClient.setAppType("bungeecord");
-            bugsnagClient.addCallback(new Callback() {
-                @Override
-                public void beforeNotify(Report report) {
-                    report.setAppInfo("serverVersion", getProxy().getVersion());
-                    if (serverInformation != null) {
-                        report.addToTab("user", "account_id", serverInformation.getAccount().getId());
-                        report.addToTab("user", "server_id", serverInformation.getServer().getId());
-                    }
-                }
-            });
-            getProxy().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
-        } catch (InterruptedException | ExecutionException e) {
-            getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
-        }
-
-        httpClient = new OkHttpClient.Builder()
-                .connectTimeout(1, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
-                .readTimeout(3, TimeUnit.SECONDS)
-                .dispatcher(new Dispatcher(getExecutorService()))
+        httpClient = Setup.okhttpBuilder()
                 .cache(cache)
-                .dns(new Ipv4PreferDns())
-                .proxySelector(ProxySelector.getDefault() == null ? FakeProxySelector.INSTANCE : ProxySelector.getDefault())
+                .dispatcher(new Dispatcher(getExecutorService()))
                 .build();
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {

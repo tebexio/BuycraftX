@@ -1,8 +1,7 @@
 package net.buycraft.plugin.bukkit;
 
 import com.bugsnag.Bugsnag;
-import com.bugsnag.Report;
-import com.bugsnag.callbacks.Callback;
+import com.google.common.base.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -29,22 +28,17 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
-import net.buycraft.plugin.shared.util.FakeProxySelector;
-import net.buycraft.plugin.shared.util.Ipv4PreferDns;
-import net.buycraft.plugin.util.BuycraftBeforeNotify;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ProxySelector;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -117,32 +111,17 @@ public class BuycraftPlugin extends JavaPlugin {
 
         i18n = configuration.createI18n();
 
-        bugsnagClient = new Bugsnag("cac4ea0fdbe89b5004d8ab8d5409e594", false);
-        bugsnagClient.setAppVersion(getDescription().getVersion());
-        bugsnagClient.setProjectPackages("net.buycraft.plugin");
-        bugsnagClient.addCallback(new BuycraftBeforeNotify());
-        bugsnagClient.setAppType("bukkit");
-        bugsnagClient.addCallback(new Callback() {
-            @Override
-            public void beforeNotify(Report report) {
-                report.setAppInfo("serverVersion", getServer().getBukkitVersion());
-                if (serverInformation != null) {
-                    report.addToTab("user", "account_id", serverInformation.getAccount().getId());
-                    report.addToTab("user", "server_id", serverInformation.getServer().getId());
-                }
-            }
-        });
+        bugsnagClient = Setup.bugsnagClient("bukkit", getDescription().getVersion(),
+                getServer().getBukkitVersion(), new Supplier<ServerInformation>() {
+                    @Override
+                    public ServerInformation get() {
+                        return getServerInformation();
+                    }
+                });
         getServer().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
 
         // Initialize API client.
-        httpClient = new OkHttpClient.Builder()
-                .connectTimeout(1, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
-                .readTimeout(3, TimeUnit.SECONDS)
-                .cache(new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10))
-                .dns(new Ipv4PreferDns())
-                .proxySelector(ProxySelector.getDefault() == null ? FakeProxySelector.INSTANCE : ProxySelector.getDefault())
-                .build();
+        httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");

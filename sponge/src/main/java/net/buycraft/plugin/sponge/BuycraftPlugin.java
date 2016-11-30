@@ -1,8 +1,6 @@
 package net.buycraft.plugin.sponge;
 
 import com.bugsnag.Bugsnag;
-import com.bugsnag.Report;
-import com.bugsnag.callbacks.Callback;
 import com.google.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,11 +16,10 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
-import net.buycraft.plugin.shared.util.FakeProxySelector;
-import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
@@ -33,8 +30,6 @@ import net.buycraft.plugin.sponge.tasks.ListingUpdateTask;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.AnalyticsUtil;
 import net.buycraft.plugin.sponge.util.VersionCheck;
-import net.buycraft.plugin.util.BuycraftBeforeNotify;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -48,13 +43,11 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
-import java.net.ProxySelector;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
 public class BuycraftPlugin {
@@ -129,14 +122,7 @@ public class BuycraftPlugin {
 
         i18n = configuration.createI18n();
 
-        httpClient = new OkHttpClient.Builder()
-                .connectTimeout(1, TimeUnit.SECONDS)
-                .writeTimeout(3, TimeUnit.SECONDS)
-                .readTimeout(3, TimeUnit.SECONDS)
-                .cache(new Cache(baseDirectory.resolve("cache").toFile(), 1024 * 1024 * 10))
-                .dns(new Ipv4PreferDns())
-                .proxySelector(ProxySelector.getDefault() == null ? FakeProxySelector.INSTANCE : ProxySelector.getDefault())
-                .build();
+        httpClient = Setup.okhttp(baseDirectory.resolve("cache").toFile());
 
         // Check for latest version.
         String curVersion = getClass().getAnnotation(Plugin.class).version();
@@ -151,18 +137,9 @@ public class BuycraftPlugin {
             Sponge.getEventManager().registerListeners(this, check);
         }
 
-        Bugsnag bugsnagClient = new Bugsnag("cac4ea0fdbe89b5004d8ab8d5409e594", false);
-        bugsnagClient.setAppVersion(MAGIC_VERSION);
-        bugsnagClient.setProjectPackages("net.buycraft.plugin");
-        bugsnagClient.addCallback(new BuycraftBeforeNotify());
-        bugsnagClient.setAppType("sponge");
-        bugsnagClient.addCallback(report -> {
-            report.setAppInfo("serverVersion", Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN"));
-            if (serverInformation != null) {
-                report.addToTab("user", "account_id", serverInformation.getAccount().getId());
-                report.addToTab("user", "server_id", serverInformation.getServer().getId());
-            }
-        });
+        String implVersion = Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN");
+        Bugsnag bugsnagClient = Setup.bugsnagClient("sponge", curVersion,
+                implVersion, this::getServerInformation);
         loggerUtils = new LoggerUtils(this, bugsnagClient);
 
         String serverKey = configuration.getServerKey();
