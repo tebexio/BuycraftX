@@ -16,7 +16,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 @AllArgsConstructor
 public class SecretCmd implements CommandExecutor {

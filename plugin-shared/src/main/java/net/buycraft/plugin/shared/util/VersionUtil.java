@@ -9,7 +9,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @UtilityClass
 public class VersionUtil {

@@ -1,7 +1,7 @@
 package net.buycraft.plugin.bukkit.util;
 
 import lombok.experimental.UtilityClass;
-import net.buycraft.plugin.shared.config.signs.storage.*;
+import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 

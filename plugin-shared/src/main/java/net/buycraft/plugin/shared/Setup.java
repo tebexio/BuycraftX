@@ -6,10 +6,10 @@ import com.bugsnag.callbacks.Callback;
 import com.google.common.base.Supplier;
 import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.data.responses.ServerInformation;
+import net.buycraft.plugin.shared.logging.BuycraftBeforeNotify;
 import net.buycraft.plugin.shared.logging.OkHttpBugsnagDelivery;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
-import net.buycraft.plugin.shared.logging.BuycraftBeforeNotify;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 

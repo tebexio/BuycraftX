@@ -7,7 +7,6 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 @UtilityClass
 public class AnalyticsSend {

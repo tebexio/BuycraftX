@@ -2,9 +2,9 @@ package net.buycraft.plugin.bukkit.tasks;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.RecentPayment;
+import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
