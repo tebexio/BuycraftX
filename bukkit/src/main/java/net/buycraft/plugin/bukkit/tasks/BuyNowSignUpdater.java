@@ -2,7 +2,8 @@ package net.buycraft.plugin.bukkit.tasks;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.signs.buynow.SavedBuyNowSign;
+import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
+import net.buycraft.plugin.shared.config.signs.storage.SavedBuyNowSign;
 import net.buycraft.plugin.data.Package;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -27,7 +28,7 @@ public class BuyNowSignUpdater implements Runnable {
                 continue;
             }
 
-            Location location = sign.getLocation().toBukkitLocation();
+            Location location = BukkitSerializedBlockLocation.toBukkit(sign.getLocation());
 
             if (location.getWorld() == null) {
                 plugin.getLogger().warning(String.format("Sign at %d, %d, %d exists in non-existent world %s!",

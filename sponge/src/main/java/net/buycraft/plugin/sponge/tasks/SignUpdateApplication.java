@@ -3,8 +3,9 @@ package net.buycraft.plugin.sponge.tasks;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.RecentPayment;
+import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignPosition;
+import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
 import org.spongepowered.api.block.tileentity.Skull;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.TileEntityTypes;
@@ -44,7 +45,7 @@ public class SignUpdateApplication implements Runnable {
     @Override
     public void run() {
         for (Map.Entry<RecentPurchaseSignPosition, RecentPayment> entry : paymentMap.entrySet()) {
-            Location<World> location = entry.getKey().getLocation().toSpongeLocation();
+            Location<World> location = SpongeSerializedBlockLocation.toSponge(entry.getKey().getLocation());
 
             Optional<TileEntity> entity = location.getTileEntity();
             if (entity.isPresent() && entity.get().supports(SignData.class)) {

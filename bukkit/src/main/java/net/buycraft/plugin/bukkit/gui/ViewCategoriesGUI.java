@@ -1,6 +1,7 @@
 package net.buycraft.plugin.bukkit.gui;
 
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.bukkit.util.GUIUtil;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.responses.Listing;
 import org.bukkit.Bukkit;
@@ -14,7 +15,7 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.Objects;
 
-import static net.buycraft.plugin.bukkit.gui.GUIUtil.withName;
+import static net.buycraft.plugin.bukkit.util.GUIUtil.withName;
 
 public class ViewCategoriesGUI implements Listener {
     private final BuycraftPlugin plugin;

@@ -2,7 +2,8 @@ package net.buycraft.plugin.bukkit.tasks;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignPosition;
+import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
+import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.data.RecentPayment;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -36,7 +37,7 @@ public class RecentPurchaseSignUpdateApplication implements Runnable {
     @Override
     public void run() {
         for (Map.Entry<RecentPurchaseSignPosition, RecentPayment> entry : signToPurchases.entrySet()) {
-            Location location = entry.getKey().getLocation().toBukkitLocation();
+            Location location = BukkitSerializedBlockLocation.toBukkit(entry.getKey().getLocation());
             if (location.getWorld() == null) {
                 // Invalid (no world).
                 continue;

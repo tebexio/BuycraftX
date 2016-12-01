@@ -3,8 +3,8 @@ package net.buycraft.plugin.sponge.tasks;
 import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.RecentPayment;
+import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignPosition;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.profile.GameProfile;
 

@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
+import net.buycraft.plugin.bukkit.util.GUIUtil;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.data.responses.Listing;
@@ -25,7 +26,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.text.NumberFormat;
 import java.util.*;
 
-import static net.buycraft.plugin.bukkit.gui.GUIUtil.withName;
+import static net.buycraft.plugin.bukkit.util.GUIUtil.withName;
 
 @RequiredArgsConstructor
 public class CategoryViewGUI {

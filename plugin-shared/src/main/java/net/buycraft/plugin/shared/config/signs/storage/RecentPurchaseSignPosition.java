@@ -1,7 +1,6 @@
-package net.buycraft.plugin.bukkit.signs.purchases;
+package net.buycraft.plugin.shared.config.signs.storage;
 
 import lombok.Value;
-import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
 
 @Value
 public class RecentPurchaseSignPosition {

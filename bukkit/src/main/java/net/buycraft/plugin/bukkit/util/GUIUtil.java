@@ -1,4 +1,4 @@
-package net.buycraft.plugin.bukkit.gui;
+package net.buycraft.plugin.bukkit.util;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;

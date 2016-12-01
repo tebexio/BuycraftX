@@ -5,8 +5,10 @@ import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.tasks.BuyNowSignUpdater;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateApplication;
 import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
-import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
+import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
 import net.buycraft.plugin.data.Package;
+import net.buycraft.plugin.shared.config.signs.storage.SavedBuyNowSign;
+import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -57,7 +59,8 @@ public class BuyNowSignListener implements Listener {
             event.setLine(i, "");
         }
 
-        settingUpSigns.put(event.getPlayer().getUniqueId(), SerializedBlockLocation.fromBukkitLocation(event.getBlock().getLocation()));
+
+        settingUpSigns.put(event.getPlayer().getUniqueId(), BukkitSerializedBlockLocation.create(event.getBlock().getLocation()));
         event.getPlayer().sendMessage(ChatColor.GREEN + "Navigate to the item you want to set this sign for.");
 
         plugin.getViewCategoriesGUI().open(event.getPlayer());
@@ -71,7 +74,7 @@ public class BuyNowSignListener implements Listener {
             if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
                 return;
 
-            SerializedBlockLocation sbl = SerializedBlockLocation.fromBukkitLocation(event.getClickedBlock().getLocation());
+            SerializedBlockLocation sbl = BukkitSerializedBlockLocation.create(event.getClickedBlock().getLocation());
 
             for (SavedBuyNowSign s : plugin.getBuyNowSignStorage().getSigns()) {
                 if (s.getLocation().equals(sbl)) {
@@ -116,14 +119,15 @@ public class BuyNowSignListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
-            if (plugin.getBuyNowSignStorage().containsLocation(event.getBlock().getLocation())) {
+            SerializedBlockLocation location = BukkitSerializedBlockLocation.create(event.getBlock().getLocation());
+            if (plugin.getBuyNowSignStorage().containsLocation(location)) {
                 if (!event.getPlayer().hasPermission("buycraft.admin")) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
                     event.setCancelled(true);
                     return;
                 }
 
-                if (plugin.getBuyNowSignStorage().removeSign(event.getBlock().getLocation())) {
+                if (plugin.getBuyNowSignStorage().removeSign(location)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
                 }
             }
@@ -132,15 +136,16 @@ public class BuyNowSignListener implements Listener {
 
         for (BlockFace face : RecentPurchaseSignUpdateApplication.FACES) {
             Location onFace = event.getBlock().getRelative(face).getLocation();
+            SerializedBlockLocation onFaceSbl = BukkitSerializedBlockLocation.create(onFace);
 
-            if (plugin.getBuyNowSignStorage().containsLocation(onFace)) {
+            if (plugin.getBuyNowSignStorage().containsLocation(onFaceSbl)) {
                 if (!event.getPlayer().hasPermission("buycraft.admin")) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
                     event.setCancelled(true);
                     return;
                 }
 
-                if (plugin.getBuyNowSignStorage().removeSign(onFace)) {
+                if (plugin.getBuyNowSignStorage().removeSign(onFaceSbl)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "Removed buy now sign!");
                 }
             }
@@ -152,7 +157,7 @@ public class BuyNowSignListener implements Listener {
         if (sbl == null)
             return;
 
-        Block b = sbl.toBukkitLocation().getBlock();
+        Block b = BukkitSerializedBlockLocation.toBukkit(sbl).getBlock();
 
         if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
             return;

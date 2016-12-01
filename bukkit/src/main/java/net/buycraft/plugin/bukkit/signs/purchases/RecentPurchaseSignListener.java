@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateApplication;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
-import net.buycraft.plugin.bukkit.util.SerializedBlockLocation;
+import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
+import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
+import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -55,7 +57,7 @@ public class RecentPurchaseSignListener implements Listener {
             return;
         }
 
-        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(SerializedBlockLocation.fromBukkitLocation(
+        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(BukkitSerializedBlockLocation.create(
                 event.getBlock().getLocation()), pos));
         event.getPlayer().sendMessage(ChatColor.GREEN + "Added new recent purchase sign!");
 
@@ -69,13 +71,15 @@ public class RecentPurchaseSignListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
-            if (plugin.getRecentPurchaseSignStorage().containsLocation(event.getBlock().getLocation())) {
+            SerializedBlockLocation location = BukkitSerializedBlockLocation.create(event.getBlock().getLocation());
+
+            if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
                 if (!event.getPlayer().hasPermission("buycraft.admin")) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
                     event.setCancelled(true);
                     return;
                 }
-                if (plugin.getRecentPurchaseSignStorage().removeSign(event.getBlock().getLocation())) {
+                if (plugin.getRecentPurchaseSignStorage().removeSign(location)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
                 }
             }
@@ -84,13 +88,14 @@ public class RecentPurchaseSignListener implements Listener {
 
         for (BlockFace face : RecentPurchaseSignUpdateApplication.FACES) {
             Location onFace = event.getBlock().getRelative(face).getLocation();
-            if (plugin.getRecentPurchaseSignStorage().containsLocation(onFace)) {
+            SerializedBlockLocation onFaceSbl = BukkitSerializedBlockLocation.create(onFace);
+            if (plugin.getRecentPurchaseSignStorage().containsLocation(onFaceSbl)) {
                 if (!event.getPlayer().hasPermission("buycraft.admin")) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");
                     event.setCancelled(true);
                     return;
                 }
-                if (plugin.getRecentPurchaseSignStorage().removeSign(onFace)) {
+                if (plugin.getRecentPurchaseSignStorage().removeSign(onFaceSbl)) {
                     event.getPlayer().sendMessage(ChatColor.RED + "Removed recent purchase sign!");
                 }
             }

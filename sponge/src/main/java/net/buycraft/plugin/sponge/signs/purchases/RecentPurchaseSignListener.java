@@ -1,10 +1,12 @@
 package net.buycraft.plugin.sponge.signs.purchases;
 
 import lombok.RequiredArgsConstructor;
+import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
+import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.tasks.SignUpdateApplication;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
-import net.buycraft.plugin.sponge.util.SerializedBlockLocation;
+import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
@@ -21,7 +23,6 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Optional;
-
 
 @RequiredArgsConstructor
 public class RecentPurchaseSignListener {
@@ -74,7 +75,7 @@ public class RecentPurchaseSignListener {
         }
 
         plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(
-                SerializedBlockLocation.fromSpongeLocation(event.getTargetTile().getLocation()), pos));
+                SpongeSerializedBlockLocation.create(event.getTargetTile().getLocation()), pos));
         player.sendMessage(Text.builder("Added new recent purchase sign!").color(TextColors.GREEN).build());
 
         // The below is due to the design of the Sponge Data API
@@ -108,21 +109,20 @@ public class RecentPurchaseSignListener {
 
     @Listener
     public void onBlockBreak(ChangeBlockEvent.Break event) {
-        // TODO: Check directions too
         for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
             Optional<Location<World>> locationOptional = transaction.getOriginal().getLocation();
             Optional<Player> playerOptional = event.getCause().first(Player.class);
             if (locationOptional.isPresent() && playerOptional.isPresent()) {
                 Location<World> location = locationOptional.get();
                 if (isSign(location)) {
-                    if (!removeSign(playerOptional.get(), SerializedBlockLocation.fromSpongeLocation(location))) {
+                    if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(location))) {
                         event.setCancelled(true);
                     }
                 } else {
                     for (Direction direction : SignUpdateApplication.SKULL_CHECK) {
                         Location<World> rel = location.getRelative(direction);
                         if (isSign(rel)) {
-                            if (!removeSign(playerOptional.get(), SerializedBlockLocation.fromSpongeLocation(rel))) {
+                            if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(rel))) {
                                 event.setCancelled(true);
                             }
                             return;

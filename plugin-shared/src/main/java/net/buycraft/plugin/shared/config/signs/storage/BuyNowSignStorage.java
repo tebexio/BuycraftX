@@ -1,8 +1,7 @@
-package net.buycraft.plugin.bukkit.signs.buynow;
+package net.buycraft.plugin.shared.config.signs.storage;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
-import org.bukkit.Location;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -27,10 +26,10 @@ public class BuyNowSignStorage {
         return signs.remove(location);
     }
 
-    public boolean removeSign(Location location) {
+    public boolean removeSign(SerializedBlockLocation location) {
         for (Iterator<SavedBuyNowSign> it = signs.iterator(); it.hasNext(); ) {
             SavedBuyNowSign psp = it.next();
-            if (psp.getLocation().toBukkitLocation().equals(location)) {
+            if (psp.getLocation().equals(location)) {
                 it.remove();
                 return true;
             }
@@ -42,9 +41,9 @@ public class BuyNowSignStorage {
         return ImmutableList.copyOf(signs);
     }
 
-    public boolean containsLocation(Location location) {
+    public boolean containsLocation(SerializedBlockLocation location) {
         for (SavedBuyNowSign sign : signs) {
-            if (sign.getLocation().toBukkitLocation().equals(location))
+            if (sign.getLocation().equals(location))
                 return true;
         }
         return false;

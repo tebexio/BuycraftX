@@ -1,7 +1,6 @@
-package net.buycraft.plugin.sponge.signs.buynow;
+package net.buycraft.plugin.shared.config.signs.storage;
 
 import lombok.Value;
-import net.buycraft.plugin.sponge.util.SerializedBlockLocation;
 
 @Value
 public class SavedBuyNowSign {
