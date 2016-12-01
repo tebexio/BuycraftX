@@ -2,6 +2,7 @@ package net.buycraft.plugin.bukkit;
 
 import com.bugsnag.Bugsnag;
 import com.google.common.base.Supplier;
+import com.google.gson.JsonParseException;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -231,7 +232,7 @@ public class BuycraftPlugin extends JavaPlugin {
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
             recentPurchaseSignStorage.load(getDataFolder().toPath().resolve("purchase_signs.json"));
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
             getLogger().log(Level.WARNING, "Can't load purchase signs, continuing anyway");
         }
         getServer().getScheduler().runTaskTimerAsynchronously(this, new RecentPurchaseSignUpdateFetcher(this), 20, 3600 * 15);
@@ -241,7 +242,7 @@ public class BuycraftPlugin extends JavaPlugin {
         buyNowSignStorage = new BuyNowSignStorage();
         try {
             buyNowSignStorage.load(getDataFolder().toPath().resolve("buy_now_signs.json"));
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
             getLogger().log(Level.WARNING, "Can't load buy now signs, continuing anyway");
         }
         buyNowSignListener = new BuyNowSignListener(this);

@@ -1,6 +1,7 @@
 package net.buycraft.plugin.sponge;
 
 import com.bugsnag.Bugsnag;
+import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
@@ -173,7 +174,7 @@ public class BuycraftPlugin {
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
             recentPurchaseSignStorage.load(baseDirectory.resolve("purchase_signs.json"));
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
             logger.warn("Can't load purchase signs, continuing anyway", e);
         }
 
