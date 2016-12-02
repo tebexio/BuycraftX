@@ -28,6 +28,7 @@ import net.buycraft.plugin.shared.logging.BugsnagHandler;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
+import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 
@@ -37,7 +38,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -85,46 +85,40 @@ public class BuycraftPlugin extends Plugin {
 
         i18n = configuration.createI18n();
 
-        // This has to be done partially async due to the SecurityManager.
-        FutureTask<Cache> cacheFutureTask = new FutureTask<>(new Callable<Cache>() {
-            @Override
-            public Cache call() throws Exception {
-                return new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10);
-            }
-        });
-        getProxy().getScheduler().runAsync(this, cacheFutureTask);
-        Cache cache;
+        // This has to be done in a different thread due to the SecurityManager.
         try {
-            cache = cacheFutureTask.get();
-        } catch (InterruptedException | ExecutionException e) {
-            getLogger().log(Level.SEVERE, "Can't create cache", e);
-            cache = null;
+            httpClient = runTaskToAppeaseBungeeSecurityManager(new Callable<OkHttpClient>() {
+                @Override
+                public OkHttpClient call() throws Exception {
+                    return Setup.okhttpBuilder()
+                            .cache(new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10))
+                            .connectionPool(new ConnectionPool())
+                            .dispatcher(new Dispatcher(getExecutorService()))
+                            .build();
+                }
+            });
+        } catch (ExecutionException e) {
+            // We must bail early
+            throw new RuntimeException("Can't create HTTP client", e);
         }
-
-        httpClient = Setup.okhttpBuilder()
-                .cache(cache)
-                .dispatcher(new Dispatcher(getExecutorService()))
-                .build();
 
         // Set up Bugsnag.
         // Hack due to SecurityManager shenanigans.
-        FutureTask<Bugsnag> clientInit = new FutureTask<>(new Callable<Bugsnag>() {
-            @Override
-            public Bugsnag call() throws Exception {
-                return Setup.bugsnagClient(httpClient, "bungeecord", getDescription().getVersion(),
-                        getProxy().getVersion(), new Supplier<ServerInformation>() {
-                            @Override
-                            public ServerInformation get() {
-                                return getServerInformation();
-                            }
-                        });
-            }
-        });
-        getProxy().getScheduler().runAsync(this, clientInit);
         try {
-            Bugsnag bugsnagClient = clientInit.get();
+            Bugsnag bugsnagClient = runTaskToAppeaseBungeeSecurityManager(new Callable<Bugsnag>() {
+                @Override
+                public Bugsnag call() throws Exception {
+                    return Setup.bugsnagClient(httpClient, "bungeecord", getDescription().getVersion(),
+                            getProxy().getVersion(), new Supplier<ServerInformation>() {
+                                @Override
+                                public ServerInformation get() {
+                                    return getServerInformation();
+                                }
+                            });
+                }
+            });
             getProxy().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException e) {
             getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
         }
 
@@ -207,14 +201,16 @@ public class BuycraftPlugin extends Plugin {
 
     @Override
     public void onDisable() {
-        completedCommandsTask.flush();
+        if (completedCommandsTask != null) {
+            completedCommandsTask.flush();
+        }
     }
 
-    private void runTaskToAppeaseBungeeSecurityManager(Callable<Void> runnable) throws ExecutionException {
+    private <T> T runTaskToAppeaseBungeeSecurityManager(Callable<T> runnable) throws ExecutionException {
         try {
-            getExecutorService().submit(runnable).get();
+            return getExecutorService().submit(runnable).get();
         } catch (InterruptedException e) {
-            throw new ExecutionException(e);
+            throw new ExecutionException("interrupted", e);
         }
     }
 
