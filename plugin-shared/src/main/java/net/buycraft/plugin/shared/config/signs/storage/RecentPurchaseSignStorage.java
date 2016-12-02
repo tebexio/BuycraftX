@@ -53,7 +53,9 @@ public class RecentPurchaseSignStorage {
         if (Files.exists(path)) {
             try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
                 RecentPurchaseSignStorage s = gson.fromJson(reader, RecentPurchaseSignStorage.class);
-                signs.addAll(s.signs);
+                if (s != null) {
+                    signs.addAll(s.signs);
+                }
             }
         }
     }

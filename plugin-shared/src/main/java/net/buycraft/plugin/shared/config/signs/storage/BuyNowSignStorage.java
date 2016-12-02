@@ -53,7 +53,9 @@ public class BuyNowSignStorage {
         if (Files.exists(path)) {
             try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
                 BuyNowSignStorage s = gson.fromJson(reader, BuyNowSignStorage.class);
-                signs.addAll(s.signs);
+                if (s != null) {
+                    signs.addAll(s.signs);
+                }
             }
         }
     }
