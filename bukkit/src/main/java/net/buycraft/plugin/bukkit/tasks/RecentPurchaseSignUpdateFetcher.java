@@ -49,9 +49,9 @@ public class RecentPurchaseSignUpdateFetcher implements Runnable {
         for (RecentPurchaseSignPosition sign : signs) {
             if (sign.getPosition() >= payments.size()) {
                 signToPurchases.put(sign, null);
+            } else {
+                signToPurchases.put(sign, payments.get(sign.getPosition() - 1));
             }
-
-            signToPurchases.put(sign, payments.get(sign.getPosition() - 1));
         }
 
         Bukkit.getScheduler().runTask(plugin, new RecentPurchaseSignUpdateApplication(plugin, signToPurchases));
