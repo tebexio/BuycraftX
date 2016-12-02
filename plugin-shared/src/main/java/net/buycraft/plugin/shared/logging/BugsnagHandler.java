@@ -29,14 +29,16 @@ public class BugsnagHandler extends Handler {
             return;
         }
 
-        // BungeeCord logs this message if it can't execute a command.
-        if (record.getMessage().equals("Error in dispatching command")) {
-            return;
-        }
+        if (record.getMessage() != null) {
+            // BungeeCord logs this message if it can't execute a command.
+            if (record.getMessage().equals("Error in dispatching command")) {
+                return;
+            }
 
-        // Buycraft logs this message if an exception is raised while trying to run a command.
-        if (BUYCRAFT_COMMAND_ERROR.matcher(record.getMessage()).find()) {
-            return;
+            // Buycraft logs this message if an exception is raised while trying to run a command.
+            if (BUYCRAFT_COMMAND_ERROR.matcher(record.getMessage()).find()) {
+                return;
+            }
         }
 
         // Check if this exception is not allowed.
