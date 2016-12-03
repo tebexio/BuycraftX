@@ -14,7 +14,6 @@ import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
-    private static final CacheControl NO_STORE = new CacheControl.Builder().noStore().build();
 
     private final Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -42,7 +41,7 @@ public class ProductionApiClient implements ApiClient {
     private ApiException handleError(Response response, ResponseBody body) throws IOException {
         String in = body.string();
         if (!Objects.equals(response.header("Content-Type"), "application/json")) {
-            return new ApiException("Unexpected error response", response.request(), response, in);
+            return new ApiException("Unexpected content-type " + response.header("Content-Type"), response.request(), response, in);
         }
         BuycraftError error = gson.fromJson(in, BuycraftError.class);
         if (error != null) {
@@ -86,7 +85,7 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public QueueInformation retrieveOfflineQueue() throws IOException, ApiException {
-        return get("/queue/offline-commands", NO_STORE, QueueInformation.class);
+        return get("/queue/offline-commands", CacheControl.FORCE_NETWORK, QueueInformation.class);
     }
 
     @Override
@@ -96,7 +95,7 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public QueueInformation getPlayerQueue(int id) throws IOException, ApiException {
-        return get("/queue/online-commands/" + id, NO_STORE, QueueInformation.class);
+        return get("/queue/online-commands/" + id, CacheControl.FORCE_NETWORK, QueueInformation.class);
     }
 
     @Override
