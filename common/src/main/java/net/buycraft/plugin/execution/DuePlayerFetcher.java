@@ -113,14 +113,19 @@ public class DuePlayerFetcher implements Runnable {
         // Check for online players and execute their commands.
         List<QueuedPlayer> processNow = new ArrayList<>();
 
-        for (Iterator<QueuedPlayer> it = due.values().iterator(); it.hasNext(); ) {
-            QueuedPlayer qp = it.next();
-            if (platform.isPlayerOnline(qp)) {
-                if (processNow.size() < MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE) {
-                    processNow.add(qp);
-                    it.remove();
+        lock.lock();
+        try {
+            for (Iterator<QueuedPlayer> it = due.values().iterator(); it.hasNext(); ) {
+                QueuedPlayer qp = it.next();
+                if (platform.isPlayerOnline(qp)) {
+                    if (processNow.size() < MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE) {
+                        processNow.add(qp);
+                        it.remove();
+                    }
                 }
             }
+        } finally {
+            lock.unlock();
         }
 
         if (!processNow.isEmpty()) {
