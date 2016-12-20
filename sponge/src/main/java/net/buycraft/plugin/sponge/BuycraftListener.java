@@ -18,8 +18,7 @@ public class BuycraftListener {
         }
         QueuedPlayer qp = plugin.getDuePlayerFetcher().fetchAndRemoveDuePlayer(event.getTargetEntity().getName());
         if (qp != null) {
-            plugin.getLogger().info(String.format("Executing login commands for %s...", event.getTargetEntity().getName()));
-            plugin.getPlatform().executeAsync(new PlayerCommandExecutor(qp, plugin.getPlatform()));
+            plugin.getPlayerJoinCheckTask().queue(qp);
         }
     }
 }

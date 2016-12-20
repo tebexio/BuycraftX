@@ -25,6 +25,7 @@ import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
+import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.md_5.bungee.api.plugin.Plugin;
 import okhttp3.Cache;
@@ -62,6 +63,8 @@ public class BuycraftPlugin extends Plugin {
     @Getter
     private BuycraftI18n i18n;
     private PostCompletedCommandsTask completedCommandsTask;
+    @Getter
+    private PlayerJoinCheckTask playerJoinCheckTask;
 
     @Override
     public void onEnable() {
@@ -171,6 +174,8 @@ public class BuycraftPlugin extends Plugin {
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
         getProxy().getScheduler().schedule(this, completedCommandsTask, 1, 1, TimeUnit.SECONDS);
         getProxy().getScheduler().schedule(this, (Runnable) commandExecutor, 50, 50, TimeUnit.MILLISECONDS);
+        playerJoinCheckTask = new PlayerJoinCheckTask(platform);
+        getProxy().getScheduler().schedule(this, playerJoinCheckTask, 1, 1, TimeUnit.SECONDS);
 
         // Register listener.
         getProxy().getPluginManager().registerListener(this, new BuycraftListener(this));

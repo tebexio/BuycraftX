@@ -36,6 +36,7 @@ import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
+import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import okhttp3.OkHttpClient;
 import org.bukkit.Bukkit;
@@ -89,6 +90,8 @@ public class BuycraftPlugin extends JavaPlugin {
     @Getter
     private PostCompletedCommandsTask completedCommandsTask;
     private Bugsnag bugsnagClient;
+    @Getter
+    private PlayerJoinCheckTask playerJoinCheckTask;
 
     @Override
     public void onEnable() {
@@ -162,6 +165,8 @@ public class BuycraftPlugin extends JavaPlugin {
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
         getServer().getScheduler().runTaskTimer(this, (Runnable) commandExecutor, 1, 1);
         getServer().getScheduler().runTaskTimerAsynchronously(this, completedCommandsTask, 20, 20);
+        playerJoinCheckTask = new PlayerJoinCheckTask(platform);
+        getServer().getScheduler().runTaskTimer(this, playerJoinCheckTask, 20, 20);
 
         // Initialize the GUIs.
         viewCategoriesGUI = new ViewCategoriesGUI(this);

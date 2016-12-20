@@ -19,8 +19,7 @@ public class BuycraftListener implements Listener {
 
         QueuedPlayer qp = plugin.getDuePlayerFetcher().fetchAndRemoveDuePlayer(event.getPlayer().getName());
         if (qp != null) {
-            plugin.getLogger().info(String.format("Executing login commands for %s...", event.getPlayer().getName()));
-            plugin.getProxy().getScheduler().runAsync(plugin, new PlayerCommandExecutor(qp, plugin.getPlatform()));
+            plugin.getPlayerJoinCheckTask().queue(qp);
         }
     }
 }
