@@ -30,11 +30,6 @@ public class ImmediateCommandExecutor implements Runnable {
             return;
         }
 
-        // Nothing to do? Then let's exit.
-        if (information.getCommands().isEmpty()) {
-            return;
-        }
-
         // Queue commands for later.
         for (QueuedCommand command : information.getCommands()) {
             platform.getExecutor().queue(new ToRunQueuedCommand(command.getPlayer(), command, false));
