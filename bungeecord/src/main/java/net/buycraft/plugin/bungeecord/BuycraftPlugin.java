@@ -36,6 +36,7 @@ import okhttp3.OkHttpClient;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -73,17 +74,17 @@ public class BuycraftPlugin extends Plugin {
 
         // Initialize configuration.
         getDataFolder().mkdir();
+        Path configPath = getDataFolder().toPath().resolve("config.properties");
         try {
-            Path configPath = getDataFolder().toPath().resolve("config.properties");
-            if (!Files.exists(configPath)) {
+            try {
+                configuration.load(configPath);
+            } catch (NoSuchFileException e) {
+                // Save defaults
                 configuration.fillDefaults();
                 configuration.save(configPath);
-            } else {
-                configuration.load(configPath);
-                configuration.fillDefaults();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load configuration!", e);
+            throw new RuntimeException("Unable to load configuration", e);
         }
 
         i18n = configuration.createI18n();
@@ -194,8 +195,7 @@ public class BuycraftPlugin extends Plugin {
                 @Override
                 public void run() {
                     try {
-                        AnalyticsSend.postServerInformation(httpClient, serverKey, "bungeecord",
-                                getProxy().getVersion(), getDescription().getVersion(), getProxy().getConfig().isOnlineMode());
+                        AnalyticsSend.postServerInformation(httpClient, serverKey, platform, getProxy().getConfig().isOnlineMode());
                     } catch (IOException e) {
                         getLogger().log(Level.WARNING, "Can't send analytics", e);
                     }

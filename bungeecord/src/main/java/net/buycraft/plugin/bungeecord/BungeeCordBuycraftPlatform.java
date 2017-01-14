@@ -4,9 +4,12 @@ import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
+import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.platform.NoBlocking;
+import net.buycraft.plugin.platform.PlatformInformation;
+import net.buycraft.plugin.platform.PlatformType;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.concurrent.TimeUnit;
@@ -87,5 +90,20 @@ public class BungeeCordBuycraftPlatform implements IBuycraftPlatform {
     @Override
     public CommandExecutor getExecutor() {
         return plugin.getCommandExecutor();
+    }
+
+    @Override
+    public PlatformInformation getPlatformInformation() {
+        return new PlatformInformation(PlatformType.BUNGEECORD, plugin.getProxy().getVersion());
+    }
+
+    @Override
+    public String getPluginVersion() {
+        return plugin.getDescription().getVersion();
+    }
+
+    @Override
+    public ServerInformation getServerInformation() {
+        return plugin.getServerInformation();
     }
 }

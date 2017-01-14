@@ -20,13 +20,6 @@ import java.util.Date;
 @Builder
 public class ReportBuilder {
     @NonNull
-    private final String serverPlatform;
-    @NonNull
-    private final String serverPlatformVersion;
-    @NonNull
-    private final String pluginVersion;
-    private final ServerInformation information;
-    @NonNull
     private final DuePlayerFetcher duePlayerFetcher;
     private final ListingUpdateTask listingUpdateTask;
     @NonNull
@@ -54,17 +47,20 @@ public class ReportBuilder {
 
         writer.println("Operating system: " + os);
         writer.println("Java version: " + javaVersion);
-        writer.println("Server version: " + serverPlatform);
+        writer.println("Server version: " + platform.getPlatformInformation().getType() + " / " +
+                platform.getPlatformInformation().getVersion());
         writer.println("Server IP and port: " + ip + " / " + port);
         writer.println("Online mode: " + serverOnlineMode);
         writer.println("Buycraft is-bungeecord setting: " + configuration.isBungeeCord());
         writer.println();
 
         writer.println("### Plugin Information ###");
-        writer.println("Plugin version: " + pluginVersion);
-        writer.println("Platform: " + serverPlatform);
+        writer.println("Plugin version: " + platform.getPluginVersion());
+        writer.println("Platform: " + platform.getPlatformInformation().getType() + " / " +
+                platform.getPlatformInformation().getVersion());
         writer.println();
         writer.println("Connected to Buycraft? " + (platform.getApiClient() != null));
+        ServerInformation information = platform.getServerInformation();
         writer.println("Web store information found? " + (information != null));
         if (information != null) {
             writer.println("Web store ID: " +information.getAccount().getId());

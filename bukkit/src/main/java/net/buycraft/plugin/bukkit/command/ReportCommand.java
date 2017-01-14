@@ -34,14 +34,10 @@ public class ReportCommand implements Subcommand {
                         .configuration(plugin.getConfiguration())
                         .platform(plugin.getPlatform())
                         .duePlayerFetcher(plugin.getDuePlayerFetcher())
-                        .information(plugin.getServerInformation())
                         .ip(Bukkit.getIp())
                         .port(Bukkit.getPort())
                         .listingUpdateTask(plugin.getListingUpdateTask())
-                        .pluginVersion(plugin.getDescription().getVersion())
                         .serverOnlineMode(Bukkit.getOnlineMode())
-                        .serverPlatform("Bukkit")
-                        .serverPlatformVersion(Bukkit.getVersion())
                         .build();
 
                 SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");

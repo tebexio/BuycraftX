@@ -83,5 +83,10 @@ public class StandaloneBuycraftRunner {
         public void log(Level level, String message, Throwable throwable) {
             logger.log(level, message, throwable);
         }
+
+        @Override
+        public ServerInformation getServerInformation() {
+            return serverInformation;
+        }
     }
 }

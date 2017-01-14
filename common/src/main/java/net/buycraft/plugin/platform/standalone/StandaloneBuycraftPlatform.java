@@ -2,12 +2,15 @@ package net.buycraft.plugin.platform.standalone;
 
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiClient;
+import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.platform.PlatformInformation;
+import net.buycraft.plugin.platform.PlatformType;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -76,4 +79,18 @@ public abstract class StandaloneBuycraftPlatform implements IBuycraftPlatform {
         return commandExecutor;
     }
 
+    @Override
+    public PlatformInformation getPlatformInformation() {
+        return new PlatformInformation(PlatformType.NONE, "");
+    }
+
+    @Override
+    public String getPluginVersion() {
+        return "";
+    }
+
+    @Override
+    public ServerInformation getServerInformation() {
+        return null;
+    }
 }

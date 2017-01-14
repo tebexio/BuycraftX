@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -101,14 +102,14 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Initialize configuration.
         getDataFolder().mkdir();
+        Path configPath = getDataFolder().toPath().resolve("config.properties");
         try {
-            Path configPath = getDataFolder().toPath().resolve("config.properties");
-            if (!Files.exists(configPath)) {
+            try {
+                configuration.load(configPath);
+            } catch (NoSuchFileException e) {
+                // Save defaults
                 configuration.fillDefaults();
                 configuration.save(configPath);
-            } else {
-                configuration.load(configPath);
-                configuration.fillDefaults();
             }
         } catch (IOException e) {
             getLogger().log(Level.INFO, "Unable to load configuration! The plugin will disable itself now.", e);
@@ -263,8 +264,7 @@ public class BuycraftPlugin extends JavaPlugin {
                     String pv = fullPlatformVersion.substring(start + 5, fullPlatformVersion.length() - 1);
 
                     try {
-                        AnalyticsSend.postServerInformation(httpClient, serverKey, "bukkit",
-                                pv, getDescription().getVersion(), getServer().getOnlineMode());
+                        AnalyticsSend.postServerInformation(httpClient, serverKey, platform, getServer().getOnlineMode());
                     } catch (IOException e) {
                         getLogger().log(Level.WARNING, "Can't send analytics", e);
                     }

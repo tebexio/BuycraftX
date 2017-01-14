@@ -32,24 +32,18 @@ public class ReportCmd implements CommandExecutor {
         src.sendMessage(Text.builder(plugin.getI18n().get("report_wait")).color(TextColors.RED).build());
 
         plugin.getPlatform().executeAsync(() -> {
-            String serverVersion = Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN");
             String serverIP = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getHostName() : "?";
             int serverPort = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getPort() : -1;
-            String buycraftVersion = BuycraftPlugin.class.getAnnotation(Plugin.class).version();
 
             ReportBuilder builder = ReportBuilder.builder()
                     .client(plugin.getHttpClient())
                     .configuration(plugin.getConfiguration())
                     .platform(plugin.getPlatform())
                     .duePlayerFetcher(plugin.getDuePlayerFetcher())
-                    .information(plugin.getServerInformation())
                     .ip(serverIP)
                     .port(serverPort)
-                    .pluginVersion(buycraftVersion)
                     .listingUpdateTask(plugin.getListingUpdateTask())
                     .serverOnlineMode(Sponge.getServer().getOnlineMode())
-                    .serverPlatform("Sponge")
-                    .serverPlatformVersion(serverVersion)
                     .build();
 
             SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");

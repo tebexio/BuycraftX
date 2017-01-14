@@ -35,13 +35,9 @@ public class ReportCommand implements Subcommand {
                         .configuration(plugin.getConfiguration())
                         .platform(plugin.getPlatform())
                         .duePlayerFetcher(plugin.getDuePlayerFetcher())
-                        .information(plugin.getServerInformation())
                         .ip(listener1.getAddress().toString())
                         .port(listener1.getPort())
-                        .pluginVersion(plugin.getDescription().getVersion())
                         .serverOnlineMode(plugin.getProxy().getConfig().isOnlineMode())
-                        .serverPlatform("BungeeCord")
-                        .serverPlatformVersion(plugin.getProxy().getVersion())
                         .build();
 
                 SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");

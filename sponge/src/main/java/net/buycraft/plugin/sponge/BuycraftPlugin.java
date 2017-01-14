@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
@@ -106,12 +107,12 @@ public class BuycraftPlugin {
 
             }
             Path configPath = baseDirectory.resolve("config.properties");
-            if (!Files.exists(configPath)) {
+            try {
+                configuration.load(configPath);
+            } catch (NoSuchFileException e) {
+                // Save defaults
                 configuration.fillDefaults();
                 configuration.save(configPath);
-            } else {
-                configuration.load(configPath);
-                configuration.fillDefaults();
             }
         } catch (IOException e) {
             getLogger().error("Unable to load configuration! The plugin will disable itself now.", e);
@@ -207,8 +208,7 @@ public class BuycraftPlugin {
                     .interval(1, TimeUnit.DAYS)
                     .execute(() -> {
                         try {
-                            AnalyticsSend.postServerInformation(httpClient, configuration.getServerKey(), "sponge",
-                                    Sponge.getPlatform().getMinecraftVersion().getName(), getClass().getAnnotation(Plugin.class).version(),
+                            AnalyticsSend.postServerInformation(httpClient, configuration.getServerKey(), platform,
                                     Sponge.getServer().getOnlineMode());
                         } catch (IOException e) {
                             getLogger().warn("Can't send analytics", e);

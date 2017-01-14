@@ -2,6 +2,7 @@ package net.buycraft.plugin.shared.util;
 
 import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
+import net.buycraft.plugin.IBuycraftPlatform;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -24,18 +25,17 @@ public class AnalyticsSend {
         }
     }
 
-    public static void postServerInformation(OkHttpClient client, String serverKey, String platform,
-                                             String platformVersion, String pluginVersion, boolean onlineMode) throws IOException {
+    public static void postServerInformation(OkHttpClient client, String serverKey, IBuycraftPlatform platform, boolean onlineMode) throws IOException {
         Map<String, Object> serverData = new LinkedHashMap<>();
         Map<String, Object> pluginData = new LinkedHashMap<>();
 
         // Server data
-        serverData.put("platform", platform);
-        serverData.put("platform_version", platformVersion);
+        serverData.put("platform", platform.getPlatformInformation().getType().platformName());
+        serverData.put("platform_version", platform.getPlatformInformation().getVersion());
         serverData.put("online_mode", onlineMode);
 
         // Plugin data
-        pluginData.put("version", platformVersion);
+        pluginData.put("version", platform.getPluginVersion());
 
         // Combine and send to Buycraft
         Map<String, Object> keenData = new LinkedHashMap<>();

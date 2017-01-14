@@ -4,8 +4,10 @@ import lombok.Getter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
+import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.platform.PlatformInformation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,6 +80,21 @@ public class SimulatedPlayerBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public CommandExecutor getExecutor() {
+        return null;
+    }
+
+    @Override
+    public PlatformInformation getPlatformInformation() {
+        return null;
+    }
+
+    @Override
+    public String getPluginVersion() {
+        return null;
+    }
+
+    @Override
+    public ServerInformation getServerInformation() {
         return null;
     }
 }

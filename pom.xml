@@ -29,10 +29,6 @@
             <id>stealthyone-repo</id>
             <url>http://repo.stealthyone.com/content/groups/public</url>
         </repository>
-        <repository>
-            <id>inventive-repo</id>
-            <url>http://repo.inventivetalent.org/content/groups/public/</url>
-        </repository>
     </repositories>
 
     <dependencies>
