@@ -27,7 +27,12 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.IBuycraftPlugin;
 import net.buycraft.plugin.shared.Setup;
+import net.buycraft.plugin.shared.commands.ForceCheckSubcommand;
+import net.buycraft.plugin.shared.commands.InformationSubcommand;
+import net.buycraft.plugin.shared.commands.RefreshSubcommand;
+import net.buycraft.plugin.shared.commands.ReportCommand;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
@@ -44,6 +49,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -52,7 +58,7 @@ import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-public class BuycraftPlugin extends JavaPlugin {
+public class BuycraftPlugin extends JavaPlugin implements IBuycraftPlugin {
     @Getter
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     @Getter
@@ -200,12 +206,12 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Initialize and register commands.
         BuycraftCommand command = new BuycraftCommand(this);
-        command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
-        command.getSubcommandMap().put("secret", new SecretSubcommand(this));
-        command.getSubcommandMap().put("info", new InformationSubcommand(this));
-        command.getSubcommandMap().put("refresh", new RefreshSubcommand(this));
-        command.getSubcommandMap().put("signupdate", new SignUpdateSubcommand(this));
-        command.getSubcommandMap().put("report", new ReportCommand(this));
+        command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand());
+        command.getSubcommandMap().put("secret", new SecretSubcommand());
+        command.getSubcommandMap().put("info", new InformationSubcommand());
+        command.getSubcommandMap().put("refresh", new RefreshSubcommand());
+        command.getSubcommandMap().put("signupdate", new SignUpdateSubcommand());
+        command.getSubcommandMap().put("report", new ReportCommand());
         getCommand("buycraft").setExecutor(command);
 
         // Initialize sign layouts.
@@ -303,5 +309,20 @@ public class BuycraftPlugin extends JavaPlugin {
             getLogger().log(Level.WARNING, "If you have verified that your set up is correct, you can suppress this message by setting " +
                     "is-bungeecord=true in your BuycraftX config.properties.");
         }
+    }
+
+    @Override
+    public boolean isOnlineMode() {
+        return getServer().getOnlineMode();
+    }
+
+    @Override
+    public InetSocketAddress getAddress() {
+        return new InetSocketAddress(getServer().getIp(), getServer().getPort());
+    }
+
+    @Override
+    public Path getBasePath() {
+        return getDataFolder().toPath();
     }
 }

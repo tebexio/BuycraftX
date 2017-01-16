@@ -1,7 +1,7 @@
 package net.buycraft.plugin.bungeecord;
 
 import lombok.Getter;
-import net.buycraft.plugin.bungeecord.command.Subcommand;
+import net.buycraft.plugin.shared.commands.BuycraftSubcommand;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class BuycraftCommand extends Command {
     @Getter
-    private final Map<String, Subcommand> subcommandMap = new LinkedHashMap<>();
+    private final Map<String, BuycraftSubcommand> subcommandMap = new LinkedHashMap<>();
     private final BuycraftPlugin plugin;
 
     public BuycraftCommand(BuycraftPlugin plugin) {
@@ -32,24 +32,23 @@ public class BuycraftCommand extends Command {
             return;
         }
 
-        for (Map.Entry<String, Subcommand> entry : subcommandMap.entrySet()) {
+        for (Map.Entry<String, BuycraftSubcommand> entry : subcommandMap.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(args[0])) {
                 String[] withoutSubcommand = Arrays.copyOfRange(args, 1, args.length);
-                entry.getValue().execute(sender, withoutSubcommand);
+                entry.getValue().execute(plugin, new BungeeCordBuycraftCommandSender(sender, plugin), withoutSubcommand);
                 return;
             }
         }
 
         showHelp(sender);
-
-        return;
     }
 
     private void showHelp(CommandSender sender) {
         sender.sendMessage(ChatColor.DARK_AQUA + ChatColor.BOLD.toString() + plugin.getI18n().get("usage"));
 
-        for (Map.Entry<String, Subcommand> entry : subcommandMap.entrySet()) {
-            sender.sendMessage(ChatColor.GREEN + "/buycraft " + entry.getKey() + ChatColor.GRAY + ": " + entry.getValue().getDescription());
+        for (Map.Entry<String, BuycraftSubcommand> entry : subcommandMap.entrySet()) {
+            sender.sendMessage(ChatColor.GREEN + "/buycraft " + entry.getKey() + ChatColor.GRAY + ": " +
+                    plugin.getI18n().get(entry.getValue().getDescriptionMessageName()));
         }
     }
 }

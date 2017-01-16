@@ -1,64 +1,65 @@
 package net.buycraft.plugin.bungeecord.command;
 
-import lombok.RequiredArgsConstructor;
+import net.buycraft.plugin.bungeecord.BungeeCordBuycraftCommandSender;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.CommandSender;
+import net.buycraft.plugin.shared.IBuycraftPlugin;
+import net.buycraft.plugin.shared.commands.BuycraftCommandSender;
+import net.buycraft.plugin.shared.commands.BuycraftSubcommand;
+import net.buycraft.plugin.shared.commands.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 
 import java.io.IOException;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
-public class SecretSubcommand implements Subcommand {
-    private final BuycraftPlugin plugin;
-
+public class SecretSubcommand implements BuycraftSubcommand {
     @Override
-    public void execute(final CommandSender sender, final String[] args) {
-        if (!sender.equals(plugin.getProxy().getConsole())) {
-            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_console_only"));
+    public void execute(final IBuycraftPlugin plugin, final BuycraftCommandSender player, final String[] args) {
+        if (((BungeeCordBuycraftCommandSender) player).getBungeeSender() == ProxyServer.getInstance().getConsole()) { // rather cross-platform
+            player.sendMessage(ChatColor.RED, "secret_console_only");
             return;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_need_key"));
+            player.sendMessage(ChatColor.RED, "secret_need_key");
             return;
         }
 
-        plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
+        final BuycraftPlugin bungeePlugin = (BuycraftPlugin) plugin;
+        plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {
                 ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
                 try {
-                    plugin.updateInformation(client);
-                } catch (IOException | ApiException e) {
-                    plugin.getLogger().log(Level.SEVERE, "Unable to verify secret", e);
-                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_does_not_work"));
+                    bungeePlugin.updateInformation(client);
+                } catch (Exception e) {
+                    bungeePlugin.getLogger().log(Level.SEVERE, "Unable to verify secret", e);
+                    player.sendMessage(ChatColor.RED, "secret_does_not_work");
                     return;
                 }
 
-                ServerInformation information = plugin.getServerInformation();
-                plugin.setApiClient(client);
+                ServerInformation information = plugin.getPlatform().getServerInformation();
+                bungeePlugin.setApiClient(client);
+                plugin.getListingUpdateTask().run();
                 plugin.getConfiguration().setServerKey(args[0]);
                 try {
-                    plugin.saveConfiguration();
+                    bungeePlugin.saveConfiguration();
                 } catch (IOException e) {
-                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_cant_be_saved"));
+                    player.sendMessage(ChatColor.RED, "secret_cant_be_saved");
                 }
 
-                sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("secret_success",
-                        information.getServer().getName(), information.getAccount().getName()));
+                player.sendMessage(ChatColor.GREEN, "secret_success",
+                        information.getServer().getName(), information.getAccount().getName());
 
-                plugin.getProxy().getScheduler().runAsync(plugin, plugin.getDuePlayerFetcher());
+                plugin.getDuePlayerFetcher().run(false);
             }
         });
     }
 
     @Override
-    public String getDescription() {
-        return "Sets the secret key to use for this server.";
+    public String getDescriptionMessageName() {
+        return "usage_secret";
     }
 }

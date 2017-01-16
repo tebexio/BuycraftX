@@ -5,9 +5,6 @@ import com.google.common.base.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.bungeecord.command.ForceCheckSubcommand;
-import net.buycraft.plugin.bungeecord.command.InformationSubcommand;
-import net.buycraft.plugin.bungeecord.command.ReportCommand;
 import net.buycraft.plugin.bungeecord.command.SecretSubcommand;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
@@ -21,10 +18,15 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.IBuycraftPlugin;
 import net.buycraft.plugin.shared.Setup;
+import net.buycraft.plugin.shared.commands.ForceCheckSubcommand;
+import net.buycraft.plugin.shared.commands.InformationSubcommand;
+import net.buycraft.plugin.shared.commands.ReportCommand;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
+import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -35,6 +37,7 @@ import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -43,7 +46,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-public class BuycraftPlugin extends Plugin {
+public class BuycraftPlugin extends Plugin implements IBuycraftPlugin {
     @Getter
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     @Getter
@@ -183,10 +186,10 @@ public class BuycraftPlugin extends Plugin {
 
         // Initialize and register commands.
         BuycraftCommand command = new BuycraftCommand(this);
-        command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand(this));
-        command.getSubcommandMap().put("secret", new SecretSubcommand(this));
-        command.getSubcommandMap().put("info", new InformationSubcommand(this));
-        command.getSubcommandMap().put("report", new ReportCommand(this));
+        command.getSubcommandMap().put("forcecheck", new ForceCheckSubcommand());
+        command.getSubcommandMap().put("secret", new SecretSubcommand());
+        command.getSubcommandMap().put("info", new InformationSubcommand());
+        command.getSubcommandMap().put("report", new ReportCommand());
         getProxy().getPluginManager().registerCommand(this, command);
 
         // Send data to Keen IO
@@ -226,5 +229,25 @@ public class BuycraftPlugin extends Plugin {
 
     public void updateInformation(ApiClient client) throws IOException, ApiException {
         serverInformation = client.getServerInformation();
+    }
+
+    @Override
+    public ListingUpdateTask getListingUpdateTask() {
+        return null;
+    }
+
+    @Override
+    public boolean isOnlineMode() {
+        return getProxy().getConfig().isOnlineMode();
+    }
+
+    @Override
+    public InetSocketAddress getAddress() {
+        return getProxy().getConfig().getListeners().iterator().next().getHost();
+    }
+
+    @Override
+    public Path getBasePath() {
+        return getDataFolder().toPath();
     }
 }

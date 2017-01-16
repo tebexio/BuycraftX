@@ -1,10 +1,7 @@
-package net.buycraft.plugin.bukkit.command;
+package net.buycraft.plugin.shared.commands;
 
-import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.shared.IBuycraftPlugin;
 import net.buycraft.plugin.shared.util.ReportBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,19 +11,14 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 
-public class ReportCommand implements Subcommand {
-    private final BuycraftPlugin plugin;
-
-    public ReportCommand(BuycraftPlugin plugin) {
-        this.plugin = plugin;
-    }
-
+public class ReportCommand implements BuycraftSubcommand {
     @Override
-    public void execute(final CommandSender sender, String[] args) {
-        sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("report_wait"));
+    public void execute(final IBuycraftPlugin plugin, final BuycraftCommandSender player, String[] args) {
+        player.sendMessage(ChatColor.YELLOW, "report_wait");
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {
                 ReportBuilder builder = ReportBuilder.builder()
@@ -34,30 +26,30 @@ public class ReportCommand implements Subcommand {
                         .configuration(plugin.getConfiguration())
                         .platform(plugin.getPlatform())
                         .duePlayerFetcher(plugin.getDuePlayerFetcher())
-                        .ip(Bukkit.getIp())
-                        .port(Bukkit.getPort())
+                        .ip(plugin.getAddress().getAddress().toString())
+                        .port(plugin.getAddress().getPort())
+                        .serverOnlineMode(plugin.isOnlineMode())
                         .listingUpdateTask(plugin.getListingUpdateTask())
-                        .serverOnlineMode(Bukkit.getOnlineMode())
                         .build();
 
                 SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
                 String filename = "report-" + f.format(new Date()) + ".txt";
-                Path p = plugin.getDataFolder().toPath().resolve(filename);
+                Path p = plugin.getBasePath().resolve(filename);
                 String generated = builder.generate();
 
                 try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
                     w.write(generated);
-                    sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("report_saved", p.toAbsolutePath().toString()));
+                    player.sendMessage(ChatColor.YELLOW, "report_saved", p.toAbsolutePath().toString());
                 } catch (IOException e) {
-                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("report_cant_save"));
-                    plugin.getLogger().info(generated);
+                    player.sendMessage(ChatColor.RED, "report_cant_save");
+                    plugin.getPlatform().log(Level.INFO, generated);
                 }
             }
         });
     }
 
     @Override
-    public String getDescription() {
-        return plugin.getI18n().get("usage_report");
+    public String getDescriptionMessageName() {
+        return "usage_report";
     }
 }

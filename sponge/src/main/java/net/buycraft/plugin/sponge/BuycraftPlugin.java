@@ -17,6 +17,7 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.shared.IBuycraftPlugin;
 import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
@@ -43,6 +44,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -51,7 +53,7 @@ import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
-public class BuycraftPlugin {
+public class BuycraftPlugin implements IBuycraftPlugin {
 
     static final String MAGIC_VERSION = "SET_BY_MAGIC";
     @Getter
@@ -289,4 +291,18 @@ public class BuycraftPlugin {
         }
     }
 
+    @Override
+    public boolean isOnlineMode() {
+        return Sponge.getServer().getOnlineMode();
+    }
+
+    @Override
+    public InetSocketAddress getAddress() {
+        return Sponge.getServer().getBoundAddress().orElse(null);
+    }
+
+    @Override
+    public Path getBasePath() {
+        return baseDirectory;
+    }
 }
