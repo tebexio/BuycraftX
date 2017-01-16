@@ -42,7 +42,6 @@ public class SecretSubcommand implements BuycraftSubcommand {
 
                 ServerInformation information = plugin.getPlatform().getServerInformation();
                 bungeePlugin.setApiClient(client);
-                plugin.getListingUpdateTask().run();
                 plugin.getConfiguration().setServerKey(args[0]);
                 try {
                     bungeePlugin.saveConfiguration();
