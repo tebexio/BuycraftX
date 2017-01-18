@@ -87,12 +87,7 @@ public class BuycraftConfiguration {
     }
 
     private Locale getLocale() {
-        String name = properties.getProperty("language", "en");
-        if (name.indexOf('_') != -1) {
-            String[] parts = name.split("_");
-            return new Locale(parts[0], parts[1]);
-        }
-        return new Locale(name);
+        return Locale.forLanguageTag(properties.getProperty("language", "en_US"));
     }
 
     public BuycraftI18n createI18n() {
@@ -105,7 +100,7 @@ public class BuycraftConfiguration {
         defaultSet("check-for-updates", "true");
         defaultSet("disable-buy-command", "false");
         defaultSet("buy-command-name", "buy");
-        defaultSet("language", Locale.getDefault().getLanguage());
+        defaultSet("language", Locale.getDefault().toLanguageTag());
         defaultSet("verbose", "true");
     }
 }
