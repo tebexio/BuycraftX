@@ -279,9 +279,9 @@ public class BuycraftPlugin implements IBuycraftPlugin {
         configuration.save(baseDirectory.resolve("config.properties"));
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
-
+    @Override
+    public void setServerInformation(ServerInformation information) {
+        serverInformation = information;
         if (!configuration.isBungeeCord() && Sponge.getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
             getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
@@ -289,6 +289,10 @@ public class BuycraftPlugin implements IBuycraftPlugin {
             getLogger().warn("If you have verified that your set up is correct, you can suppress this message by setting " +
                     "is-bungeecord=true in your BuycraftX config.properties.");
         }
+    }
+
+    public void updateInformation(ApiClient client) throws IOException, ApiException {
+        setServerInformation(client.getServerInformation());
     }
 
     @Override

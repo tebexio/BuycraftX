@@ -37,4 +37,9 @@ public class BungeeCordBuycraftCommandSender implements BuycraftCommandSender {
     public void sendMessage(ChatColor color, String message, String... args) {
         bungeeSender.sendMessage(color + plugin.getI18n().get(message, (Object[]) args));
     }
+
+    @Override
+    public boolean isConsole() {
+        return bungeeSender == plugin.getProxy().getConsole();
+    }
 }

@@ -29,10 +29,7 @@ import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.IBuycraftPlugin;
 import net.buycraft.plugin.shared.Setup;
-import net.buycraft.plugin.shared.commands.ForceCheckSubcommand;
-import net.buycraft.plugin.shared.commands.InformationSubcommand;
-import net.buycraft.plugin.shared.commands.RefreshSubcommand;
-import net.buycraft.plugin.shared.commands.ReportCommand;
+import net.buycraft.plugin.shared.commands.*;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
@@ -299,9 +296,9 @@ public class BuycraftPlugin extends JavaPlugin implements IBuycraftPlugin {
         configuration.save(configPath);
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
-
+    @Override
+    public void setServerInformation(ServerInformation information) {
+        serverInformation = information;
         if (!configuration.isBungeeCord() && getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
             getLogger().log(Level.WARNING, "Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
@@ -309,6 +306,10 @@ public class BuycraftPlugin extends JavaPlugin implements IBuycraftPlugin {
             getLogger().log(Level.WARNING, "If you have verified that your set up is correct, you can suppress this message by setting " +
                     "is-bungeecord=true in your BuycraftX config.properties.");
         }
+    }
+
+    public void updateInformation(ApiClient client) throws IOException, ApiException {
+        setServerInformation(client.getServerInformation());
     }
 
     @Override

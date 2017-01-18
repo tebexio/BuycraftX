@@ -5,7 +5,6 @@ import com.google.common.base.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.bungeecord.command.SecretSubcommand;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
@@ -23,6 +22,7 @@ import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.commands.ForceCheckSubcommand;
 import net.buycraft.plugin.shared.commands.InformationSubcommand;
 import net.buycraft.plugin.shared.commands.ReportCommand;
+import net.buycraft.plugin.shared.commands.SecretSubcommand;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
@@ -38,7 +38,6 @@ import okhttp3.OkHttpClient;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -227,8 +226,13 @@ public class BuycraftPlugin extends Plugin implements IBuycraftPlugin {
         configuration.save(configPath);
     }
 
+    @Override
+    public void setServerInformation(ServerInformation information) {
+        serverInformation = information;
+    }
+
     public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
+        setServerInformation(client.getServerInformation());
     }
 
     @Override

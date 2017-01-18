@@ -10,4 +10,6 @@ public interface BuycraftCommandSender {
     void sendMessage(String message, String... args);
 
     void sendMessage(ChatColor color, String message, String... args);
+
+    boolean isConsole();
 }

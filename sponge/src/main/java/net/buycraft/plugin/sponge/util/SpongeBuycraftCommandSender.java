@@ -6,6 +6,7 @@ import net.buycraft.plugin.shared.commands.BuycraftCommandSender;
 import net.buycraft.plugin.shared.commands.ChatColor;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColor;
@@ -47,5 +48,10 @@ public class SpongeBuycraftCommandSender implements BuycraftCommandSender {
     public void sendMessage(ChatColor color, String message, String... args) {
         spongeCommandSource.sendMessage(Text.builder(plugin.getI18n().get(message, (Object[]) args))
                 .color(COLOR_MAP.get(color)).build());
+    }
+
+    @Override
+    public boolean isConsole() {
+        return spongeCommandSource instanceof ConsoleSource;
     }
 }

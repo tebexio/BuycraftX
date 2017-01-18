@@ -6,6 +6,7 @@ import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.shared.commands.BuycraftCommandSender;
 import net.buycraft.plugin.shared.commands.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -37,5 +38,10 @@ public class BukkitBuycraftCommandSender implements BuycraftCommandSender {
     @Override
     public void sendMessage(ChatColor color, String message, String... args) {
         bukkitSender.sendMessage(color + plugin.getI18n().get(message, (Object[]) args));
+    }
+
+    @Override
+    public boolean isConsole() {
+        return bukkitSender instanceof ConsoleCommandSender;
     }
 }
