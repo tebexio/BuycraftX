@@ -1,0 +1,4 @@
+
+%player%
+%amount%
+%nbr%

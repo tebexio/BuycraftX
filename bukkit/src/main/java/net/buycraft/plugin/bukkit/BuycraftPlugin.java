@@ -51,6 +51,10 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import net.buycraft.plugin.bukkit.signs.purchases.MaxPurchaseSignListener;
+import net.buycraft.plugin.bukkit.tasks.MaxPurchaseSignUpdateFetcher;
+import net.buycraft.plugin.shared.config.signs.MaxPurchaseSignLayout;
+import net.buycraft.plugin.shared.config.signs.storage.MaxPurchaseSignStorage;
 
 public class BuycraftPlugin extends JavaPlugin {
     @Getter
@@ -73,6 +77,8 @@ public class BuycraftPlugin extends JavaPlugin {
     @Getter
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
     @Getter
+    private MaxPurchaseSignStorage maxPurchaseSignStorage;
+    @Getter
     private OkHttpClient httpClient;
     @Getter
     private BuyNowSignStorage buyNowSignStorage;
@@ -88,6 +94,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private BuyNowSignLayout buyNowSignLayout = BuyNowSignLayout.DEFAULT;
     @Getter
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
+    @Getter
+    private MaxPurchaseSignLayout maxPurchaseSignLayout = MaxPurchaseSignLayout.DEFAULT;
     @Getter
     private PostCompletedCommandsTask completedCommandsTask;
     private Bugsnag bugsnagClient;
@@ -217,10 +225,15 @@ public class BuycraftPlugin extends JavaPlugin {
             }
 
             Path rpPath = signLayoutDirectory.resolve("recentpurchase.txt");
+            Path mpPath = signLayoutDirectory.resolve("maxpurchase.txt");
             Path bnPath = signLayoutDirectory.resolve("buynow.txt");
 
             try {
                 Files.copy(getResource("sign_layouts/recentpurchase.txt"), rpPath);
+            } catch (FileAlreadyExistsException ignored) {
+            }
+            try {
+                Files.copy(getResource("sign_layouts/maxpurchase.txt"), mpPath);
             } catch (FileAlreadyExistsException ignored) {
             }
             try {
@@ -229,6 +242,7 @@ public class BuycraftPlugin extends JavaPlugin {
             }
 
             recentPurchaseSignLayout = new RecentPurchaseSignLayout(Files.readAllLines(rpPath, StandardCharsets.UTF_8));
+            maxPurchaseSignLayout = new MaxPurchaseSignLayout(Files.readAllLines(mpPath, StandardCharsets.UTF_8));
             buyNowSignLayout = new BuyNowSignLayout(Files.readAllLines(bnPath, StandardCharsets.UTF_8));
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Unable to load sign layouts", e);
@@ -244,6 +258,16 @@ public class BuycraftPlugin extends JavaPlugin {
         getServer().getScheduler().runTaskTimerAsynchronously(this, new RecentPurchaseSignUpdateFetcher(this), 20, 3600 * 15);
         getServer().getPluginManager().registerEvents(new RecentPurchaseSignListener(this), this);
 
+        // Initialize max purchase sign data and listener.
+        maxPurchaseSignStorage = new MaxPurchaseSignStorage();
+        try {
+            maxPurchaseSignStorage.load(getDataFolder().toPath().resolve("max_purchase_signs.json"));
+        } catch (IOException | JsonParseException e) {
+            getLogger().log(Level.WARNING, "Can't load max purchase signs, continuing anyway");
+        }
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new MaxPurchaseSignUpdateFetcher(this), 20, 3600 * 15);
+        getServer().getPluginManager().registerEvents(new MaxPurchaseSignListener(this), this);
+        
         // Initialize purchase signs.
         buyNowSignStorage = new BuyNowSignStorage();
         try {
@@ -279,6 +303,11 @@ public class BuycraftPlugin extends JavaPlugin {
             recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Can't save purchase signs, continuing anyway");
+        }
+        try {
+            maxPurchaseSignStorage.save(getDataFolder().toPath().resolve("max_purchase_signs.json"));
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Can't save max purchase signs, continuing anyway");
         }
         try {
             buyNowSignStorage.save(getDataFolder().toPath().resolve("buy_now_signs.json"));
