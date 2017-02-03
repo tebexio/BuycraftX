@@ -24,3 +24,7 @@ BuycraftX includes the `buycraftx-common` module, which contains an API client, 
 BuycraftX can be integrated into your own custom applications to handle command execution. Most applications will
 find `StandaloneBuycraftRunnerBuilder` to be the easiest method for integration, but you can also implement the whole
 BuycraftX stack if desired.
+
+## Support
+
+Please don't raise support issues on this repo. For support with the plugin or any Buycraft issues, please [contact support](http://help.buycraft.net)
