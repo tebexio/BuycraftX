@@ -72,10 +72,12 @@ public class DuePlayerFetcher implements Runnable {
                     allDue.put(player.getName().toLowerCase(Locale.US), player);
                 }
 
-                try {
-                    Thread.sleep(random.nextInt(1000) + 500);
-                } catch (InterruptedException e) {
-                    platform.log(Level.SEVERE, "Interrupted", e);
+                if (page > 1) {
+                    try {
+                        Thread.sleep(random.nextInt(1000) + 500);
+                    } catch (InterruptedException e) {
+                        platform.log(Level.SEVERE, "Interrupted", e);
+                    }
                 }
 
                 page++;
