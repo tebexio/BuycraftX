@@ -27,7 +27,7 @@ public class ForceCheckSubcommand implements Subcommand {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 plugin.getDuePlayerFetcher().run(false);

@@ -23,6 +23,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,8 @@ public class BuyNowSignListener implements Listener {
     @Getter
     private final Map<UUID, SerializedBlockLocation> settingUpSigns = new HashMap<>();
     private final BuycraftPlugin plugin;
-    private boolean signLimited = false;
+    private final Map<UUID, Long> signCooldowns = new HashMap<>();
+    private static final long COOLDOWN_MS = 250; // 5 ticks
 
     public BuyNowSignListener(BuycraftPlugin plugin) {
         this.plugin = plugin;
@@ -78,20 +80,14 @@ public class BuyNowSignListener implements Listener {
 
             for (SavedBuyNowSign s : plugin.getBuyNowSignStorage().getSigns()) {
                 if (s.getLocation().equals(sbl)) {
-                    // Signs are rate limited in order to limit API calls issued.
-                    if (signLimited) {
-                        return;
+                    // Signs are rate limited (per player) in order to limit API calls issued.
+                    Long ts = signCooldowns.get(event.getPlayer().getUniqueId());
+                    long now = System.currentTimeMillis();
+                    if (ts == null || ts + COOLDOWN_MS <= now) {
+                        signCooldowns.put(event.getPlayer().getUniqueId(), now);
+                        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, s.getPackageId(),
+                                event.getPlayer()));
                     }
-                    signLimited = true;
-
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, s.getPackageId(),
-                            event.getPlayer()));
-                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            signLimited = false;
-                        }
-                    }, 4);
 
                     return;
                 }
@@ -102,7 +98,7 @@ public class BuyNowSignListener implements Listener {
     @EventHandler
     public void onInventoryClose(final InventoryCloseEvent event) {
         if (settingUpSigns.containsKey(event.getPlayer().getUniqueId())) {
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
                     if ((event.getPlayer().getOpenInventory().getTopInventory() == null ||
@@ -152,6 +148,12 @@ public class BuyNowSignListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        settingUpSigns.remove(event.getPlayer().getUniqueId());
+        signCooldowns.remove(event.getPlayer().getUniqueId());
+    }
+
     public void doSignSetup(Player player, Package p) {
         SerializedBlockLocation sbl = settingUpSigns.remove(player.getUniqueId());
         if (sbl == null)
@@ -163,6 +165,6 @@ public class BuyNowSignListener implements Listener {
             return;
 
         plugin.getBuyNowSignStorage().addSign(new SavedBuyNowSign(sbl, p.getId()));
-        Bukkit.getScheduler().runTask(plugin, new BuyNowSignUpdater(plugin));
+        plugin.getServer().getScheduler().runTask(plugin, new BuyNowSignUpdater(plugin));
     }
 }

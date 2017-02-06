@@ -29,7 +29,7 @@ public class SecretSubcommand implements Subcommand {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
@@ -54,7 +54,7 @@ public class SecretSubcommand implements Subcommand {
                 sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("secret_success",
                         information.getServer().getName(), information.getAccount().getName()));
 
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, plugin.getDuePlayerFetcher());
+                plugin.getDuePlayerFetcher().run(false);
             }
         });
     }

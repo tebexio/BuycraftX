@@ -28,7 +28,7 @@ public class GUIUtil {
     }
 
     public static void closeInventoryLater(final Player player) {
-        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
                 player.closeInventory();

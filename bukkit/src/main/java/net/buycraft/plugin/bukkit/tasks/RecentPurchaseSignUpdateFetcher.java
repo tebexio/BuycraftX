@@ -54,6 +54,6 @@ public class RecentPurchaseSignUpdateFetcher implements Runnable {
             }
         }
 
-        Bukkit.getScheduler().runTask(plugin, new RecentPurchaseSignUpdateApplication(plugin, signToPurchases));
+        plugin.getServer().getScheduler().runTask(plugin, new RecentPurchaseSignUpdateApplication(plugin, signToPurchases));
     }
 }

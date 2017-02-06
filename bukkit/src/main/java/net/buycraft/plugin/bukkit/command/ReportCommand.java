@@ -26,7 +26,7 @@ public class ReportCommand implements Subcommand {
     public void execute(final CommandSender sender, String[] args) {
         sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("report_wait"));
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 ReportBuilder builder = ReportBuilder.builder()

@@ -35,22 +35,22 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void dispatchCommand(String command) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 
     @Override
     public void executeAsync(Runnable runnable) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
     }
 
     @Override
     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, runnable, unit.toMillis(time) / 50);
+        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, runnable, unit.toMillis(time) / 50);
     }
 
     @Override
     public void executeBlocking(Runnable runnable) {
-        Bukkit.getScheduler().runTask(plugin, runnable);
+        plugin.getServer().getScheduler().runTask(plugin, runnable);
     }
 
     @Override
@@ -60,9 +60,9 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
 
     private Player getPlayer(QueuedPlayer player) {
         if (player.getUuid() != null && (plugin.getServer().getOnlineMode() || plugin.getConfiguration().isBungeeCord())) {
-            return Bukkit.getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
+            return plugin.getServer().getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
         }
-        return Bukkit.getPlayer(player.getName());
+        return plugin.getServer().getPlayer(player.getName());
     }
 
     @Override

@@ -65,7 +65,7 @@ public class RecentPurchaseSignListener implements Listener {
             event.setLine(i, "");
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new RecentPurchaseSignUpdateFetcher(plugin));
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new RecentPurchaseSignUpdateFetcher(plugin));
     }
 
     @EventHandler

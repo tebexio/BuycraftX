@@ -28,7 +28,7 @@ public class SignUpdateSubcommand implements Subcommand {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new RecentPurchaseSignUpdateFetcher(plugin));
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new RecentPurchaseSignUpdateFetcher(plugin));
         sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("sign_update_queued"));
     }
 

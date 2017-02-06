@@ -89,7 +89,7 @@ public class CategoryViewGUI {
             categoryMenus.put(category.getId(), pages);
             for (int i = 0; i < calculatePages(category); i++) {
                 GUIImpl gui = new GUIImpl(parent != null ? parent.getId() : null, i, category);
-                Bukkit.getPluginManager().registerEvents(gui, plugin);
+                plugin.getServer().getPluginManager().registerEvents(gui, plugin);
                 pages.add(gui);
             }
         } else {
@@ -105,7 +105,7 @@ public class CategoryViewGUI {
                 int toAdd = -toRemove;
                 for (int i = 0; i < toAdd; i++) {
                     GUIImpl gui = new GUIImpl(parent != null ? parent.getId() : null, pages.size(), category);
-                    Bukkit.getPluginManager().registerEvents(gui, plugin);
+                    plugin.getServer().getPluginManager().registerEvents(gui, plugin);
                     pages.add(gui);
                 }
             }
@@ -115,7 +115,7 @@ public class CategoryViewGUI {
                 if (gui.requiresResize(category)) {
                     HandlerList.unregisterAll(gui);
                     GUIImpl tmpGui = new GUIImpl(parent != null ? parent.getId() : null, i, category);
-                    Bukkit.getPluginManager().registerEvents(tmpGui, plugin);
+                    plugin.getServer().getPluginManager().registerEvents(tmpGui, plugin);
                     pages.set(i, tmpGui);
 
                     GUIUtil.replaceInventory(gui.inventory, tmpGui.inventory);
@@ -282,7 +282,7 @@ public class CategoryViewGUI {
                                 player.sendMessage(ChatColor.RED + plugin.getI18n().get("nothing_in_category"));
                                 return;
                             }
-                            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                            plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                                 @Override
                                 public void run() {
                                     gui.open(player);
@@ -299,20 +299,20 @@ public class CategoryViewGUI {
                             if (plugin.getBuyNowSignListener().getSettingUpSigns().containsKey(player.getUniqueId())) {
                                 plugin.getBuyNowSignListener().doSignSetup(player, aPackage);
                             } else {
-                                Bukkit.getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, aPackage.getId(), player));
+                                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new SendCheckoutLink(plugin, aPackage.getId(), player));
                             }
                             return;
                         }
                     }
                 } else if (displayName.equals(ChatColor.AQUA + plugin.getI18n().get("previous_page"))) {
-                    Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                    plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                         @Override
                         public void run() {
                             categoryMenus.get(category.getId()).get(page - 1).open(player);
                         }
                     });
                 } else if (displayName.equals(ChatColor.AQUA + plugin.getI18n().get("next_page"))) {
-                    Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                    plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                         @Override
                         public void run() {
                             categoryMenus.get(category.getId()).get(page + 1).open(player);
@@ -320,14 +320,14 @@ public class CategoryViewGUI {
                     });
                 } else if (stack.getType() == Material.BOOK_AND_QUILL) {
                     if (parentId != null) {
-                        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                             @Override
                             public void run() {
                                 categoryMenus.get(parentId).get(0).open(player);
                             }
                         });
                     } else {
-                        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                             @Override
                             public void run() {
                                 plugin.getViewCategoriesGUI().open(player);

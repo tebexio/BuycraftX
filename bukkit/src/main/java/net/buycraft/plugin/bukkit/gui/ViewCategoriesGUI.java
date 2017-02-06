@@ -96,7 +96,7 @@ public class ViewCategoriesGUI implements Listener {
                 return;
             }
 
-            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+            plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                 @Override
                 public void run() {
                     gui.open(player);
