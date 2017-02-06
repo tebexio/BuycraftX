@@ -131,7 +131,9 @@ public class DuePlayerFetcher implements Runnable {
         }
 
         if (!processNow.isEmpty()) {
-            platform.log(Level.INFO, String.format("Executing commands for %d online players...", processNow.size()));
+            if (verbose) {
+                platform.log(Level.INFO, String.format("Executing commands for %d online players...", processNow.size()));
+            }
             for (int i = 0; i < processNow.size(); i++) {
                 QueuedPlayer qp = processNow.get(i);
                 platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), DELAY_BETWEEN_PLAYERS * (i + 1), TimeUnit.MILLISECONDS);
