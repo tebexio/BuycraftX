@@ -1,40 +1,28 @@
 package net.buycraft.plugin.shared.util;
 
 import org.junit.Assert;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(Parameterized.class)
 public class CouponUtilTest {
-    public CouponUtilTest(String string, long expected) {
-        this.string = string;
-        this.expected = expected;
+    @Test
+    public void parseDurationEmptyDuration() {
+        Assert.assertEquals(0, CouponUtil.parseDuration(""));
     }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { "3m", TimeUnit.MINUTES.toMillis(3) },
-                { "30h", TimeUnit.HOURS.toMillis(30) },
-                { "30d", TimeUnit.DAYS.toMillis(30) },
-                { "30m", TimeUnit.MINUTES.toMillis(30) },
-                { "30w", TimeUnit.DAYS.toMillis(30*7) },
-                { "48h30m", TimeUnit.HOURS.toMillis(48) + TimeUnit.MINUTES.toMillis(30) },
-                { "1w7d24h60m", TimeUnit.DAYS.toMillis(15) + TimeUnit.HOURS.toMillis(1) },
-                { "60m7d24h1w", TimeUnit.DAYS.toMillis(15) + TimeUnit.HOURS.toMillis(1) }
-        });
+    @Test
+    public void parseDurationEmptyDuration2() {
+        Assert.assertEquals(0, CouponUtil.parseDuration("dwhm"));
     }
 
-    private final String string;
-    private final long expected;
-
-    @org.junit.Test
-    public void parseDuration() throws Exception {
-        Assert.assertEquals(expected, CouponUtil.parseDuration(string));
+    @Test
+    public void parseDurationPartialDuration() {
+        Assert.assertEquals(TimeUnit.DAYS.toMillis(8), CouponUtil.parseDuration("w7d24hm"));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void parseDurationInvalidFormat() {
+        Assert.assertEquals(TimeUnit.DAYS.toMillis(7), CouponUtil.parseDuration("xyz"));
+    }
 }
