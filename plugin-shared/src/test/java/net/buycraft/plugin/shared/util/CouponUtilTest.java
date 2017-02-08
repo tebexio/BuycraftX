@@ -24,7 +24,8 @@ public class CouponUtilTest {
                 { "30m", TimeUnit.MINUTES.toMillis(30) },
                 { "30w", TimeUnit.DAYS.toMillis(30*7) },
                 { "48h30m", TimeUnit.HOURS.toMillis(48) + TimeUnit.MINUTES.toMillis(30) },
-                { "1w7d24h60m", TimeUnit.DAYS.toMillis(15) + TimeUnit.HOURS.toMillis(1) }
+                { "1w7d24h60m", TimeUnit.DAYS.toMillis(15) + TimeUnit.HOURS.toMillis(1) },
+                { "60m7d24h1w", TimeUnit.DAYS.toMillis(15) + TimeUnit.HOURS.toMillis(1) }
         });
     }
 
