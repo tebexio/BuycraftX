@@ -1,0 +1,46 @@
+package net.buycraft.plugin.data;
+
+import com.google.gson.annotations.SerializedName;
+import lombok.Builder;
+import lombok.Value;
+
+import java.util.Date;
+import java.util.List;
+
+@Value
+@Builder
+public class Coupon {
+    private final int id;
+    private final String code;
+    private final Effective effective;
+    private final Discount discount;
+    private final Expire expire;
+    @SerializedName("basket_type")
+    private final String basketType;
+    @SerializedName("start_date")
+    private final Date startDate;
+    @SerializedName("user_limit")
+    private final int userLimit;
+    private final int minimum;
+
+    @Value
+    public static class Effective {
+        private final String type;
+        private final List<Integer> packages;
+        private final List<Integer> categories;
+    }
+
+    @Value
+    public static class Discount {
+        private final String type;
+        private final int percentage;
+        private final int value;
+    }
+
+    @Value
+    public static class Expire {
+        private final String type;
+        private final int limit;
+        private final Date date;
+    }
+}
