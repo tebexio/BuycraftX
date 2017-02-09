@@ -3,6 +3,7 @@ package net.buycraft.plugin.shared.util;
 import com.google.common.collect.ImmutableList;
 import net.buycraft.plugin.data.Coupon;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -57,7 +58,7 @@ public class CouponUtil {
         return new String(cs);
     }
 
-    public static void parseArguments(String[] args) {
+    public static Coupon parseArguments(String[] args) {
         Map<String, String> kv = new HashMap<>();
 
         String k = null;
@@ -72,7 +73,9 @@ public class CouponUtil {
 
         Coupon.CouponBuilder builder = Coupon.builder()
                 .code(generateCode())
-                .effective(new Coupon.Effective("cart", ImmutableList.<Integer>of(), ImmutableList.<Integer>of()));
+                .effective(new Coupon.Effective("cart", ImmutableList.<Integer>of(), ImmutableList.<Integer>of()))
+                .basketType("both")
+                .startDate(new Date());
 
         // Percentage / value discount
         String percentageStr = kv.get("percentage");
@@ -93,9 +96,7 @@ public class CouponUtil {
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("percentage is not valid (must be a number)");
             }
-        }
-
-        if (valueStr != null) {
+        } else {
             try {
                 builder.discount(new Coupon.Discount("value", 0, Integer.parseInt(valueStr)));
             } catch (NumberFormatException e) {
@@ -103,6 +104,48 @@ public class CouponUtil {
             }
         }
 
+        // Expiry: none, limit of uses or expiry,
+        String expiresStr = kv.get("expires");
+        String limitStr = kv.get("limit");
 
+        if (expiresStr != null && limitStr != null) {
+            throw new IllegalArgumentException("expires and limit are mutually exclusive");
+        }
+
+        if (expiresStr != null) {
+            long ms = parseDuration(expiresStr);
+            if (ms == 0) {
+                throw new IllegalArgumentException("Invalid duration!");
+            }
+            builder.expire(new Coupon.Expire("timestamp", 0, new Date(System.currentTimeMillis() + ms)));
+        } else if (limitStr != null) {
+            try {
+                builder.expire(new Coupon.Expire("limit", Integer.parseInt(limitStr), new Date()));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("limit is not valid (must be a number)");
+            }
+        } else {
+            builder.expire(new Coupon.Expire("never", 0, new Date()));
+        }
+
+        String minimumBasket = kv.get("min_value");
+        if (minimumBasket != null) {
+            try {
+                builder.minimum(Integer.parseInt(minimumBasket));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("min_value is not valid (must be a number)");
+            }
+        }
+
+        String perUserUses = kv.get("user_limit");
+        if (perUserUses != null) {
+            try {
+                builder.minimum(Integer.parseInt(perUserUses));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("user_limit is not valid (must be a number)");
+            }
+        }
+
+        return builder.build();
     }
 }
