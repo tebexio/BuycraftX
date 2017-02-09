@@ -30,6 +30,7 @@ public class ListingUpdateTask implements Runnable {
             listing.set(platform.getApiClient().retrieveListing());
         } catch (IOException | ApiException e) {
             platform.log(Level.SEVERE, "Error whilst retrieving listing", e);
+            return;
         }
 
         lastUpdate.set(new Date());
