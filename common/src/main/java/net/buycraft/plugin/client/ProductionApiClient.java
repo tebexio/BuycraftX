@@ -3,6 +3,7 @@ package net.buycraft.plugin.client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 import okhttp3.*;
@@ -143,5 +144,17 @@ public class ProductionApiClient implements ApiClient {
     public List<RecentPayment> getRecentPayments(int limit) throws IOException, ApiException {
         return get("/payments?limit=" + limit, CacheControl.FORCE_NETWORK, new TypeToken<List<RecentPayment>>() {
         }.getType());
+    }
+
+    @Override
+    public List<Coupon> getAllCoupons() throws IOException, ApiException {
+        CouponListing listing = get("/coupons", CouponListing.class);
+        return listing.getData();
+    }
+
+    @Override
+    public Coupon getCoupon(int id) throws IOException, ApiException {
+        CouponSingleListing listing = get("/coupons/" + id, CouponSingleListing.class);
+        return listing.getData();
     }
 }

@@ -1,5 +1,6 @@
 package net.buycraft.plugin.client;
 
+import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 
@@ -22,4 +23,8 @@ public interface ApiClient {
     CheckoutUrlResponse getCheckoutUri(String username, int packageId) throws IOException, ApiException;
 
     List<RecentPayment> getRecentPayments(int limit) throws IOException, ApiException;
+
+    List<Coupon> getAllCoupons() throws IOException, ApiException;
+
+    Coupon getCoupon(int id) throws IOException, ApiException;
 }

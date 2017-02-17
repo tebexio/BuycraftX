@@ -2,12 +2,15 @@ package net.buycraft.plugin.bukkit.command;
 
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class CouponSubcommand implements Subcommand {
@@ -39,13 +42,29 @@ public class CouponSubcommand implements Subcommand {
         }
     }
 
-    private void listCoupons(CommandSender sender, String[] args) {
+    private void listCoupons(final CommandSender sender, String[] args) {
         if (args.length != 1) {
             sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_params"));
             return;
         }
 
         // TODO: Handle listing coupons.
+        plugin.getPlatform().executeAsync(new Runnable() {
+            @Override
+            public void run() {
+                List<Coupon> couponList;
+                try {
+                    couponList = plugin.getApiClient().getAllCoupons();
+                } catch (IOException | ApiException e) {
+                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
+                    return;
+                }
+
+                for (Coupon coupon : couponList) {
+                    sender.sendMessage(coupon.getCode());
+                }
+            }
+        });
     }
 
     private void createCoupon(CommandSender sender, String[] args) {
