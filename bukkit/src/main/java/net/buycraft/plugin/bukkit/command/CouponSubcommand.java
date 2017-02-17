@@ -1,5 +1,6 @@
 package net.buycraft.plugin.bukkit.command;
 
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
@@ -9,11 +10,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class CouponSubcommand implements Subcommand {
+    private static final int COUPON_PAGE_LIMIT = 10;
+
     private final BuycraftPlugin plugin;
 
     @Override
@@ -48,7 +52,6 @@ public class CouponSubcommand implements Subcommand {
             return;
         }
 
-        // TODO: Handle listing coupons.
         plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {
@@ -60,9 +63,12 @@ public class CouponSubcommand implements Subcommand {
                     return;
                 }
 
+                List<String> codes = new ArrayList<>();
                 for (Coupon coupon : couponList) {
-                    sender.sendMessage(coupon.getCode());
+                    codes.add(coupon.getCode());
                 }
+
+                sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("coupon_listing_header", Joiner.on(", ").join(codes)));
             }
         });
     }

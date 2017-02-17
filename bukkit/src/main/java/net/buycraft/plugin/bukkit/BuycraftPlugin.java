@@ -35,6 +35,7 @@ import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
+import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
@@ -64,6 +65,8 @@ public class BuycraftPlugin extends JavaPlugin {
     private DuePlayerFetcher duePlayerFetcher;
     @Getter
     private ListingUpdateTask listingUpdateTask;
+    @Getter
+    private CouponUpdateTask couponUpdateTask;
     @Getter
     private ServerInformation serverInformation;
     @Getter
@@ -181,10 +184,13 @@ public class BuycraftPlugin extends JavaPlugin {
                 Bukkit.getScheduler().runTask(BuycraftPlugin.this, new BuyNowSignUpdater(BuycraftPlugin.this));
             }
         });
+        couponUpdateTask = new CouponUpdateTask(platform, null);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             try {
-                listingUpdateTask.run(); // for a first synchronous run
+                // for a first synchronous run
+                listingUpdateTask.run();
+                couponUpdateTask.run();;
 
                 // Update GUIs too.
                 viewCategoriesGUI.update();
@@ -193,6 +199,8 @@ public class BuycraftPlugin extends JavaPlugin {
                 getLogger().log(Level.SEVERE, "Unable to fetch server packages", e);
             }
             getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
+            // Coupons are updated more aggressively
+            getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60);
         }
 
         // Register listener.

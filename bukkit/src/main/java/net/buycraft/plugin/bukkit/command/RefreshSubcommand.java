@@ -23,6 +23,7 @@ public class RefreshSubcommand implements Subcommand {
         }
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, plugin.getListingUpdateTask());
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, plugin.getCouponUpdateTask());
         sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("refresh_queued"));
     }
 
