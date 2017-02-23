@@ -27,4 +27,6 @@ public interface ApiClient {
     List<Coupon> getAllCoupons() throws IOException, ApiException;
 
     Coupon getCoupon(int id) throws IOException, ApiException;
+
+    void deleteCoupon(int id) throws IOException, ApiException;
 }

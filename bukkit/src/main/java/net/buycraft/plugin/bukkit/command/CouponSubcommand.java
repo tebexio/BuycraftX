@@ -87,13 +87,30 @@ public class CouponSubcommand implements Subcommand {
         sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
     }
 
-    private void deleteCoupon(CommandSender sender, String[] args) {
+    private void deleteCoupon(final CommandSender sender, String[] args) {
         if (args.length != 2) {
             sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_coupon_specified"));
             return;
         }
 
-        // TODO: Handle coupon deletion.
+        final Coupon coupon = plugin.getCouponUpdateTask().getCouponByCode(args[1]);
+        if (coupon == null) {
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("coupon_not_found"));
+            return;
+        }
+
+        plugin.getPlatform().executeAsync(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    plugin.getApiClient().deleteCoupon(coupon.getId());
+                    sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_deleted"));
+                } catch (ApiException | IOException e) {
+                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
+                    return;
+                }
+            }
+        });
     }
 
     private void getCouponInfo(CommandSender sender, String[] args) {

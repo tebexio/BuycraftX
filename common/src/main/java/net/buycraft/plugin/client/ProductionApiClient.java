@@ -157,4 +157,19 @@ public class ProductionApiClient implements ApiClient {
         CouponSingleListing listing = get("/coupons/" + id, CouponSingleListing.class);
         return listing.getData();
     }
+
+    @Override
+    public void deleteCoupon(int id) throws IOException, ApiException {
+        Request request = getBuilder("/coupons/" + id)
+                .delete()
+                .build();
+
+        Response response = httpClient.newCall(request).execute();
+
+        try (ResponseBody rspBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw handleError(response, rspBody);
+            }
+        }
+    }
 }

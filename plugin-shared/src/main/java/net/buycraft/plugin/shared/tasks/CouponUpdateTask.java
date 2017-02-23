@@ -52,28 +52,15 @@ public class CouponUpdateTask implements Runnable {
         return lastUpdate.get();
     }
 
-    public int getCouponIdByCode(String code) {
+    public Coupon getCouponByCode(String code) {
         List<Coupon> listing = getListing();
         for (Coupon coupon : listing) {
             if (coupon.getCode().equalsIgnoreCase(code)) {
-                return coupon.getId();
+                return coupon;
             }
         }
-        return -1;
-    }
-
-    private Package doSearch(int id, Category category) {
-        for (Package aPackage : category.getPackages()) {
-            if (aPackage.getId() == id)
-                return aPackage;
-        }
-
-        for (Category sub : category.getSubcategories()) {
-            Package p = doSearch(id, sub);
-            if (p != null)
-                return p;
-        }
-
         return null;
     }
+
+
 }
