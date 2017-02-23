@@ -10,6 +10,7 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -169,6 +170,49 @@ public class ProductionApiClient implements ApiClient {
         try (ResponseBody rspBody = response.body()) {
             if (!response.isSuccessful()) {
                 throw handleError(response, rspBody);
+            }
+        }
+    }
+
+    @Override
+    public Coupon createCoupon(Coupon coupon) throws IOException, ApiException {
+        FormBody.Builder build = new FormBody.Builder()
+                .add("code", coupon.getCode())
+                .add("effective_on", coupon.getEffective().getType());
+        switch (coupon.getEffective().getType()) {
+            case "packages":
+                for (Integer id1 : coupon.getEffective().getPackages()) {
+                    build.add("packages[]", Integer.toString(id1));
+                }
+                break;
+            case "categories":
+                for (Integer id2 : coupon.getEffective().getCategories()) {
+                    build.add("categories[]", Integer.toString(id2));
+                }
+                break;
+        }
+        RequestBody body = build.add("discount_type", coupon.getDiscount().getType())
+                .add("discount_amount", Integer.toString(coupon.getDiscount().getValue()))
+                .add("discount_percentage", Integer.toString(coupon.getDiscount().getPercentage()))
+                .add("expire_type", coupon.getExpire().getType())
+                .add("expire_limit", Integer.toString(coupon.getExpire().getLimit()))
+                .add("expire_date", new SimpleDateFormat("yyyy-MM-dd").format(coupon.getExpire().getDate()))
+                .add("start_date", new SimpleDateFormat("yyyy-MM-dd").format(coupon.getStartDate()))
+                .add("basket_type", coupon.getBasketType())
+                .add("minimum", Integer.toString(coupon.getMinimum()))
+                .add("redeem_limit", Integer.toString(coupon.getUserLimit()))
+                .build();
+
+        Request request = getBuilder("/coupons")
+                .post(body)
+                .build();
+        Response response = httpClient.newCall(request).execute();
+
+        try (ResponseBody rspBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw handleError(response, rspBody);
+            } else {
+                return gson.fromJson(rspBody.charStream(), CouponSingleListing.class).getData();
             }
         }
     }

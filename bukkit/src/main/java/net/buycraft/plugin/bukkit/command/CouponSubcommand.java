@@ -73,9 +73,9 @@ public class CouponSubcommand implements Subcommand {
         });
     }
 
-    private void createCoupon(CommandSender sender, String[] args) {
+    private void createCoupon(final CommandSender sender, String[] args) {
         String[] stripped = Arrays.copyOfRange(args, 1, args.length);
-        Coupon coupon;
+        final Coupon coupon;
         try {
             coupon = CouponUtil.parseArguments(stripped);
         } catch (Exception e) {
@@ -83,8 +83,17 @@ public class CouponSubcommand implements Subcommand {
             return;
         }
 
-        // TODO: Handle creation.
-        sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
+        plugin.getPlatform().executeAsync(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    plugin.getApiClient().createCoupon(coupon);
+                    sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success"));
+                } catch (ApiException | IOException e) {
+                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
+                }
+            }
+        });
     }
 
     private void deleteCoupon(final CommandSender sender, String[] args) {
