@@ -88,7 +88,7 @@ public class CouponSubcommand implements Subcommand {
             public void run() {
                 try {
                     plugin.getApiClient().createCoupon(coupon);
-                    sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success"));
+                    sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
                 } catch (ApiException | IOException e) {
                     sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
                 }
