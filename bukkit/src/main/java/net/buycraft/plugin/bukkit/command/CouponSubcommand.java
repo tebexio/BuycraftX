@@ -65,6 +65,7 @@ public class CouponSubcommand implements Subcommand {
 
                 List<String> codes = new ArrayList<>();
                 for (Coupon coupon : couponList) {
+                    // TODO: Exclude expired coupons
                     codes.add(coupon.getCode());
                 }
 
@@ -125,6 +126,12 @@ public class CouponSubcommand implements Subcommand {
     private void getCouponInfo(CommandSender sender, String[] args) {
         if (args.length != 2) {
             sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_coupon_specified"));
+            return;
+        }
+
+        final Coupon coupon = plugin.getCouponUpdateTask().getCouponByCode(args[1]);
+        if (coupon == null) {
+            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("coupon_not_found"));
             return;
         }
 

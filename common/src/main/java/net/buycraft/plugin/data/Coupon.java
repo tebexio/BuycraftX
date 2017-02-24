@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
 import lombok.Value;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -33,8 +34,8 @@ public class Coupon {
     @Value
     public static class Discount {
         private final String type;
-        private final int percentage;
-        private final int value;
+        private final BigDecimal percentage;
+        private final BigDecimal value;
     }
 
     @Value

@@ -192,8 +192,8 @@ public class ProductionApiClient implements ApiClient {
                 break;
         }
         RequestBody body = build.add("discount_type", coupon.getDiscount().getType())
-                .add("discount_amount", Integer.toString(coupon.getDiscount().getValue()))
-                .add("discount_percentage", Integer.toString(coupon.getDiscount().getPercentage()))
+                .add("discount_amount", coupon.getDiscount().getValue().toPlainString())
+                .add("discount_percentage", coupon.getDiscount().getPercentage().toPlainString())
                 .add("expire_type", coupon.getExpire().getType())
                 .add("expire_limit", Integer.toString(coupon.getExpire().getLimit()))
                 .add("expire_date", new SimpleDateFormat("yyyy-MM-dd").format(coupon.getExpire().getDate()))

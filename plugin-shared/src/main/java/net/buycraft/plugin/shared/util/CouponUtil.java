@@ -3,6 +3,7 @@ package net.buycraft.plugin.shared.util;
 import com.google.common.collect.ImmutableList;
 import net.buycraft.plugin.data.Coupon;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,13 +93,13 @@ public class CouponUtil {
 
         if (percentageStr != null) {
             try {
-                builder.discount(new Coupon.Discount("percentage", Integer.parseInt(percentageStr), 0));
+                builder.discount(new Coupon.Discount("percentage", new BigDecimal(percentageStr), BigDecimal.ZERO));
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("percentage is not valid (must be a number)");
             }
         } else {
             try {
-                builder.discount(new Coupon.Discount("value", 0, Integer.parseInt(valueStr)));
+                builder.discount(new Coupon.Discount("value", BigDecimal.ZERO, new BigDecimal(valueStr)));
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("value is not valid (must be a number)");
             }
