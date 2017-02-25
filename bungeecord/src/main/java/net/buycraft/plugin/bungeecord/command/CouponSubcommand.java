@@ -1,13 +1,13 @@
-package net.buycraft.plugin.bukkit.command;
+package net.buycraft.plugin.bungeecord.command;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import net.buycraft.plugin.bukkit.BuycraftPlugin;
+import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 
 import java.io.IOException;
 import java.util.ArrayList;

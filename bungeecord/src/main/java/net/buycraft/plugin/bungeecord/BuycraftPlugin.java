@@ -5,10 +5,7 @@ import com.google.common.base.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.bungeecord.command.ForceCheckSubcommand;
-import net.buycraft.plugin.bungeecord.command.InformationSubcommand;
-import net.buycraft.plugin.bungeecord.command.ReportCommand;
-import net.buycraft.plugin.bungeecord.command.SecretSubcommand;
+import net.buycraft.plugin.bungeecord.command.*;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
@@ -25,6 +22,7 @@ import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
+import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -66,6 +64,8 @@ public class BuycraftPlugin extends Plugin {
     private PostCompletedCommandsTask completedCommandsTask;
     @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
+    @Getter
+    private CouponUpdateTask couponUpdateTask;
 
     @Override
     public void onEnable() {
@@ -177,6 +177,15 @@ public class BuycraftPlugin extends Plugin {
         getProxy().getScheduler().schedule(this, (Runnable) commandExecutor, 50, 50, TimeUnit.MILLISECONDS);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         getProxy().getScheduler().schedule(this, playerJoinCheckTask, 1, 1, TimeUnit.SECONDS);
+        couponUpdateTask = new CouponUpdateTask(platform, null);
+        if (apiClient != null) {
+            try {
+                couponUpdateTask.run();
+            } catch (Exception e) {
+                getLogger().log(Level.SEVERE, "Can't update coupon listing", e);
+            }
+        }
+        getProxy().getScheduler().schedule(this, couponUpdateTask, 1, 1, TimeUnit.MINUTES);
 
         // Register listener.
         getProxy().getPluginManager().registerListener(this, new BuycraftListener(this));
@@ -187,6 +196,7 @@ public class BuycraftPlugin extends Plugin {
         command.getSubcommandMap().put("secret", new SecretSubcommand(this));
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
         command.getSubcommandMap().put("report", new ReportCommand(this));
+        command.getSubcommandMap().put("coupon", new CouponSubcommand(this));
         getProxy().getPluginManager().registerCommand(this, command);
 
         // Send data to Keen IO
