@@ -37,9 +37,6 @@ public class CouponSubcommand implements Subcommand {
             case "delete":
                 deleteCoupon(sender, args);
                 break;
-            case "information":
-                getCouponInfo(sender, args);
-                break;
             default:
                 sender.sendMessage(ChatColor.RED + plugin.getI18n().get("usage_coupon_subcommands"));
                 break;
@@ -52,26 +49,15 @@ public class CouponSubcommand implements Subcommand {
             return;
         }
 
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                List<Coupon> couponList;
-                try {
-                    couponList = plugin.getApiClient().getAllCoupons();
-                } catch (IOException | ApiException e) {
-                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
-                    return;
-                }
+        List<Coupon> couponList = plugin.getCouponUpdateTask().getListing();
 
-                List<String> codes = new ArrayList<>();
-                for (Coupon coupon : couponList) {
-                    // TODO: Exclude expired coupons
-                    codes.add(coupon.getCode());
-                }
+        List<String> codes = new ArrayList<>();
+        for (Coupon coupon : couponList) {
+            // TODO: Exclude expired coupons
+            codes.add(coupon.getCode());
+        }
 
-                sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("coupon_listing_header", Joiner.on(", ").join(codes)));
-            }
-        });
+        sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("coupon_listing_header", Joiner.on(", ").join(codes)));
     }
 
     private void createCoupon(final CommandSender sender, String[] args) {
@@ -90,6 +76,8 @@ public class CouponSubcommand implements Subcommand {
                 try {
                     plugin.getApiClient().createCoupon(coupon);
                     sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
+
+                    plugin.getPlatform().executeAsync(plugin.getCouponUpdateTask());
                 } catch (ApiException | IOException e) {
                     sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
                 }
@@ -115,27 +103,14 @@ public class CouponSubcommand implements Subcommand {
                 try {
                     plugin.getApiClient().deleteCoupon(coupon.getId());
                     sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_deleted"));
+
+                    plugin.getPlatform().executeAsync(plugin.getCouponUpdateTask());
                 } catch (ApiException | IOException e) {
                     sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
                     return;
                 }
             }
         });
-    }
-
-    private void getCouponInfo(CommandSender sender, String[] args) {
-        if (args.length != 2) {
-            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_coupon_specified"));
-            return;
-        }
-
-        final Coupon coupon = plugin.getCouponUpdateTask().getCouponByCode(args[1]);
-        if (coupon == null) {
-            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("coupon_not_found"));
-            return;
-        }
-
-        // TODO: Handle displaying coupon information.
     }
 
     @Override

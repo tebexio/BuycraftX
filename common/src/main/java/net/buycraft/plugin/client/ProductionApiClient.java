@@ -16,9 +16,10 @@ import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
+    private static final String API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     private final Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .setDateFormat(API_DATE_FORMAT)
             .create();
     private final OkHttpClient httpClient;
     private final String secret;
@@ -196,8 +197,8 @@ public class ProductionApiClient implements ApiClient {
                 .add("discount_percentage", coupon.getDiscount().getPercentage().toPlainString())
                 .add("expire_type", coupon.getExpire().getType())
                 .add("expire_limit", Integer.toString(coupon.getExpire().getLimit()))
-                .add("expire_date", new SimpleDateFormat("yyyy-MM-dd").format(coupon.getExpire().getDate()))
-                .add("start_date", new SimpleDateFormat("yyyy-MM-dd").format(coupon.getStartDate()))
+                .add("expire_date", new SimpleDateFormat(API_DATE_FORMAT).format(coupon.getExpire().getDate()))
+                .add("start_date", new SimpleDateFormat(API_DATE_FORMAT).format(coupon.getStartDate()))
                 .add("basket_type", coupon.getBasketType())
                 .add("minimum", Integer.toString(coupon.getMinimum()))
                 .add("redeem_limit", Integer.toString(coupon.getUserLimit()))
