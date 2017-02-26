@@ -30,7 +30,7 @@ public class CouponCmd {
             codes.add(coupon.getCode());
         }
 
-        source.sendMessage(Text.builder(plugin.getI18n().get("coupon_listing_header", Joiner.on(", ").join(codes)))
+        source.sendMessage(Text.builder(plugin.getI18n().get("coupon_listing", Joiner.on(", ").join(codes)))
                 .color(TextColors.YELLOW)
                 .build());
 

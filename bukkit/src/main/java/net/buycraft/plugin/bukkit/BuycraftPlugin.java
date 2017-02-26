@@ -190,7 +190,7 @@ public class BuycraftPlugin extends JavaPlugin {
             try {
                 // for a first synchronous run
                 listingUpdateTask.run();
-                couponUpdateTask.run();;
+                couponUpdateTask.run();
 
                 // Update GUIs too.
                 viewCategoriesGUI.update();

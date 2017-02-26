@@ -56,7 +56,7 @@ public class CouponSubcommand implements Subcommand {
             codes.add(coupon.getCode());
         }
 
-        sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("coupon_listing_header", Joiner.on(", ").join(codes)));
+        sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("coupon_listing", Joiner.on(", ").join(codes)));
     }
 
     private void createCoupon(final CommandSender sender, String[] args) {

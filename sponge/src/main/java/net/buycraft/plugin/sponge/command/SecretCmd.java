@@ -46,6 +46,7 @@ public class SecretCmd implements CommandExecutor {
                         ServerInformation information = plugin.getServerInformation();
                         plugin.setApiClient(client);
                         plugin.getListingUpdateTask().run();
+                        plugin.getCouponUpdateTask().run();
                         plugin.getConfiguration().setServerKey((String) args.getOne("secret").get());
                         try {
                             plugin.saveConfiguration();

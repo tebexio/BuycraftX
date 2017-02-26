@@ -43,6 +43,7 @@ public class SecretSubcommand implements Subcommand {
                 ServerInformation information = plugin.getServerInformation();
                 plugin.setApiClient(client);
                 plugin.getConfiguration().setServerKey(args[0]);
+                plugin.getCouponUpdateTask().run();
                 try {
                     plugin.saveConfiguration();
                 } catch (IOException e) {

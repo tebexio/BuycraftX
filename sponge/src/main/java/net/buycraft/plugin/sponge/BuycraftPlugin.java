@@ -289,7 +289,7 @@ public class BuycraftPlugin {
                 .build();
         CommandSpec create = CommandSpec.builder()
                 .executor(cmd::createCoupon)
-                .arguments(GenericArguments.string(Text.of("args")))
+                .arguments(GenericArguments.allOf(GenericArguments.string(Text.of("args"))))
                 .build();
         CommandSpec delete = CommandSpec.builder()
                 .executor(cmd::deleteCoupon)
