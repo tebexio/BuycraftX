@@ -198,10 +198,9 @@ public class BuycraftPlugin extends JavaPlugin {
             } catch (Exception e) {
                 getLogger().log(Level.SEVERE, "Unable to fetch server packages", e);
             }
-            getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
-            // Coupons are updated more aggressively
-            getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60);
         }
+        getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
