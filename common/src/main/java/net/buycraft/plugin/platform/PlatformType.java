@@ -6,6 +6,7 @@ public enum PlatformType {
     BUKKIT,
     BUNGEECORD,
     SPONGE,
+    NUKKIT,
     NONE;
 
     public String platformName() {

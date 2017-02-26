@@ -14,6 +14,7 @@
         <module>sponge</module>
         <module>bungeecord</module>
         <module>plugin-shared</module>
+        <module>nukkit</module>
     </modules>
 
     <repositories>
@@ -28,6 +29,10 @@
         <repository>
             <id>stealthyone-repo</id>
             <url>http://repo.stealthyone.com/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>mengcraft-repo</id>
+            <url>http://ci.mengcraft.com:8080/plugin/repository/everything/</url>
         </repository>
     </repositories>
 
