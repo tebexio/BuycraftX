@@ -4,7 +4,6 @@ import cn.nukkit.plugin.PluginLogger;
 import com.bugsnag.Bugsnag;
 import com.bugsnag.Severity;
 import lombok.AllArgsConstructor;
-import net.buycraft.plugin.sponge.BuycraftPlugin;
 
 import java.util.logging.Level;
 
@@ -19,19 +18,27 @@ public class LoggerUtils {
 
     public void log(Level level, String message, Throwable e) {
         if (level == Level.INFO) {
-            logger.info(message, e);
+            if (e != null) {
+                logger.info(message, e);
+            } else {
+                logger.info(message);
+            }
         } else if (level == Level.WARNING) {
             if (e != null) {
                 bugsnagClient.notify(bugsnagClient.buildReport(e)
                         .setSeverity(Severity.WARNING));
+                logger.warning(message, e);
+            } else {
+                logger.warning(message);
             }
-            logger.warning(message, e);
         } else if (level == Level.SEVERE) {
             if (e != null) {
                 bugsnagClient.notify(bugsnagClient.buildReport(e)
                         .setSeverity(Severity.ERROR));
+                logger.error(message, e);
+            } else {
+                logger.error(message);
             }
-            logger.error(message, e);
         }
     }
 }

@@ -12,6 +12,12 @@
     <artifactId>buycraftx-nukkit</artifactId>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -36,10 +42,6 @@
                         <relocation>
                             <pattern>com.bugsnag</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.bugsnag</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.google.gson</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.gson</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>okhttp3</pattern>
@@ -91,11 +93,6 @@
             <artifactId>buycraftx-plugin-shared</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.buycraft</groupId>
-            <artifactId>buycraftx-sponge</artifactId>
-            <version>10.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
