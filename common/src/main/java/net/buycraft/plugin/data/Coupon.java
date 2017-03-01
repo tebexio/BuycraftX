@@ -22,7 +22,7 @@ public class Coupon {
     private final Date startDate;
     @SerializedName("user_limit")
     private final int userLimit;
-    private final int minimum;
+    private final BigDecimal minimum;
 
     @Value
     public static class Effective {
