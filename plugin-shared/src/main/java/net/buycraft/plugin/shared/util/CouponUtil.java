@@ -132,7 +132,7 @@ public class CouponUtil {
         String minimumBasket = kv.get("min_value");
         if (minimumBasket != null) {
             try {
-                builder.minimum(Integer.parseInt(minimumBasket));
+                builder.minimum(new BigDecimal(minimumBasket));
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("min_value is not valid (must be a number)");
             }
@@ -141,7 +141,7 @@ public class CouponUtil {
         String perUserUses = kv.get("user_limit");
         if (perUserUses != null) {
             try {
-                builder.minimum(Integer.parseInt(perUserUses));
+                builder.userLimit(Integer.parseInt(perUserUses));
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("user_limit is not valid (must be a number)");
             }

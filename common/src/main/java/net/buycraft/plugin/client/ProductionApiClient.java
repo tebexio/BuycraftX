@@ -200,7 +200,7 @@ public class ProductionApiClient implements ApiClient {
                 .add("expire_date", new SimpleDateFormat(API_DATE_FORMAT).format(coupon.getExpire().getDate()))
                 .add("start_date", new SimpleDateFormat(API_DATE_FORMAT).format(coupon.getStartDate()))
                 .add("basket_type", coupon.getBasketType())
-                .add("minimum", Integer.toString(coupon.getMinimum()))
+                .add("minimum", coupon.getMinimum().toPlainString())
                 .add("redeem_limit", Integer.toString(coupon.getUserLimit()))
                 .build();
 
