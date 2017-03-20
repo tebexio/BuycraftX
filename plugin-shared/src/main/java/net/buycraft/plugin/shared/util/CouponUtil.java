@@ -136,6 +136,8 @@ public class CouponUtil {
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("min_value is not valid (must be a number)");
             }
+        } else {
+            builder.minimum(BigDecimal.ZERO);
         }
 
         String perUserUses = kv.get("user_limit");
