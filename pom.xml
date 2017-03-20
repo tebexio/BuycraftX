@@ -26,14 +26,6 @@
             <id>oss-sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
-        <repository>
-            <id>stealthyone-repo</id>
-            <url>http://repo.stealthyone.com/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>regularbox-nukkit-repo</id>
-            <url>http://ci.regularbox.com/job/Nukkit/lastSuccessfulBuild/maven-repository/</url>
-        </repository>
     </repositories>
 
     <dependencies>

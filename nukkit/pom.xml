@@ -76,8 +76,8 @@
 
     <repositories>
         <repository>
-            <id>sponge-repo</id>
-            <url>https://repo.spongepowered.org/maven</url>
+            <id>regularbox-nukkit-repo</id>
+            <url>http://ci.regularbox.com/job/Nukkit/lastSuccessfulBuild/maven-repository/</url>
         </repository>
     </repositories>
 
