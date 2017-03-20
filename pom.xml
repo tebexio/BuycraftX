@@ -31,8 +31,8 @@
             <url>http://repo.stealthyone.com/content/groups/public</url>
         </repository>
         <repository>
-            <id>mengcraft-repo</id>
-            <url>http://ci.mengcraft.com:8080/plugin/repository/everything/</url>
+            <id>regularbox-nukkit-repo</id>
+            <url>http://ci.regularbox.com/job/Nukkit/lastSuccessfulBuild/maven-repository/</url>
         </repository>
     </repositories>
 
