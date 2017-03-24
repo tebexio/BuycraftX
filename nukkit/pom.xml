@@ -77,7 +77,7 @@
     <repositories>
         <repository>
             <id>regularbox-nukkit-repo</id>
-            <url>http://ci.regularbox.com/job/Nukkit/lastSuccessfulBuild/maven-repository/</url>
+            <url>http://ci.regularbox.com/job/Nukkit/512/maven-repository/repository/</url>
         </repository>
     </repositories>
 
