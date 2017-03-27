@@ -35,21 +35,21 @@ public class VersionUtil {
         String[] componentsOne = one.split("\\.");
         String[] componentsTwo = two.split("\\.");
 
-        int verLen = Math.max(componentsOne.length, componentsTwo.length);
+        int verLen = Math.min(componentsOne.length, componentsTwo.length);
 
         int[] numOne = new int[verLen];
         int[] numTwo = new int[verLen];
 
         // We expect integers only
-        for (int i = 0; i < componentsOne.length; i++) {
+        for (int i = 0; i < verLen; i++) {
             numOne[i] = Integer.parseInt(componentsOne[i]);
         }
-        for (int i = 0; i < componentsTwo.length; i++) {
+        for (int i = 0; i < verLen; i++) {
             numTwo[i] = Integer.parseInt(componentsTwo[i]);
         }
 
         // Compare the versions
-        for (int i = 0; i < numOne.length; i++) {
+        for (int i = 0; i < verLen; i++) {
             if (numTwo[i] == numOne[i])
                 continue;
 
