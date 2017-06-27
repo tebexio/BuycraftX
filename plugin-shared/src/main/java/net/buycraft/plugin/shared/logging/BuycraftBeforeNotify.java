@@ -15,6 +15,11 @@ public class BuycraftBeforeNotify implements Callback {
             if (exception.getReceivedResponse() != null) {
                 report.addToTab("http", "receivedResponse", exception.getReceivedResponse().toString());
                 report.addToTab("http", "receivedHeaders", exception.getReceivedResponse().headers().toString());
+                try {
+                    exception.getReceivedResponse().close();
+                } catch (Exception e) {
+                    // not much we can do... gotta catch them all, I guess
+                }
             }
             if (exception.getResponseBody() != null) {
                 report.addToTab("http", "receivedBody", exception.getResponseBody());
