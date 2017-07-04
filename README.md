@@ -28,3 +28,8 @@ BuycraftX stack if desired.
 ## Support
 
 Please don't raise support issues on this repo. For support with the plugin or any Buycraft issues, please [contact support](http://help.buycraft.net)
+
+## Contributing
+
+We welcome contributions from the community. Please refer to the CONTRIBUTING.md file for more details. By submitting code to us, you agree to the 
+terms set out in the CONTRIBUTING.md file
