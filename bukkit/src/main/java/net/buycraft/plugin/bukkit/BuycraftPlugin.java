@@ -149,7 +149,7 @@ public class BuycraftPlugin extends JavaPlugin {
 
         // Check for latest version.
         if (configuration.isCheckForUpdates()) {
-            VersionCheck check = new VersionCheck(this, getDescription().getVersion());
+            VersionCheck check = new VersionCheck(this, getDescription().getVersion(), configuration.getServerKey());
             try {
                 check.verify();
             } catch (IOException e) {
@@ -200,7 +200,7 @@ public class BuycraftPlugin extends JavaPlugin {
             }
         }
         getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
-        getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60 * 10);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);

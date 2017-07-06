@@ -24,6 +24,9 @@ public class CouponUpdateTask implements Runnable {
 
     @Override
     public void run() {
+
+        platform.log(Level.INFO, "Updating coupon list...");
+
         if (platform.getApiClient() == null) {
             // no API client
             return;
