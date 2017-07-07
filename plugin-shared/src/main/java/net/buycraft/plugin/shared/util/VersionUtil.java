@@ -12,14 +12,16 @@ import java.io.IOException;
 
 @UtilityClass
 public class VersionUtil {
-    public static Version getVersion(OkHttpClient client, String platform) throws IOException {
+    public static Version getVersion(OkHttpClient client, String platform, String secret) throws IOException {
         Request request = new Request.Builder()
                 .url("https://plugin.buycraft.net/versions/" + platform)
+                .addHeader("X-Buycraft-Secret", secret)
                 .build();
 
         Response response = client.newCall(request).execute();
 
         if (!response.isSuccessful()) {
+            response.body().close();
             return null;
         }
 

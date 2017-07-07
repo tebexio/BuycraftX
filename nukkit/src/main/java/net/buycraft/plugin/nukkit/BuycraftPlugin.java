@@ -112,7 +112,7 @@ public class BuycraftPlugin extends PluginBase {
 
         // Check for latest version.
         if (configuration.isCheckForUpdates()) {
-            final VersionCheck check = new VersionCheck(this, getDescription().getVersion());
+            final VersionCheck check = new VersionCheck(this, getDescription().getVersion(), configuration.getServerKey());
             try {
                 check.verify();
             } catch (IOException e) {
@@ -141,7 +141,7 @@ public class BuycraftPlugin extends PluginBase {
                 getLogger().error("Can't update coupon listing", e);
             }
         }
-        getServer().getScheduler().scheduleDelayedRepeatingTask(this, couponUpdateTask, 20*60, 20*60);
+        getServer().getScheduler().scheduleDelayedRepeatingTask(this, couponUpdateTask, 20*60, 20*60*10);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);

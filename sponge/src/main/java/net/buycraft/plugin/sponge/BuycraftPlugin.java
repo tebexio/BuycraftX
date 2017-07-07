@@ -130,7 +130,7 @@ public class BuycraftPlugin {
         String curVersion = getClass().getAnnotation(Plugin.class).version();
 
         if (configuration.isCheckForUpdates()) {
-            VersionCheck check = new VersionCheck(this, curVersion);
+            VersionCheck check = new VersionCheck(this, curVersion, configuration.getServerKey());
             try {
                 check.verify();
             } catch (IOException e) {
@@ -175,7 +175,7 @@ public class BuycraftPlugin {
         }
         Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60 * 20).intervalTicks(20 * 60 * 20).execute(listingUpdateTask).async()
                 .submit(this);
-        Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60).intervalTicks(20 * 60).execute(couponUpdateTask).async()
+        Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60).intervalTicks(20 * 60 * 10).execute(couponUpdateTask).async()
                 .submit(this);
 
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();

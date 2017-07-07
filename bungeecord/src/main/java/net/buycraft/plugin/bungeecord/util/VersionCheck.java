@@ -19,6 +19,7 @@ import static net.buycraft.plugin.shared.util.VersionUtil.isVersionGreater;
 public class VersionCheck implements Listener {
     private final BuycraftPlugin plugin;
     private final String pluginVersion;
+    private final String secret;
     @Getter
     private Version lastKnownVersion;
     @Getter
@@ -29,7 +30,7 @@ public class VersionCheck implements Listener {
             return; // SNAPSHOT versions ignore updates
         }
 
-        lastKnownVersion = VersionUtil.getVersion(plugin.getHttpClient(), "bungeecord");
+        lastKnownVersion = VersionUtil.getVersion(plugin.getHttpClient(), "bungeecord", secret);
 
         if (lastKnownVersion == null) {
             return;
