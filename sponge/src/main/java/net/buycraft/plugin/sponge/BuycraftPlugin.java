@@ -33,6 +33,7 @@ import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
+import net.buycraft.plugin.sponge.tasks.BuyNowSignUpdater;
 import net.buycraft.plugin.sponge.util.VersionCheck;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -230,6 +231,12 @@ public class BuycraftPlugin {
                 .delay(1, TimeUnit.SECONDS)
                 .interval(15, TimeUnit.MINUTES)
                 .execute(new SignUpdater(this))
+                .submit(this);
+
+        Sponge.getScheduler().createTaskBuilder()
+                .delay(1, TimeUnit.SECONDS)
+                .interval(15, TimeUnit.MINUTES)
+                .execute(new BuyNowSignUpdater(this))
                 .submit(this);
 
         if (serverInformation != null) {
