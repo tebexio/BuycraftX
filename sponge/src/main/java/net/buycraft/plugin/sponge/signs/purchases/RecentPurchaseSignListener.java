@@ -109,27 +109,15 @@ public class RecentPurchaseSignListener {
 
     @Listener
     public void onBlockBreak(ChangeBlockEvent.Break event) {
-        for (Transaction<BlockSnapshot> transaction : event.getTransactions()) {
-            Optional<Location<World>> locationOptional = transaction.getOriginal().getLocation();
-            Optional<Player> playerOptional = event.getCause().first(Player.class);
-            if (locationOptional.isPresent() && playerOptional.isPresent()) {
-                Location<World> location = locationOptional.get();
-                if (isSign(location)) {
-                    if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(location))) {
-                        event.setCancelled(true);
-                    }
-                } else {
-                    for (Direction direction : SignUpdateApplication.SKULL_CHECK) {
-                        Location<World> rel = location.getRelative(direction);
-                        if (isSign(rel)) {
-                            if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(rel))) {
-                                event.setCancelled(true);
-                            }
-                            return;
-                        }
-                    }
+        event.getTransactions().stream().forEach((trans) -> {
+            if ((trans.getOriginal().getState().getType().equals(BlockTypes.WALL_SIGN) || trans.getOriginal().getState().getType().equals(BlockTypes.STANDING_SIGN))) {
+                Optional<Location<World>> locationOptional = trans.getOriginal().getLocation();
+                Optional<Player> playerOptional = event.getCause().first(Player.class);
+                if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(locationOptional.get()))) {
+                    event.setCancelled(true);
                 }
+
             }
-        }
+        });
     }
 }
