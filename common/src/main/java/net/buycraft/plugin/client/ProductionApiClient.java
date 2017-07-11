@@ -7,6 +7,7 @@ import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 import okhttp3.*;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -59,18 +60,26 @@ public class ProductionApiClient implements ApiClient {
     }
 
     private <T> T get(String endpoint, CacheControl control, Type type) throws IOException, ApiException {
-        Request.Builder requestBuilder = getBuilder(endpoint).get();
-        if (control != null) requestBuilder.cacheControl(control);
-        Request request = requestBuilder.build();
+        try {
+            Request.Builder requestBuilder = getBuilder(endpoint).get();
+            if (control != null) requestBuilder.cacheControl(control);
+            Request request = requestBuilder.build();
 
-        Response response = httpClient.newCall(request).execute();
+            Response response = httpClient.newCall(request).execute();
 
-        try (ResponseBody body = response.body()) {
-            if (response.isSuccessful()) {
-                return gson.fromJson(body.charStream(), type);
-            } else {
-                throw handleError(response, body);
+            try (ResponseBody body = response.body()) {
+                if (response.isSuccessful()) {
+                    try {
+                        return gson.fromJson(body.charStream(), type);
+                    } catch (JsonSyntaxException e) {
+                        throw new ApiException("Unable to parse response.", response.request(), response, body.string());
+                    }
+                } else {
+                    throw handleError(response, body);
+                }
             }
+        } catch (Exception e) {
+            throw new ApiException("Unable to connect to API");
         }
     }
 
