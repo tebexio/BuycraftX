@@ -22,6 +22,8 @@ import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
+import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
+import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
 import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
@@ -29,6 +31,7 @@ import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
+import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.VersionCheck;
 import okhttp3.OkHttpClient;
@@ -71,6 +74,8 @@ public class BuycraftPlugin {
     @Getter
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
     @Getter
+    private BuyNowSignStorage buyNowSignStorage;
+    @Getter
     private OkHttpClient httpClient;
     @Getter
     private IBuycraftPlatform platform;
@@ -90,6 +95,9 @@ public class BuycraftPlugin {
 
     @Getter
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
+
+    @Getter
+    private BuyNowSignLayout buyNowSignLayout = BuyNowSignLayout.DEFAULT;
 
     @Getter
     private BuycraftI18n i18n;
@@ -185,6 +193,13 @@ public class BuycraftPlugin {
             logger.warn("Can't load purchase signs, continuing anyway", e);
         }
 
+        buyNowSignStorage = new BuyNowSignStorage();
+        try {
+            buyNowSignStorage.load(baseDirectory.resolve("buy_now_signs.json"));
+        } catch (IOException | JsonParseException e) {
+            logger.warn("Can't load purchase signs, continuing anyway", e);
+        }
+
         try {
             Path signLayoutDirectory = baseDirectory.resolve("sign_layouts");
             try {
@@ -193,12 +208,20 @@ public class BuycraftPlugin {
             }
 
             Path rpPath = signLayoutDirectory.resolve("recentpurchase.txt");
+            Path bnPath = signLayoutDirectory.resolve("buynow.txt");
+
             try {
                 Files.copy(getClass().getClassLoader().getResourceAsStream("sign_layouts/recentpurchase.txt"), rpPath);
             } catch (FileAlreadyExistsException ignored) {
             }
 
+            try {
+                Files.copy(getClass().getClassLoader().getResourceAsStream("sign_layouts/buynow.txt"), bnPath);
+            } catch (FileAlreadyExistsException ignored) {
+            }
+
             recentPurchaseSignLayout = new RecentPurchaseSignLayout(Files.readAllLines(rpPath, StandardCharsets.UTF_8));
+            buyNowSignLayout = new BuyNowSignLayout(Files.readAllLines(bnPath, StandardCharsets.UTF_8));
         } catch (IOException e) {
             getLogger().error("Unable to load sign layouts", e);
         }
@@ -226,6 +249,7 @@ public class BuycraftPlugin {
 
         Sponge.getEventManager().registerListeners(this, new BuycraftListener(this));
         Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
+        Sponge.getEventManager().registerListeners(this, new BuyNowSignListener(this));
 
         Sponge.getCommandManager().register(this, buildCommands(), "buycraft");
         Sponge.getCommandManager().register(this, CommandSpec.builder()
@@ -238,6 +262,12 @@ public class BuycraftPlugin {
     public void onGameStoppingServerEvent(GameStoppingServerEvent event) {
         try {
             recentPurchaseSignStorage.save(baseDirectory.resolve("purchase_signs.json"));
+        } catch (IOException e) {
+            logger.error("Can't save purchase signs, continuing anyway");
+        }
+
+        try {
+            buyNowSignStorage.save(baseDirectory.resolve("buy_now_signs.json"));
         } catch (IOException e) {
             logger.error("Can't save purchase signs, continuing anyway");
         }
