@@ -21,11 +21,14 @@ public class CouponUpdateTask implements Runnable {
     private final AtomicReference<List<Coupon>> listing = new AtomicReference<>();
     private final AtomicReference<Date> lastUpdate = new AtomicReference<>();
     private final Runnable updateTask;
+    private final boolean verbose;
 
     @Override
     public void run() {
 
-        platform.log(Level.INFO, "Updating coupon list...");
+        if (verbose) {
+            platform.log(Level.INFO, "Updating coupon list...");
+        }
 
         if (platform.getApiClient() == null) {
             // no API client
@@ -47,6 +50,8 @@ public class CouponUpdateTask implements Runnable {
     }
 
     public List<Coupon> getListing() {
+        //Update the list
+        run();
         List<Coupon> coupons = listing.get();
         return coupons == null ? ImmutableList.<Coupon>of() : coupons;
     }
