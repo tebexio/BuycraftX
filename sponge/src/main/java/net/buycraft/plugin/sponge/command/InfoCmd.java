@@ -34,7 +34,7 @@ public class InfoCmd implements CommandExecutor {
         String webstoreURL = plugin.getServerInformation().getAccount().getDomain();
 
         try {
-            LiteralText webstore = Text.builder(plugin.getServerInformation().getAccount().getName())
+            LiteralText webstore = Text.builder(webstoreURL)
                     .color(TextColors.GREEN)
                     .onClick(TextActions.openUrl(new URL(webstoreURL)))
                     .onHover(TextActions.showText(Text.of(webstoreURL)))
