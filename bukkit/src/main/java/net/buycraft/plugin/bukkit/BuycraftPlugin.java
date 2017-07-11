@@ -184,7 +184,7 @@ public class BuycraftPlugin extends JavaPlugin {
                 Bukkit.getScheduler().runTask(BuycraftPlugin.this, new BuyNowSignUpdater(BuycraftPlugin.this));
             }
         });
-        couponUpdateTask = new CouponUpdateTask(platform, null);
+        couponUpdateTask = new CouponUpdateTask(platform, null, configuration.isVerbose());
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             try {
@@ -200,7 +200,7 @@ public class BuycraftPlugin extends JavaPlugin {
             }
         }
         getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
-        getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60 * 10);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60 * 20);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);

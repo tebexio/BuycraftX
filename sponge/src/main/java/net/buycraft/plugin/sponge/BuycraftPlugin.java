@@ -167,7 +167,7 @@ public class BuycraftPlugin {
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).execute(playerJoinCheckTask).submit(this);
         listingUpdateTask = new ListingUpdateTask(platform, null);
-        couponUpdateTask = new CouponUpdateTask(platform, null);
+        couponUpdateTask = new CouponUpdateTask(platform, null, configuration.isVerbose());
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run();
@@ -175,7 +175,7 @@ public class BuycraftPlugin {
         }
         Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60 * 20).intervalTicks(20 * 60 * 20).execute(listingUpdateTask).async()
                 .submit(this);
-        Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60).intervalTicks(20 * 60 * 10).execute(couponUpdateTask).async()
+        Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60).intervalTicks(20 * 60 * 20).execute(couponUpdateTask).async()
                 .submit(this);
 
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
