@@ -34,6 +34,7 @@ public class SecretCmd implements CommandExecutor {
                 plugin.getPlatform().executeAsync(new Runnable() {
                     @Override
                     public void run() {
+                        String currentKey = plugin.getConfiguration().getServerKey();
                         ApiClient client = new ProductionApiClient((String) args.getOne("secret").get(), plugin.getHttpClient());
                         try {
                             plugin.updateInformation(client);
@@ -55,7 +56,13 @@ public class SecretCmd implements CommandExecutor {
                         }
                         src.sendMessage(Text.builder(plugin.getI18n().get("secret_success",
                                 information.getServer().getName(), information.getAccount().getName())).color(TextColors.GREEN).build());
-                        plugin.getPlatform().executeAsync(plugin.getDuePlayerFetcher());
+
+                        boolean repeatChecks = false;
+                        if (currentKey == "INVALID") {
+                            repeatChecks = true;
+                        }
+
+                        plugin.getDuePlayerFetcher().run(repeatChecks);
                     }
                 });
             }
