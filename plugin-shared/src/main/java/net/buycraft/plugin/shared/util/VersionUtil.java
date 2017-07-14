@@ -34,6 +34,7 @@ public class VersionUtil {
     }
 
     public static boolean isVersionGreater(String one, String two) {
+
         String[] componentsOne = one.split("\\.");
         String[] componentsTwo = two.split("\\.");
 
@@ -52,11 +53,15 @@ public class VersionUtil {
 
         // Compare the versions
         for (int i = 0; i < verLen; i++) {
+
             if (numTwo[i] == numOne[i])
                 continue;
 
-            if (numTwo[i] > numOne[i])
+            if (numTwo[i] > numOne[i]) {
                 return true;
+            }
+
+            return false;
         }
 
         return false;
