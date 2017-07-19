@@ -226,25 +226,4 @@ public class ProductionApiClient implements ApiClient {
             }
         }
     }
-
-    @Override
-    public boolean verifyUser(String username, String code) throws IOException, ApiException {
-        FormBody.Builder builder = new FormBody.Builder();
-
-        builder.add("username", username);
-        builder.add("code", code);
-
-        Request request = getBuilder("/verify")
-                .method("POST", builder.build())
-                .build();
-        Response response = httpClient.newCall(request).execute();
-
-        try (ResponseBody body = response.body()) {
-            if (!response.isSuccessful()) {
-                throw handleError(response, body);
-            }
-        }
-
-        return true;
-    }
 }

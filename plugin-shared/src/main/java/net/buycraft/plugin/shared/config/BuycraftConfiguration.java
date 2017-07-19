@@ -86,10 +86,6 @@ public class BuycraftConfiguration {
         return getBoolean("disable-buy-command", false);
     }
 
-    public boolean isDisableVerifyCommand() {
-        return getBoolean("disable-verify-command", false);
-    }
-
     private Locale getLocale() {
         return Locale.forLanguageTag(properties.getProperty("language", "en_US"));
     }
@@ -103,7 +99,6 @@ public class BuycraftConfiguration {
         defaultSet("is-bungeecord", "false");
         defaultSet("check-for-updates", "true");
         defaultSet("disable-buy-command", "false");
-        defaultSet("disable-verify-command", "false");
         defaultSet("buy-command-name", "buy");
         defaultSet("language", Locale.getDefault().toLanguageTag());
         defaultSet("verbose", "true");

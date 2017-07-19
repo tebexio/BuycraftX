@@ -31,6 +31,4 @@ public interface ApiClient {
     void deleteCoupon(int id) throws IOException, ApiException;
 
     Coupon createCoupon(Coupon coupon) throws IOException, ApiException;
-
-    boolean verifyUser(String username, String code) throws IOException, ApiException;
 }
