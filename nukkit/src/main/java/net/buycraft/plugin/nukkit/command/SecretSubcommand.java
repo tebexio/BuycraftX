@@ -32,6 +32,7 @@ public class SecretSubcommand implements Subcommand {
         plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {
+                String currentKey = plugin.getConfiguration().getServerKey();
                 ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
                 try {
                     plugin.updateInformation(client);
@@ -54,7 +55,12 @@ public class SecretSubcommand implements Subcommand {
                 sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("secret_success",
                         information.getServer().getName(), information.getAccount().getName()));
 
-                plugin.getPlatform().executeAsync(plugin.getDuePlayerFetcher());
+                boolean repeatChecks = false;
+                if (currentKey == "INVALID") {
+                    repeatChecks = true;
+                }
+
+                plugin.getDuePlayerFetcher().run(repeatChecks);
             }
         });
     }

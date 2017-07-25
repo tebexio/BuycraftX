@@ -133,7 +133,7 @@ public class BuycraftPlugin extends PluginBase {
         getServer().getScheduler().scheduleDelayedRepeatingTask(this, (Runnable) commandExecutor, 1, 1);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         getServer().getScheduler().scheduleDelayedRepeatingTask(this, playerJoinCheckTask, 1, 1);
-        couponUpdateTask = new CouponUpdateTask(platform, null);
+        couponUpdateTask = new CouponUpdateTask(platform, null, configuration.isVerbose());
         if (apiClient != null) {
             try {
                 couponUpdateTask.run();
@@ -141,7 +141,7 @@ public class BuycraftPlugin extends PluginBase {
                 getLogger().error("Can't update coupon listing", e);
             }
         }
-        getServer().getScheduler().scheduleDelayedRepeatingTask(this, couponUpdateTask, 20*60, 20*60*10);
+        getServer().getScheduler().scheduleDelayedRepeatingTask(this, couponUpdateTask, 20*60, 20*60*20);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
