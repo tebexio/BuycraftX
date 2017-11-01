@@ -217,7 +217,7 @@ public class CategoryViewGUI {
                         material = 339;
                     }
 
-                    ItemStack stack = new ItemStack(material, 1, variant);//new ItemStack(Material.PAPER);
+                    ItemStack stack = new ItemStack(material, 1, variant);
                     ItemMeta meta = stack.getItemMeta();
                     meta.setDisplayName(ChatColor.GREEN + p.getName());
 
