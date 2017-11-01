@@ -14,6 +14,7 @@ public class Category implements Comparable<Category> {
     private final String name;
     private final List<Package> packages;
     private final List<Category> subcategories;
+    private final String gui_item;
 
     @Override
     public int compareTo(Category o) {

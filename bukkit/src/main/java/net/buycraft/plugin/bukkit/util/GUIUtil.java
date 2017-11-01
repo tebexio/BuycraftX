@@ -64,6 +64,14 @@ public class GUIUtil {
         return stack;
     }
 
+    public static ItemStack withName(int material, String name, byte variant) {
+        ItemStack stack = new ItemStack(material, 1, variant);
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(name);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
     public static String trimName(String name) {
         if (name.length() <= 32)
             return name;

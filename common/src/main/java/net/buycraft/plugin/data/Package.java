@@ -12,6 +12,7 @@ public class Package implements Comparable<Package> {
     private final String name;
     private final BigDecimal price;
     private final Sale sale;
+    private final String gui_item;
 
     @Override
     public int compareTo(Package o) {
