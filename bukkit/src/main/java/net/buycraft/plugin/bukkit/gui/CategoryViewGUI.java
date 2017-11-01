@@ -203,7 +203,21 @@ public class CategoryViewGUI {
                 for (int i = 0; i < packages.size(); i++) {
                     Package p = packages.get(i);
 
-                    ItemStack stack = new ItemStack(Material.PAPER);
+                    String gui_item = p.getGui_item();
+                    int material = 339;
+                    byte variant = 0;
+                    if (gui_item.contains(":")) {
+                        material = Integer.valueOf(gui_item.substring(0, gui_item.indexOf(":")));
+                        variant = Byte.valueOf(gui_item.substring(gui_item.indexOf(":")+1));
+                    }else{
+                        material = Integer.valueOf(gui_item);
+                    }
+
+                    if(Material.getMaterial(material) == null){
+                        material = 339;
+                    }
+
+                    ItemStack stack = new ItemStack(material, 1, variant);
                     ItemMeta meta = stack.getItemMeta();
                     meta.setDisplayName(ChatColor.GREEN + p.getName());
 
