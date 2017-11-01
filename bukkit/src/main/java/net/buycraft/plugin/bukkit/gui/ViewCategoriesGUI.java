@@ -59,7 +59,7 @@ public class ViewCategoriesGUI implements Listener {
         }
 
         for (Category category : listing.getCategories()) {
-            String gui_item = category.getGui_item();
+            String gui_item = category.getGuiItem();
             int material = 54;
             byte variant = 0;
             if (gui_item.contains(":")) {

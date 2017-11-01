@@ -203,7 +203,7 @@ public class CategoryViewGUI {
                 for (int i = 0; i < packages.size(); i++) {
                     Package p = packages.get(i);
 
-                    String gui_item = p.getGui_item();
+                    String gui_item = p.getGuiItem();
                     int material = 339;
                     byte variant = 0;
                     if (gui_item.contains(":")) {
