@@ -76,7 +76,7 @@ public class ViewCategoriesGUI implements Listener {
                 }
             }
 
-            inventory.addItem(withName(material, ChatColor.YELLOW + category.getName(), variant));
+            inventory.setItem(inventory.firstEmpty(), withName(material, ChatColor.YELLOW + category.getName(), variant));
         }
     }
 
