@@ -5,27 +5,21 @@
     <parent>
         <artifactId>BuycraftX</artifactId>
         <groupId>net.buycraft</groupId>
-        <version>10.3.1</version>
+        <version>10.3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>buycraftx-bungeecord</artifactId>
+    <artifactId>buycraftx-sponge</artifactId>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -37,6 +31,7 @@
                         <excludes>
                             <exclude>com.google.code.gson</exclude>
                             <exclude>com.google.guava</exclude>
+                            <exclude>org.slf4j</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
@@ -56,11 +51,8 @@
                             <pattern>com.fasterxml.jackson</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.jackson</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>org.slf4j</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.slf4j</shadedPattern>
-                        </relocation>
                     </relocations>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
                 <executions>
                     <execution>
@@ -71,14 +63,55 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>de.icongmbh.oss.maven.plugins</groupId>
+                <artifactId>javassist-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <configuration>
+                    <includeTestClasses>false</includeTestClasses>
+                    <transformerClasses>
+                        <transformerClass>
+                            <className>org.kitteh.craftirc.sponge.util.versioning.Transform</className>
+                            <properties>
+                                <property>
+                                    <name>version</name>
+                                    <value>${project.version}</value>
+                                </property>
+                            </properties>
+                        </transformerClass>
+                    </transformerClasses>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>javassist</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.buycraft</groupId>
+                        <artifactId>buycraftx-sponge</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>sponge-repo</id>
+            <url>https://repo.spongepowered.org/maven</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.8-SNAPSHOT</version>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -88,10 +121,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.21</version>
-            <scope>compile</scope>
+            <groupId>de.icongmbh.oss.maven.plugins</groupId>
+            <artifactId>javassist-maven-plugin</artifactId>
+            <version>1.1.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>
