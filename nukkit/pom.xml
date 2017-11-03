@@ -77,7 +77,7 @@
     <repositories>
         <repository>
             <id>zxda-nukkit-repo</id>
-            <url>http://jenkins.zxda.net/job/Nukkit/220/maven-repository/repository/</url>
+            <url>http://ci.mengcraft.com:8080/job/nukkit/lastSuccessfulBuild/maven-repository/repository/</url>
         </repository>
     </repositories>
 
