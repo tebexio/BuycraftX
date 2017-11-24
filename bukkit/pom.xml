@@ -39,10 +39,6 @@
                     </artifactSet>
                     <relocations>
                         <relocation>
-                            <pattern>com.bugsnag</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.bugsnag</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>com.google.gson</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.gson</shadedPattern>
                         </relocation>
@@ -90,10 +86,16 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.21</version>
-            <scope>compile</scope>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.minecraft.utils.io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>Latest</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/build/minecraft_server.1.12.2.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

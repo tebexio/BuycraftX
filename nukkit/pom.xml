@@ -40,10 +40,6 @@
                     </artifactSet>
                     <relocations>
                         <relocation>
-                            <pattern>com.bugsnag</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.bugsnag</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>okhttp3</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.okhttp3</shadedPattern>
                         </relocation>
