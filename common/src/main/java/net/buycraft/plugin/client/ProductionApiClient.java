@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ProductionApiClient implements ApiClient {
-    private static final String API_URL = "http://plugin.dev.buycraft.net";
+    private static final String API_URL = "https://plugin.buycraft.net";
     private static final String API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";
 
     private final Gson gson = new GsonBuilder()
