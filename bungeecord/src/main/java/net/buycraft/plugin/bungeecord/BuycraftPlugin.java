@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bungeecord.command.*;
+import net.buycraft.plugin.bungeecord.httplistener.BungeeNettyChannelInjector;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
@@ -69,6 +70,11 @@ public class BuycraftPlugin extends Plugin {
 
     @Override
     public void onEnable() {
+        try {
+            BungeeNettyChannelInjector.inject(this);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         // Pre-initialization.
         platform = new BungeeCordBuycraftPlatform(this);
 

@@ -4,8 +4,10 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
+import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.DueQueueInformation;
+import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 
 import java.io.IOException;
 import java.util.*;
@@ -138,6 +140,13 @@ public class DuePlayerFetcher implements Runnable {
                 QueuedPlayer qp = processNow.get(i);
                 platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), DELAY_BETWEEN_PLAYERS * (i + 1), TimeUnit.MILLISECONDS);
             }
+        }
+    }
+
+    public void processOnlinePlayer(QueuedPlayer qp, QueuedCommand qc) {
+        if (platform.isPlayerOnline(qp)) {
+            //platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), DELAY_BETWEEN_PLAYERS * (i + 1), TimeUnit.MILLISECONDS);
+            platform.getExecutor().queue(new ToRunQueuedCommand(qp, qc, true));
         }
     }
 

@@ -76,12 +76,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.8-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>net.buycraft</groupId>
             <artifactId>buycraftx-plugin-shared</artifactId>
             <version>${project.parent.version}</version>
@@ -92,6 +86,13 @@
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.21</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.md_5.bungee</groupId>
+            <artifactId>bungee</artifactId>
+            <version>Latest</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/build/BungeeCord.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
