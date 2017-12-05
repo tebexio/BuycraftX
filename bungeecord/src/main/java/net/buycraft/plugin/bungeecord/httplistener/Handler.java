@@ -66,12 +66,7 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     }
 
     private Object[] pushCommand() {
-        if (!body.has("uuid")
-                || !body.has("commands")
-                || body.get("commands").getAsJsonArray().size() == 0
-                || !body.has("require_online")
-                || !(body.get("require_online").getAsString().equals("0")
-        || body.get("require_online").getAsString().equals("1"))) {
+        if (!validateRequest()) {
             return new Object[]{422, "Invalid JSON format"};
         }
 
@@ -94,5 +89,49 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
 
         return new Object[]{200, "Commands executed"};
+    }
+
+    private boolean validateRequest() {
+        if (!body.has("uuid")) {
+            return false;
+        }
+        if (!body.has("name")) {
+            return false;
+        }
+        if (!body.has("commands")) {
+            return false;
+        }
+        if (!body.has("require_online")) {
+            return false;
+        }
+        if (!body.has("payment")) {
+            return false;
+        }
+        if (!body.has("package")) {
+            return false;
+        }
+        if (!body.has("conditions")) {
+            return false;
+        }
+        if (body.get("require_online").getAsString() != "0" && body.get("require_online").getAsString() != "1") {
+            return false;
+        }
+        if (!body.get("commands").isJsonArray()) {
+            return false;
+        }
+        if (body.get("commands").getAsJsonArray().size() == 0) {
+            return false;
+        }
+        if (!body.get("conditions").isJsonObject()) {
+            return false;
+        }
+        JsonObject conditions = body.get("conditions").getAsJsonObject();
+        if(!conditions.has("delay")){
+            return false;
+        }
+        if(!conditions.has("slots")){
+            return false;
+        }
+        return true;
     }
 }
