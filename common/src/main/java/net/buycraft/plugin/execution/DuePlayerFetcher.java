@@ -143,13 +143,6 @@ public class DuePlayerFetcher implements Runnable {
         }
     }
 
-    public void processOnlinePlayer(QueuedPlayer qp, QueuedCommand qc) {
-        if (platform.isPlayerOnline(qp)) {
-            //platform.executeAsyncLater(new PlayerCommandExecutor(qp, platform), DELAY_BETWEEN_PLAYERS * (i + 1), TimeUnit.MILLISECONDS);
-            platform.getExecutor().queue(new ToRunQueuedCommand(qp, qc, true));
-        }
-    }
-
     public Collection<QueuedPlayer> getDuePlayers() {
         lock.lock();
         try {
