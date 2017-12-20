@@ -1,37 +1,65 @@
 package net.buycraft.plugin.bukkit.tasks;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 
-@RequiredArgsConstructor
 public class SendCheckoutLink implements Runnable {
-    @NonNull
-    private final BuycraftPlugin plugin;
-    @NonNull
-    private final int pkgId;
-    @NonNull
-    private final Player player;
+    private BuycraftPlugin plugin;
+    private int id;
+    private Player player;
+    private Boolean isCategory;
+    private CommandSender sender = null;
+
+    public SendCheckoutLink(BuycraftPlugin plugin, int id, Player p){
+        this.plugin = plugin;
+        this.id = id;
+        this.player = p;
+        this.isCategory = false;
+        this.sender = null;
+    }
+
+    public SendCheckoutLink(BuycraftPlugin plugin, int id, Player p, boolean isCategory, CommandSender sender){
+        this.plugin = plugin;
+        this.id = id;
+        this.player = p;
+        this.isCategory = isCategory;
+        this.sender = sender;
+    }
 
     @Override
     public void run() {
         CheckoutUrlResponse response;
         try {
-            response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId);
+            if(!isCategory){
+                response = plugin.getApiClient().getCheckoutUri(player.getName(), id);
+            }else{
+                response = plugin.getApiClient().getCategoryUri(player.getName(), id);
+            }
         } catch (IOException | ApiException e) {
-            player.sendMessage(ChatColor.RED + plugin.getI18n().get("cant_check_out"));
+            if(sender == null)
+                player.sendMessage(ChatColor.RED + plugin.getI18n().get("cant_check_out") + " " + e.getMessage());
+            else
+                sender.sendMessage(ChatColor.RED + plugin.getI18n().get("cant_check_out") + " " + e.getMessage());
             return;
         }
 
-        player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
-        player.sendMessage(ChatColor.GREEN + plugin.getI18n().get("to_buy_this_package"));
-        player.sendMessage(ChatColor.BLUE + ChatColor.UNDERLINE.toString() + response.getUrl());
-        player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
+        if(!isCategory) {
+            player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
+            player.sendMessage(ChatColor.GREEN + plugin.getI18n().get("to_buy_this_package"));
+            player.sendMessage(ChatColor.BLUE + ChatColor.UNDERLINE.toString() + response.getUrl());
+            player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
+        }else{
+            player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
+            player.sendMessage(ChatColor.GREEN + plugin.getI18n().get("to_view_this_category"));
+            player.sendMessage(ChatColor.BLUE + ChatColor.UNDERLINE.toString() + response.getUrl());
+            player.sendMessage(ChatColor.STRIKETHROUGH + "                                            ");
+        }
     }
 }
