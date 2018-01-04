@@ -152,6 +152,28 @@ public class ProductionApiClient implements ApiClient {
     }
 
     @Override
+    public CheckoutUrlResponse getCategoryUri(String username, int categoryId) throws IOException, ApiException {
+        RequestBody body = new FormBody.Builder()
+                .add("username", username)
+                .add("category", "true")
+                .add("category_id", Integer.toString(categoryId))
+                .build();
+
+        Request request = getBuilder("/checkout")
+                .post(body)
+                .build();
+        Response response = httpClient.newCall(request).execute();
+
+        try (ResponseBody rspBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw handleError(response, rspBody);
+            } else {
+                return gson.fromJson(rspBody.charStream(), CheckoutUrlResponse.class);
+            }
+        }
+    }
+
+    @Override
     public List<RecentPayment> getRecentPayments(int limit) throws IOException, ApiException {
         return get("/payments?limit=" + limit, CacheControl.FORCE_NETWORK, new TypeToken<List<RecentPayment>>() {
         }.getType());
