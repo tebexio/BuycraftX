@@ -61,6 +61,9 @@ public class DuePlayerFetcher implements Runnable {
             do {
                 try {
                     information = platform.getApiClient().retrieveDueQueue(MAXIMUM_PER_PAGE, page);
+                    if(information == null){
+                        return;
+                    }
                     nextCheck = information.getMeta().getNextCheck();
                 } catch (IOException | ApiException e) {
                     platform.log(Level.SEVERE, "Could not fetch due players queue", e);
