@@ -214,6 +214,7 @@ public class BuycraftPlugin extends JavaPlugin {
         command.getSubcommandMap().put("signupdate", new SignUpdateSubcommand(this));
         command.getSubcommandMap().put("report", new ReportCommand(this));
         command.getSubcommandMap().put("coupon", new CouponSubcommand(this));
+        command.getSubcommandMap().put("sendlink", new SendLinkSubcommand(this));
         getCommand("buycraft").setExecutor(command);
 
         // Initialize sign layouts.

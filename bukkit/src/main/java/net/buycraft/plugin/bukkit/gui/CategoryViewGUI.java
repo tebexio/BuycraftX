@@ -188,7 +188,33 @@ public class CategoryViewGUI {
                     List<Category> subcats = subcatPartition.get(page);
                     for (int i = 0; i < subcats.size(); i++) {
                         Category subcat = subcats.get(i);
-                        inventory.setItem(i, withName(Material.BOOK, ChatColor.YELLOW + subcat.getName()));
+                        
+                        String gui_item = subcats.get(i).getGui_item();
+
+                        Material material = Material.matchMaterial("BOOK");
+                        short variant = 0;
+
+                        if (gui_item != null && !gui_item.equals("")) {
+                            if(gui_item.matches("^\\d+$")){
+                                material = Material.getMaterial(Integer.valueOf(gui_item));
+                            }else if(!gui_item.contains(":")){
+                                material = Material.matchMaterial(gui_item);
+                            }else {
+                                String[] parts = gui_item.split(":");
+                                if(parts[0].matches("^\\d+$")){
+                                    material = Material.getMaterial(Integer.valueOf(parts[0]));
+                                }else{
+                                    material = Material.matchMaterial(parts[0]);
+                                }
+                                variant = Short.valueOf(parts[1]);
+                            }
+                        }
+
+                        if(material == null){
+                            material = Material.matchMaterial("BOOK");
+                        }
+
+                        inventory.setItem(i, withName(material, ChatColor.YELLOW + subcat.getName(), variant));
                     }
                 }
             } else {
@@ -204,19 +230,28 @@ public class CategoryViewGUI {
                     Package p = packages.get(i);
 
                     String gui_item = p.getGui_item();
-                    int material = 339;
-                    byte variant = 0;
-                    if (gui_item != "" && gui_item != null) {
-                        if (gui_item.contains(":")) {
-                            material = Integer.valueOf(gui_item.substring(0, gui_item.indexOf(":")));
-                            variant = Byte.valueOf(gui_item.substring(gui_item.indexOf(":") + 1));
-                        } else {
-                            material = Integer.valueOf(gui_item);
-                        }
 
-                        if (Material.getMaterial(material) == null) {
-                            material = 339;
+                    Material material = Material.matchMaterial("PAPER");
+                    short variant = 0;
+
+                    if (gui_item != null && !gui_item.equals("")) {
+                        if(gui_item.matches("^\\d+$")){
+                            material = Material.getMaterial(Integer.valueOf(gui_item));
+                        }else if(!gui_item.contains(":")){
+                            material = Material.matchMaterial(gui_item);
+                        }else {
+                            String[] parts = gui_item.split(":");
+                            if(parts[0].matches("^\\d+$")){
+                                material = Material.getMaterial(Integer.valueOf(parts[0]));
+                            }else{
+                                material = Material.matchMaterial(parts[0]);
+                            }
+                            variant = Short.valueOf(parts[1]);
                         }
+                    }
+
+                    if(material == null){
+                        material = Material.matchMaterial("PAPER");
                     }
 
                     ItemStack stack = new ItemStack(material, 1, variant);

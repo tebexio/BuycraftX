@@ -60,20 +60,28 @@ public class ViewCategoriesGUI implements Listener {
 
         for (Category category : listing.getCategories()) {
             String gui_item = category.getGui_item();
-            int material = 54;
-            byte variant = 0;
 
-            if (gui_item != "" && gui_item != null) {
-                if (gui_item.contains(":")) {
-                    material = Integer.valueOf(gui_item.substring(0, gui_item.indexOf(":")));
-                    variant = Byte.valueOf(gui_item.substring(gui_item.indexOf(":") + 1));
-                } else {
-                    material = Integer.valueOf(gui_item);
-                }
+            Material material = Material.matchMaterial("CHEST");
+            short variant = 0;
 
-                if (Material.getMaterial(material) == null) {
-                    material = 54;
+            if (gui_item != null && !gui_item.equals("")) {
+                if(gui_item.matches("^\\d+$")){
+                    material = Material.getMaterial(Integer.valueOf(gui_item));
+                }else if(!gui_item.contains(":")){
+                    material = Material.matchMaterial(gui_item);
+                }else {
+                    String[] parts = gui_item.split(":");
+                    if(parts[0].matches("^\\d+$")){
+                        material = Material.getMaterial(Integer.valueOf(parts[0]));
+                    }else{
+                        material = Material.matchMaterial(parts[0]);
+                    }
+                    variant = Short.valueOf(parts[1]);
                 }
+            }
+
+            if(material == null){
+                material = Material.matchMaterial("CHEST");
             }
 
             inventory.setItem(inventory.firstEmpty(), withName(material, ChatColor.YELLOW + category.getName(), variant));
