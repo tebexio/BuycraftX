@@ -65,6 +65,7 @@ public class CouponSubcommand implements Subcommand {
         try {
             coupon = CouponUtil.parseArguments(stripped);
         } catch (Exception e) {
+            sender.sendMessage(e.getMessage());
             sender.sendMessage(ChatColor.RED + plugin.getI18n().get("coupon_creation_arg_parse_failure", e.getMessage()));
             return;
         }

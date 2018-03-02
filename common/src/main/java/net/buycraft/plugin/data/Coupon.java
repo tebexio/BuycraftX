@@ -24,6 +24,11 @@ public class Coupon {
     private final int userLimit;
     @SerializedName("discount_application_method")
     private final int discountMethod;
+    @SerializedName("expire_never")
+    private final int expireNever;
+    @SerializedName("redeem_unlimited")
+    private final int redeemUnlimited;
+
     private final BigDecimal minimum;
 
     @Value
