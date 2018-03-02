@@ -249,6 +249,7 @@ public class ProductionApiClient implements ApiClient {
                 .add("basket_type", coupon.getBasketType())
                 .add("minimum", coupon.getMinimum().toPlainString())
                 .add("redeem_limit", Integer.toString(coupon.getUserLimit()))
+                .add("discount_application_method", Integer.toString(coupon.getDiscountMethod()))
                 .build();
 
         Request request = getBuilder("/coupons")

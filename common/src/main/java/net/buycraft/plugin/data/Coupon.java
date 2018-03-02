@@ -22,6 +22,8 @@ public class Coupon {
     private final Date startDate;
     @SerializedName("user_limit")
     private final int userLimit;
+    @SerializedName("discount_application_method")
+    private final int discountMethod;
     private final BigDecimal minimum;
 
     @Value

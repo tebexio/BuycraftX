@@ -149,6 +149,20 @@ public class CouponUtil {
             }
         }
 
+	String discountMethod = kv.get("discount_application_method");
+        if (discountMethod == null) {
+            discountMethod = "0";
+        }
+        if (discountMethod != "0" && discountMethod != "1" && discountMethod != "2") {
+                throw new IllegalArgumentException("discount_application_method is not valid (must be 0, 1 or 2)");
+        }
+
+        try {
+            builder.discountMethod(Integer.parseInt(discountMethod));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("discount_application_method is not valid (must be 0, 1 or 2)");
+        }
+
         return builder.build();
     }
 }
