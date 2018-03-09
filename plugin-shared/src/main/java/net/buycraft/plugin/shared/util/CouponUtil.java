@@ -72,6 +72,8 @@ public class CouponUtil {
             }
         }
 
+
+
         Coupon.CouponBuilder builder = Coupon.builder()
                 .code(generateCode())
                 .effective(new Coupon.Effective("cart", ImmutableList.<Integer>of(), ImmutableList.<Integer>of()))
@@ -169,6 +171,18 @@ public class CouponUtil {
             }
         } else {
             throw new IllegalArgumentException("discount_application_method must be 0, 1 or 2");
+        }
+
+        String username = kv.get("username");
+
+        if (username == null) {
+            username = "";
+        }
+
+        try {
+            builder.username(String.valueOf(username));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("username must be a string");
         }
 
 
