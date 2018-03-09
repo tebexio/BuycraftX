@@ -14,7 +14,7 @@ public interface ApiClient {
 
     QueueInformation retrieveOfflineQueue() throws IOException, ApiException;
 
-    DueQueueInformation retrieveDueQueue(int limit, int page) throws IOException, ApiException;
+    DueQueueInformation retrieveDueQueue() throws IOException, ApiException;
 
     QueueInformation getPlayerQueue(int id) throws IOException, ApiException;
 
