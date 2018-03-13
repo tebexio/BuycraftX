@@ -103,8 +103,6 @@ public class ViewCategoriesGUI implements Listener {
     }
 
     private void createInventoryFromListing(Listing listing){
-        System.out.println("Got listing...");
-
         if (roundNine(listing.getCategories().size()) != inventory.getSize()) {
             Inventory work = Bukkit.createInventory(null, roundNine(listing.getCategories().size()),
                     GUIUtil.trimName("Buycraft: " + plugin.getI18n().get("categories")));
