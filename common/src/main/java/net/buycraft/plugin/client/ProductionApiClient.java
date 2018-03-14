@@ -114,8 +114,8 @@ public class ProductionApiClient implements ApiClient {
     }
 
     @Override
-    public DueQueueInformation retrieveDueQueue(int limit, int page) throws IOException, ApiException {
-        return get("/queue?limit=" + limit + "&page=" + page, CacheControl.FORCE_NETWORK, DueQueueInformation.class);
+    public DueQueueInformation retrieveDueQueue() throws IOException, ApiException {
+        return get("/queue", CacheControl.FORCE_NETWORK, DueQueueInformation.class);
     }
 
     @Override
