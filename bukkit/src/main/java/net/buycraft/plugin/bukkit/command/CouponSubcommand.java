@@ -79,7 +79,8 @@ public class CouponSubcommand implements Subcommand {
 
                     plugin.getPlatform().executeAsync(plugin.getCouponUpdateTask());
                 } catch (ApiException | IOException e) {
-                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
+                    sender.sendMessage(ChatColor.RED + e.getMessage());
+
                 }
             }
         });

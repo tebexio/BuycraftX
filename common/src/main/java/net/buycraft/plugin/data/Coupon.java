@@ -31,6 +31,9 @@ public class Coupon {
 
     private final BigDecimal minimum;
 
+    @SerializedName("username")
+    private final String username;
+
     @Value
     public static class Effective {
         private final String type;
