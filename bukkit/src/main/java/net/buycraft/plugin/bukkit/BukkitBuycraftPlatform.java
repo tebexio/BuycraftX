@@ -63,7 +63,7 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
         if (player.getUuid() != null && (plugin.getServer().getOnlineMode() || plugin.getConfiguration().isBungeeCord())) {
             return plugin.getServer().getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
         }
-        return plugin.getServer().getPlayer(player.getName());
+        return plugin.getServer().getPlayerExact(player.getName());
     }
 
     @Override
