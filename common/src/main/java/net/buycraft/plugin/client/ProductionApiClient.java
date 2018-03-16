@@ -114,8 +114,8 @@ public class ProductionApiClient implements ApiClient {
     }
 
     @Override
-    public DueQueueInformation retrieveDueQueue(int limit, int page) throws IOException, ApiException {
-        return get("/queue?limit=" + limit + "&page=" + page, CacheControl.FORCE_NETWORK, DueQueueInformation.class);
+    public DueQueueInformation retrieveDueQueue() throws IOException, ApiException {
+        return get("/queue", CacheControl.FORCE_NETWORK, DueQueueInformation.class);
     }
 
     @Override
@@ -252,6 +252,7 @@ public class ProductionApiClient implements ApiClient {
                 .add("discount_application_method", Integer.toString(coupon.getDiscountMethod()))
                 .add("redeem_unlimited", coupon.getRedeemUnlimited() == 1 ? "true" : "false")
                 .add("expire_never", coupon.getExpireNever() == 1 ? "true" : "false")
+                .add("username", coupon.getUsername() == null ? "" : coupon.getUsername())
                 .build();
 
         Request request = getBuilder("/coupons")
