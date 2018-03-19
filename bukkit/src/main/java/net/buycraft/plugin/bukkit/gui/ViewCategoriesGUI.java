@@ -38,6 +38,7 @@ public class ViewCategoriesGUI implements Listener {
 
     public void open(Player player) {
         if (inventoryNeedsReloading()) {
+            Bukkit.getLogger().info("Inventory appears to be empty, trying to read from gui.cache file...");
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(plugin.getDataFolder() + "/gui.cache"));
                 String jsonString = reader.readLine();
