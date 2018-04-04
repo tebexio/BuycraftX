@@ -1,0 +1,22 @@
+image: maven:latest
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository/
+
+build:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS package
+  artifacts:
+    paths:
+      - "**/target/buycraftx*.jar"
+
+test:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS test
