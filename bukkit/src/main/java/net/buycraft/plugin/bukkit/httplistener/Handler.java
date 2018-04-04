@@ -38,7 +38,7 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         String body = request.content().toString(Charset.defaultCharset());
 
         String hash = Hashing.sha256().hashString(body.concat(plugin.getConfiguration().getServerKey()), Charsets.UTF_8).toString();
-        if (true){//hash.equals(request.headers().get("X-Signature"))) {
+        if (hash.equals(request.headers().get("X-Signature"))) {
             try {
                 this.body = new JsonParser().parse(body).getAsJsonObject();
             } catch (Exception e) {
