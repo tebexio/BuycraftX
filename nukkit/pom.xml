@@ -5,7 +5,7 @@
     <parent>
         <artifactId>BuycraftX</artifactId>
         <groupId>net.buycraft</groupId>
-        <version>10.3.1</version>
+        <version>10.6.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -73,7 +73,7 @@
     <repositories>
         <repository>
             <id>zxda-nukkit-repo</id>
-            <url>http://jenkins.zxda.net/job/Nukkit/220/maven-repository/repository/</url>
+            <url>http://ci.mengcraft.com:8080/job/nukkit/lastSuccessfulBuild/maven-repository/repository/</url>
         </repository>
     </repositories>
 

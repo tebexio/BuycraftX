@@ -49,14 +49,16 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
         long start = System.nanoTime();
         for (ToRunQueuedCommand command : runThisTick) {
-            String finalCommand = platform.getPlaceholderManager().doReplace(command.getPlayer(), command.getCommand());
-            platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));
-            try {
-                platform.dispatchCommand(finalCommand);
-                completedCommandsTask.add(command.getCommand().getId());
-            } catch (Exception e) {
-                platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'. " +
-                        "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, command.getPlayer().getName()), e);
+            if(command.canExecute(platform)) {
+                String finalCommand = platform.getPlaceholderManager().doReplace(command.getPlayer(), command.getCommand());
+                platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));
+                try {
+                    platform.dispatchCommand(finalCommand);
+                    completedCommandsTask.add(command.getCommand().getId());
+                } catch (Exception e) {
+                    platform.log(Level.SEVERE, String.format("Could not dispatch command '%s' for player '%s'. " +
+                            "This is typically a plugin error, not an issue with BuycraftX.", finalCommand, command.getPlayer().getName()), e);
+                }
             }
         }
 
