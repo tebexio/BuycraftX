@@ -72,6 +72,8 @@ public class CouponUtil {
             }
         }
 
+
+
         Coupon.CouponBuilder builder = Coupon.builder()
                 .code(generateCode())
                 .effective(new Coupon.Effective("cart", ImmutableList.<Integer>of(), ImmutableList.<Integer>of()))
@@ -108,26 +110,33 @@ public class CouponUtil {
         // Expiry: none, limit of uses or expiry,
         String expiresStr = kv.get("expires");
         String limitStr = kv.get("limit");
-
-        if (expiresStr != null && limitStr != null) {
-            throw new IllegalArgumentException("expires and limit are mutually exclusive");
-        }
+        String neverExpire = "1";
+        String unlimitedRedeem = "1";
 
         if (expiresStr != null) {
+            neverExpire = "0";
             long ms = parseDuration(expiresStr);
             if (ms == 0) {
                 throw new IllegalArgumentException("Invalid duration!");
             }
             builder.expire(new Coupon.Expire("timestamp", 0, new Date(System.currentTimeMillis() + ms)));
-        } else if (limitStr != null) {
+        }
+
+        if (limitStr != null) {
+            unlimitedRedeem = "0";
             try {
                 builder.expire(new Coupon.Expire("limit", Integer.parseInt(limitStr), new Date()));
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("limit is not valid (must be a number)");
             }
-        } else {
-            builder.expire(new Coupon.Expire("never", 0, new Date()));
         }
+
+        if (limitStr == null && expiresStr == null) {
+            builder.expire(new Coupon.Expire("timestamp", 0, new Date(System.currentTimeMillis() + 1)));
+        }
+
+        builder.expireNever(Integer.parseInt(neverExpire));
+        builder.redeemUnlimited(Integer.parseInt(unlimitedRedeem));
 
         String minimumBasket = kv.get("min_value");
         if (minimumBasket != null) {
@@ -148,6 +157,34 @@ public class CouponUtil {
                 throw new IllegalArgumentException("user_limit is not valid (must be a number)");
             }
         }
+
+	String discountMethod = kv.get("discount_application_method");
+
+        if (discountMethod == null) {
+            discountMethod = "0";
+        }
+        if (discountMethod.equals("0") || discountMethod.equals("1") || discountMethod.equals("2")) {
+            try {
+                builder.discountMethod(Integer.parseInt(discountMethod));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("discount_application_method is not valid (must be 0, 1 or 2)");
+            }
+        } else {
+            throw new IllegalArgumentException("discount_application_method must be 0, 1 or 2");
+        }
+
+        String username = kv.get("username");
+
+        if (username == null) {
+            username = "";
+        }
+
+        try {
+            builder.username(String.valueOf(username));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("username must be a string");
+        }
+
 
         return builder.build();
     }

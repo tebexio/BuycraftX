@@ -15,6 +15,7 @@ import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
+import net.buycraft.plugin.execution.placeholder.XuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
@@ -123,7 +124,7 @@ public class BuycraftPlugin extends PluginBase {
 
         // Initialize placeholders.
         placeholderManager.addPlaceholder(new NamePlaceholder());
-        placeholderManager.addPlaceholder(new UuidPlaceholder());
+        placeholderManager.addPlaceholder(new XuidPlaceholder());
 
         // Queueing tasks.
         platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);

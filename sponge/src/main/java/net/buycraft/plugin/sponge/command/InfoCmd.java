@@ -22,7 +22,7 @@ public class InfoCmd implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(Text.builder(plugin.getI18n().get("no_params")).color(TextColors.RED).build());
+            sender.sendMessage(Text.builder(plugin.getI18n().get("generic_api_operation_error")).color(TextColors.RED).build());
             return CommandResult.success();
         }
 

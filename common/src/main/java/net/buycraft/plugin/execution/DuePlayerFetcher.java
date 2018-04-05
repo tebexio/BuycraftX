@@ -19,7 +19,6 @@ import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class DuePlayerFetcher implements Runnable {
-    private static final int MAXIMUM_PER_PAGE = 250;
     private static final int FALLBACK_CHECK_BACK_SECS = 300;
     private static final int MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE = 60;
     private static final int DELAY_BETWEEN_PLAYERS = 500;
@@ -59,10 +58,12 @@ public class DuePlayerFetcher implements Runnable {
             Map<String, QueuedPlayer> allDue = new HashMap<>();
 
             DueQueueInformation information;
-            int page = 1;
             do {
                 try {
-                    information = platform.getApiClient().retrieveDueQueue(MAXIMUM_PER_PAGE, page);
+                    information = platform.getApiClient().retrieveDueQueue();
+                    if(information == null){
+                        return;
+                    }
                     nextCheck = information.getMeta().getNextCheck();
                 } catch (IOException | ApiException e) {
                     platform.log(Level.SEVERE, "Could not fetch due players queue", e);
@@ -73,16 +74,6 @@ public class DuePlayerFetcher implements Runnable {
                     // Using Locale.US as servers can sometimes have other locales in use.
                     allDue.put(player.getName().toLowerCase(Locale.US), player);
                 }
-
-                if (page > 1) {
-                    try {
-                        Thread.sleep(random.nextInt(1000) + 500);
-                    } catch (InterruptedException e) {
-                        platform.log(Level.SEVERE, "Interrupted", e);
-                    }
-                }
-
-                page++;
             } while (information.getMeta().isMore());
 
             if (verbose) {

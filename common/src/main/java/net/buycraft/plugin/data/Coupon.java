@@ -22,7 +22,17 @@ public class Coupon {
     private final Date startDate;
     @SerializedName("user_limit")
     private final int userLimit;
+    @SerializedName("discount_application_method")
+    private final int discountMethod;
+    @SerializedName("expire_never")
+    private final int expireNever;
+    @SerializedName("redeem_unlimited")
+    private final int redeemUnlimited;
+
     private final BigDecimal minimum;
+
+    @SerializedName("username")
+    private final String username;
 
     @Value
     public static class Effective {
