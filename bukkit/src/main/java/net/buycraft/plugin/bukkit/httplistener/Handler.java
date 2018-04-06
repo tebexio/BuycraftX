@@ -2,12 +2,15 @@ package net.buycraft.plugin.bukkit.httplistener;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import com.google.common.primitives.Chars;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
+import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
@@ -23,7 +26,7 @@ import java.util.regex.Pattern;
 
 class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private JsonObject body;
+    private JsonArray body;
     private BuycraftPlugin plugin;
 
     public Handler(BuycraftPlugin plugin) {
@@ -35,15 +38,16 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(422));
         ChannelPromise promise = ctx.channel().newPromise();
 
-        String body = request.content().toString(Charset.defaultCharset());
+        String body = request.content().toString(Charsets.UTF_8);
+
 
         String hash = Hashing.sha256().hashString(body.concat(plugin.getConfiguration().getServerKey()), Charsets.UTF_8).toString();
         if (hash.equals(request.headers().get("X-Signature"))) {
             try {
-                this.body = new JsonParser().parse(body).getAsJsonObject();
+                this.body = new JsonParser().parse(body).getAsJsonArray();
             } catch (Exception e) {
                 response.content().writeBytes(Charsets.UTF_8.encode("Invalid JSON"));
-                this.body = null;
+                response.setStatus(HttpResponseStatus.valueOf(422));
             }
 
             if (this.body != null) {
@@ -65,7 +69,44 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         });
     }
 
+
     private Object[] pushCommand() {
+        int playerId = 0;
+
+        for (JsonElement command : this.body) {
+            if (command instanceof JsonObject) {
+                JsonObject commandObject = ((JsonObject) command).getAsJsonObject();
+
+                QueuedPlayer qp = new QueuedPlayer(playerId,
+                        commandObject.get("username_name").getAsString(),
+                        commandObject.get("username").getAsString().replace("-", ""));
+
+
+                Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
+                map.put("delay", commandObject.get("delay").getAsInt());
+
+                if (commandObject.get("require_slots").getAsInt() > 0) {
+                    map.put("slots", commandObject.get("require_slots").getAsInt());
+                }
+
+                QueuedCommand qc = new QueuedCommand(commandObject.get("id").getAsInt(),
+                        commandObject.get("payment").getAsInt(),
+                        commandObject.get("package").getAsInt(),
+                        map,
+                        commandObject.get("command").getAsString(),
+                        qp);
+
+
+                plugin.getCommandExecutor().queue(new ToRunQueuedCommand(qp, qc, commandObject.get("require_online").getAsInt() == 1 ? true : false));
+
+                playerId += 1;
+            }
+        }
+
+
+
+        return new Object[]{200, "Commands executed"};
+        /*
         if (!body.has("uuid") || !body.has("commands") || body.get("commands").getAsJsonArray().size() == 0) {
             return new Object[]{422, "Invalid JSON format"};
         }
@@ -100,10 +141,11 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             plugin.getPlatform().getExecutor().queue(new ToRunQueuedCommand(qp, qc, body.get("require_online").getAsInt() == 1 ? true : false));
             ci += 1;
         }
-        return new Object[]{200, "Commands executed"};
+        return new Object[]{200, "Commands executed"};*/
     }
 
     private boolean validateRequest() {
+       return true;/*
         if (!body.has("id")) {
             return false;
         }
@@ -157,6 +199,6 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         if (!Pattern.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", body.get("uuid").getAsString())) {
             return false;
         }
-        return true;
+        return true;*/
     }
 }
