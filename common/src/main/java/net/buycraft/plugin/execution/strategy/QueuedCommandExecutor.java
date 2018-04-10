@@ -59,7 +59,9 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
         long start = System.nanoTime();
         for (ToRunQueuedCommand command : runThisTick) {
             if(completedCommandsTask.getRetained().contains(command.getCommand().getId())){
-                commandQueue.remove(command);
+                synchronized (commandQueue) {
+                    commandQueue.remove(command);
+                }
                 continue;
             }
 
