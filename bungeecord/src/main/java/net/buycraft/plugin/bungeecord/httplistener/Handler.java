@@ -20,8 +20,7 @@ import java.util.regex.Pattern;
 
 class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private JsonObject body;
-
+    private JsonArray body;
     private BuycraftPlugin plugin;
 
     public Handler(BuycraftPlugin plugin) {
@@ -33,17 +32,15 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(422));
         ChannelPromise promise = ctx.channel().newPromise();
 
-        String body = request.content().toString(Charset.defaultCharset());
+        String body = request.content().toString(Charsets.UTF_8);
 
-        String key = plugin.getConfiguration().getServerKey();
-
-        String hash = Hashing.sha256().hashString(body.concat(key), Charsets.UTF_8).toString();
+        String hash = Hashing.sha256().hashString(body.concat(plugin.getConfiguration().getServerKey()), Charsets.UTF_8).toString();
         if (hash.equals(request.headers().get("X-Signature"))) {
             try {
-                this.body = new JsonParser().parse(body).getAsJsonObject();
+                this.body = new JsonParser().parse(body).getAsJsonArray();
             } catch (Exception e) {
                 response.content().writeBytes(Charsets.UTF_8.encode("Invalid JSON"));
-                this.body = null;
+                response.setStatus(HttpResponseStatus.valueOf(422));
             }
 
             if (this.body != null) {
@@ -66,92 +63,44 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
     }
 
     private Object[] pushCommand() {
-        if (!validateRequest()) {
-            return new Object[]{422, "Invalid JSON format"};
-        }
+        int playerId = 0;
 
-        QueuedPlayer qp = new QueuedPlayer(body.get("id").getAsInt(),
-                body.get("name").getAsString(),
-                body.get("uuid").getAsString().replace("-", ""));
+        for (JsonElement command : this.body) {
+            if (command instanceof JsonObject) {
+                JsonObject commandObject = ((JsonObject) command).getAsJsonObject();
+
+                QueuedPlayer qp = new QueuedPlayer(playerId,
+                        commandObject.get("username_name").getAsString(),
+                        commandObject.get("username").getAsString().replace("-", ""));
 
 
-        if(!plugin.getPlatform().isPlayerOnline(qp) && body.get("require_online").getAsInt() == 1){
-            return new Object[]{422, "Player is not online"};
-        }
+                Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
+                map.put("delay", commandObject.get("delay").getAsInt());
 
-        JsonArray commands = body.get("commands").getAsJsonArray();
-        int ci = 0;
-        for (JsonElement command : commands) {
-            Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
-            map.put("delay", body.get("conditions").getAsJsonObject().get("delay").getAsInt());
+                if (commandObject.get("require_slots").getAsInt() > 0) {
+                    map.put("slots", commandObject.get("require_slots").getAsInt());
+                }
 
-            QueuedCommand qc = new QueuedCommand(ci,
-                    body.get("payment").getAsInt(),
-                    body.get("package").getAsInt(),
-                    map,
-                    command.getAsString(),
-                    qp);
-            plugin.getPlatform().getExecutor().queue(new ToRunQueuedCommand(qp, qc, body.get("require_online").getAsInt() == 1 ? true : false));
-            ci += 1;
+                int packageId = 0;
+
+                if(commandObject.has("package") && !commandObject.get("package").isJsonNull()){
+                    packageId = commandObject.get("package").getAsInt();
+                }
+
+                QueuedCommand qc = new QueuedCommand(commandObject.get("id").getAsInt(),
+                        commandObject.get("payment").getAsInt(),
+                        packageId,
+                        map,
+                        commandObject.get("command").getAsString(),
+                        qp);
+
+
+                plugin.getCommandExecutor().queue(new ToRunQueuedCommand(qp, qc, commandObject.get("require_online").getAsInt() == 1 ? true : false));
+
+                playerId += 1;
+            }
         }
 
         return new Object[]{200, "Commands executed"};
-    }
-
-    private boolean validateRequest() {
-        if (!body.has("id")) {
-            return false;
-        }
-        if (!body.has("uuid")) {
-            return false;
-        }
-        if (!body.has("name")) {
-            return false;
-        }
-        if (!body.has("commands")) {
-            return false;
-        }
-        if (!body.has("require_online")) {
-            return false;
-        }
-        if (!body.has("payment")) {
-            return false;
-        }
-        if (!body.has("package")) {
-            return false;
-        }
-        if (!body.has("conditions")) {
-            return false;
-        }
-        if (body.get("require_online").getAsInt() != 0 && body.get("require_online").getAsInt() != 1) {
-            return false;
-        }
-        if (!body.get("commands").isJsonArray()) {
-            return false;
-        }
-        if (body.get("commands").getAsJsonArray().size() == 0) {
-            return false;
-        }
-        if (!body.get("conditions").isJsonObject()) {
-            return false;
-        }
-        for(JsonElement command : body.get("commands").getAsJsonArray()){
-            try{
-                command.getAsString();
-            }catch(Throwable e){
-                return false;
-            }
-        }
-        JsonObject conditions = body.get("conditions").getAsJsonObject();
-        if(!conditions.has("delay")){
-            return false;
-        }
-        if(!conditions.has("slots")){
-            return false;
-        }
-        if (!Pattern.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", body.get("uuid").getAsString())) {
-            return false;
-        }
-        return true;
     }
 }
