@@ -40,7 +40,6 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         String body = request.content().toString(Charsets.UTF_8);
 
-
         String hash = Hashing.sha256().hashString(body.concat(plugin.getConfiguration().getServerKey()), Charsets.UTF_8).toString();
         if (hash.equals(request.headers().get("X-Signature"))) {
             try {
@@ -89,9 +88,15 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                     map.put("slots", commandObject.get("require_slots").getAsInt());
                 }
 
+                int packageId = 0;
+
+                if(commandObject.has("package") && !commandObject.get("package").isJsonNull()){
+                    packageId = commandObject.get("package").getAsInt();
+                }
+
                 QueuedCommand qc = new QueuedCommand(commandObject.get("id").getAsInt(),
                         commandObject.get("payment").getAsInt(),
-                        commandObject.get("package").getAsInt(),
+                        packageId,
                         map,
                         commandObject.get("command").getAsString(),
                         qp);
@@ -102,8 +107,6 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 playerId += 1;
             }
         }
-
-
 
         return new Object[]{200, "Commands executed"};
     }
