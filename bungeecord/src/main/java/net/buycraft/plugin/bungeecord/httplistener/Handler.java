@@ -32,25 +32,29 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(422));
         ChannelPromise promise = ctx.channel().newPromise();
 
-        String body = request.content().toString(Charsets.UTF_8);
+        if (request.uri().equalsIgnoreCase("/ping")) {
+            response.content().writeBytes(Charsets.UTF_8.encode("Connection Established"));
+            response.setStatus(HttpResponseStatus.valueOf(200));
+        } else {
+            String body = request.content().toString(Charsets.UTF_8);
+            String hash = Hashing.sha256().hashString(body.concat(plugin.getConfiguration().getServerKey()), Charsets.UTF_8).toString();
+            if (hash.equals(request.headers().get("X-Signature"))) {
+                try {
+                    this.body = new JsonParser().parse(body).getAsJsonArray();
+                } catch (Exception e) {
+                    response.content().writeBytes(Charsets.UTF_8.encode("Invalid JSON"));
+                    response.setStatus(HttpResponseStatus.valueOf(422));
+                }
 
-        String hash = Hashing.sha256().hashString(body.concat(plugin.getConfiguration().getServerKey()), Charsets.UTF_8).toString();
-        if (hash.equals(request.headers().get("X-Signature"))) {
-            try {
-                this.body = new JsonParser().parse(body).getAsJsonArray();
-            } catch (Exception e) {
-                response.content().writeBytes(Charsets.UTF_8.encode("Invalid JSON"));
+                if (this.body != null) {
+                    Object[] pc = pushCommand();
+                    response.content().writeBytes(Charsets.UTF_8.encode(String.valueOf(pc[1])));
+                    response.setStatus(HttpResponseStatus.valueOf(Integer.valueOf(pc[0].toString())));
+                }
+            } else {
+                response.content().writeBytes(Charsets.UTF_8.encode("Invalid signature"));
                 response.setStatus(HttpResponseStatus.valueOf(422));
             }
-
-            if (this.body != null) {
-                Object[] pc = pushCommand();
-                response.content().writeBytes(Charsets.UTF_8.encode(String.valueOf(pc[1])));
-                response.setStatus(HttpResponseStatus.valueOf(Integer.valueOf(pc[0].toString())));
-            }
-        } else {
-            response.content().writeBytes(Charsets.UTF_8.encode("Invalid signature"));
-            response.setStatus(HttpResponseStatus.valueOf(422));
         }
 
         ctx.channel().writeAndFlush(response, promise);
