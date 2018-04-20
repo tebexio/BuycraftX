@@ -70,11 +70,6 @@ public class BuycraftPlugin extends Plugin {
 
     @Override
     public void onEnable() {
-        try {
-            BungeeNettyChannelInjector.inject(this);
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
         // Pre-initialization.
         platform = new BungeeCordBuycraftPlatform(this);
 
@@ -110,6 +105,15 @@ public class BuycraftPlugin extends Plugin {
         } catch (ExecutionException e) {
             // We must bail early
             throw new RuntimeException("Can't create HTTP client", e);
+        }
+
+
+        if(configuration.isPushCommandsEnabled()) {
+            try {
+                BungeeNettyChannelInjector.inject(this);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
 
         // Set up Bugsnag.
