@@ -1,6 +1,5 @@
 package net.buycraft.plugin.bungeecord;
 
-import com.bugsnag.Bugsnag;
 import com.google.common.base.Supplier;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +21,6 @@ import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
-import net.buycraft.plugin.shared.logging.BugsnagHandler;
 import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
@@ -107,33 +105,12 @@ public class BuycraftPlugin extends Plugin {
             throw new RuntimeException("Can't create HTTP client", e);
         }
 
-
         if(configuration.isPushCommandsEnabled()) {
             try {
                 BungeeNettyChannelInjector.inject(this);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
-        }
-
-        // Set up Bugsnag.
-        // Hack due to SecurityManager shenanigans.
-        try {
-            Bugsnag bugsnagClient = runTaskToAppeaseBungeeSecurityManager(new Callable<Bugsnag>() {
-                @Override
-                public Bugsnag call() throws Exception {
-                    return Setup.bugsnagClient(httpClient, "bungeecord", getDescription().getVersion(),
-                            getProxy().getVersion(), new Supplier<ServerInformation>() {
-                                @Override
-                                public ServerInformation get() {
-                                    return getServerInformation();
-                                }
-                            });
-                }
-            });
-            getProxy().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
-        } catch (ExecutionException e) {
-            getLogger().log(Level.SEVERE, "Unable to initialize Bugsnag", e);
         }
 
         // Initialize API client.

@@ -72,6 +72,7 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                 }
                 continue;
             }
+
             if(command.canExecute(platform)) {
                 String finalCommand = platform.getPlaceholderManager().doReplace(command.getPlayer(), command.getCommand());
                 platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));
