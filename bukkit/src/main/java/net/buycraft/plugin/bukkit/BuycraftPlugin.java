@@ -105,8 +105,6 @@ public class BuycraftPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        injector.inject();
-
         // Pre-initialization.
         GUIUtil.setPlugin(this);
         platform = new BukkitBuycraftPlatform(this);
@@ -157,6 +155,10 @@ public class BuycraftPlugin extends JavaPlugin {
                 getLogger().log(Level.SEVERE, "Can't check for updates", e);
             }
             getServer().getPluginManager().registerEvents(check, this); // out!
+        }
+
+        if(configuration.isPushCommandsEnabled()){
+            injector.inject();
         }
 
         // Initialize placeholders.
@@ -285,7 +287,9 @@ public class BuycraftPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        injector.close();
+        if(configuration.isPushCommandsEnabled()) {
+            injector.close();
+        }
         try {
             recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
