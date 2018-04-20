@@ -36,6 +36,9 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
         synchronized (commandQueue) {
             ArrayList<Integer> queuedCommandIds = new ArrayList<>();
 
+            Set<ToRunQueuedCommand> removeSet = new HashSet<ToRunQueuedCommand>();
+
+
             for (Iterator<ToRunQueuedCommand> it = commandQueue.iterator(); it.hasNext(); ) {
                 ToRunQueuedCommand command = it.next();
 
@@ -47,13 +50,17 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
 
                 if (command.canExecute(platform)) {
                     runThisTick.add(command);
-                    it.remove();
+                    //it.remove();
+                    removeSet.add(command);
                 }
 
                 if (blocking && runThisTick.size() >= RUN_MAX_COMMANDS_BLOCKING) {
                     break;
                 }
             }
+
+            commandQueue.removeAll(removeSet);
+
         }
 
         long start = System.nanoTime();
