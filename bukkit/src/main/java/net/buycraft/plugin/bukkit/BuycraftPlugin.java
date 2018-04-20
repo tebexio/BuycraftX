@@ -1,14 +1,15 @@
 package net.buycraft.plugin.bukkit;
 
-import com.bugsnag.Bugsnag;
-import com.google.common.base.Supplier;
 import com.google.gson.JsonParseException;
+import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
 import net.buycraft.plugin.bukkit.gui.ViewCategoriesGUI;
+import net.buycraft.plugin.bukkit.httplistener.Decoder;
+import net.buycraft.plugin.bukkit.httplistener.NettyInjector;
 import net.buycraft.plugin.bukkit.signs.buynow.BuyNowSignListener;
 import net.buycraft.plugin.bukkit.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.bukkit.tasks.BuyNowSignUpdater;
@@ -34,7 +35,6 @@ import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
-import net.buycraft.plugin.shared.logging.BugsnagHandler;
 import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
@@ -93,15 +93,22 @@ public class BuycraftPlugin extends JavaPlugin {
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
     @Getter
     private PostCompletedCommandsTask completedCommandsTask;
-    private Bugsnag bugsnagClient;
     @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
+
+    private NettyInjector injector = new NettyInjector() {
+        @Override
+        protected void injectChannel(Channel channel) {
+            channel.pipeline().addFirst(new Decoder(BuycraftPlugin.this));
+        }
+    };
 
     @Override
     public void onEnable() {
         // Pre-initialization.
         GUIUtil.setPlugin(this);
         platform = new BukkitBuycraftPlatform(this);
+
 
         // Initialize configuration.
         getDataFolder().mkdir();
@@ -123,14 +130,6 @@ public class BuycraftPlugin extends JavaPlugin {
         i18n = configuration.createI18n();
 
         httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
-        bugsnagClient = Setup.bugsnagClient(httpClient, "bukkit", getDescription().getVersion(),
-                getServer().getBukkitVersion(), new Supplier<ServerInformation>() {
-                    @Override
-                    public ServerInformation get() {
-                        return getServerInformation();
-                    }
-                });
-        getServer().getLogger().addHandler(new BugsnagHandler(bugsnagClient));
 
         // Initialize API client.
         final String serverKey = configuration.getServerKey();
@@ -156,6 +155,10 @@ public class BuycraftPlugin extends JavaPlugin {
                 getLogger().log(Level.SEVERE, "Can't check for updates", e);
             }
             getServer().getPluginManager().registerEvents(check, this); // out!
+        }
+
+        if(configuration.isPushCommandsEnabled()){
+            injector.inject();
         }
 
         // Initialize placeholders.
@@ -284,6 +287,9 @@ public class BuycraftPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if(configuration.isPushCommandsEnabled()) {
+            injector.close();
+        }
         try {
             recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {

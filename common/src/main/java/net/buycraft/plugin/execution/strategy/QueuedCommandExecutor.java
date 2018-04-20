@@ -34,21 +34,44 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
     public void run() {
         List<ToRunQueuedCommand> runThisTick = new ArrayList<>();
         synchronized (commandQueue) {
+            ArrayList<Integer> queuedCommandIds = new ArrayList<>();
+
+            Set<ToRunQueuedCommand> removeSet = new HashSet<ToRunQueuedCommand>();
+
+
             for (Iterator<ToRunQueuedCommand> it = commandQueue.iterator(); it.hasNext(); ) {
                 ToRunQueuedCommand command = it.next();
+
+                if(queuedCommandIds.contains(command.getCommand().getId())){
+                    commandQueue.remove(command);
+                }
+
+                queuedCommandIds.add(command.getCommand().getId());
+
                 if (command.canExecute(platform)) {
                     runThisTick.add(command);
-                    it.remove();
+                    //it.remove();
+                    removeSet.add(command);
                 }
 
                 if (blocking && runThisTick.size() >= RUN_MAX_COMMANDS_BLOCKING) {
                     break;
                 }
             }
+
+            commandQueue.removeAll(removeSet);
+
         }
 
         long start = System.nanoTime();
         for (ToRunQueuedCommand command : runThisTick) {
+            if(completedCommandsTask.getRetained().contains(command.getCommand().getId())){
+                synchronized (commandQueue) {
+                    commandQueue.remove(command);
+                }
+                continue;
+            }
+
             if(command.canExecute(platform)) {
                 String finalCommand = platform.getPlaceholderManager().doReplace(command.getPlayer(), command.getCommand());
                 platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));

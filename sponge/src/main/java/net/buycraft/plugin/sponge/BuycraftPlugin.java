@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge;
 
-import com.bugsnag.Bugsnag;
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import lombok.Getter;
@@ -148,10 +147,7 @@ public class BuycraftPlugin {
             Sponge.getEventManager().registerListeners(this, check);
         }
 
-        String implVersion = Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN");
-        Bugsnag bugsnagClient = Setup.bugsnagClient(httpClient, "sponge", curVersion,
-                implVersion, this::getServerInformation);
-        loggerUtils = new LoggerUtils(this, bugsnagClient);
+
 
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
