@@ -39,11 +39,10 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
             Set<ToRunQueuedCommand> removeSet = new HashSet<ToRunQueuedCommand>();
 
 
-            for (Iterator<ToRunQueuedCommand> it = commandQueue.iterator(); it.hasNext(); ) {
-                ToRunQueuedCommand command = it.next();
-
+            for (ToRunQueuedCommand command : commandQueue) {
                 if(queuedCommandIds.contains(command.getCommand().getId())){
-                    commandQueue.remove(command);
+                    removeSet.add(command);
+                    continue;
                 }
 
                 queuedCommandIds.add(command.getCommand().getId());
