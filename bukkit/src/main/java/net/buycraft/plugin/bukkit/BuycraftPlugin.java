@@ -42,7 +42,6 @@ import net.buycraft.plugin.shared.util.AnalyticsSend;
 import okhttp3.OkHttpClient;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,8 +63,6 @@ public class BuycraftPlugin extends JavaPlugin {
     private ApiClient apiClient;
     @Getter
     private DuePlayerFetcher duePlayerFetcher;
-
-    private BukkitTask duePlayerFetcherTask;
     @Getter
     private ListingUpdateTask listingUpdateTask;
     @Getter
@@ -166,7 +163,7 @@ public class BuycraftPlugin extends JavaPlugin {
         placeholderManager.addPlaceholder(new UuidPlaceholder());
 
         // Start the essential tasks.
-        this.duePlayerFetcherTask = getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
+        getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
                 configuration.isVerbose()), 20);
         completedCommandsTask = new PostCompletedCommandsTask(platform);
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
@@ -287,12 +284,6 @@ public class BuycraftPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        try {
-            this.duePlayerFetcherTask.cancel();
-        } catch (Exception e) {
-            // silence the exception
-        }
-
         try {
             recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
