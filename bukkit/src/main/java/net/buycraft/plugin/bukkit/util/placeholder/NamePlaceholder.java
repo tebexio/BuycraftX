@@ -16,9 +16,13 @@ public class NamePlaceholder implements Placeholder {
 
     @Override
     public String replace(String command, QueuedPlayer player, QueuedCommand queuedCommand) {
+        if (player.getUuid() == null || player.getUuid() == "") {
+            return REPLACE_NAME.matcher(command).replaceAll(player.getName());
+        }
+        
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
 
-        if(offlinePlayer == null || !offlinePlayer.hasPlayedBefore()){
+        if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
             return REPLACE_NAME.matcher(command).replaceAll(player.getName());
         }
 
