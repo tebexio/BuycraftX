@@ -22,7 +22,6 @@ import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
 import net.buycraft.plugin.shared.logging.BugsnagHandler;
-import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.md_5.bungee.api.plugin.Plugin;

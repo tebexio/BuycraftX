@@ -25,7 +25,6 @@ import net.buycraft.plugin.nukkit.util.VersionCheck;
 import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
-import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import okhttp3.OkHttpClient;
@@ -61,8 +60,6 @@ public class BuycraftPlugin extends PluginBase {
     private PostCompletedCommandsTask completedCommandsTask;
     @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
-    @Getter
-    private CouponUpdateTask couponUpdateTask;
     @Getter
     private LoggerUtils loggerUtils;
     private BuycraftCommand command;
@@ -134,15 +131,6 @@ public class BuycraftPlugin extends PluginBase {
         getServer().getScheduler().scheduleDelayedRepeatingTask(this, (Runnable) commandExecutor, 1, 1);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         getServer().getScheduler().scheduleDelayedRepeatingTask(this, playerJoinCheckTask, 1, 1);
-        couponUpdateTask = new CouponUpdateTask(platform, null, configuration.isVerbose());
-        if (apiClient != null) {
-            try {
-                couponUpdateTask.run();
-            } catch (Exception e) {
-                getLogger().error("Can't update coupon listing", e);
-            }
-        }
-        getServer().getScheduler().scheduleDelayedRepeatingTask(this, couponUpdateTask, 20*60, 20*60*20);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
