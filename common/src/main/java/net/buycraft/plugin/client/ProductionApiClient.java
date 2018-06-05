@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 public class ProductionApiClient implements ApiClient {
-    private static final String API_URL = "https://plugin.buycraft.net";
+    private static final String API_URL = "http://plugin.dev.buycraft.net";
     private static final String API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";
 
     private final Gson gson = new GsonBuilder()
@@ -210,6 +210,21 @@ public class ProductionApiClient implements ApiClient {
     @Override
     public void deleteCoupon(int id) throws IOException, ApiException {
         Request request = getBuilder("/coupons/" + id)
+                .delete()
+                .build();
+
+        Response response = httpClient.newCall(request).execute();
+
+        try (ResponseBody rspBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw handleError(response, rspBody);
+            }
+        }
+    }
+
+    @Override
+    public void deleteCoupon(String id) throws IOException, ApiException {
+        Request request = getBuilder("/coupons/" + id + "/code")
                 .delete()
                 .build();
 

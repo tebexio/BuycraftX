@@ -64,8 +64,6 @@ public class BuycraftPlugin extends Plugin {
     private PostCompletedCommandsTask completedCommandsTask;
     @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
-    @Getter
-    private CouponUpdateTask couponUpdateTask;
 
     @Override
     public void onEnable() {
@@ -177,15 +175,6 @@ public class BuycraftPlugin extends Plugin {
         getProxy().getScheduler().schedule(this, (Runnable) commandExecutor, 50, 50, TimeUnit.MILLISECONDS);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         getProxy().getScheduler().schedule(this, playerJoinCheckTask, 1, 1, TimeUnit.SECONDS);
-        couponUpdateTask = new CouponUpdateTask(platform, null, configuration.isVerbose());
-        if (apiClient != null) {
-            try {
-                couponUpdateTask.run();
-            } catch (Exception e) {
-                getLogger().log(Level.SEVERE, "Can't update coupon listing", e);
-            }
-        }
-        getProxy().getScheduler().schedule(this, couponUpdateTask, 1, 20, TimeUnit.MINUTES);
 
         // Register listener.
         getProxy().getPluginManager().registerListener(this, new BuycraftListener(this));
