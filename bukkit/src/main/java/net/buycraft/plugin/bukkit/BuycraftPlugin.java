@@ -159,7 +159,7 @@ public class BuycraftPlugin extends JavaPlugin {
         }
 
         // Initialize placeholders.
-        placeholderManager.addPlaceholder(new NamePlaceholder());
+        placeholderManager.addPlaceholder(new net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
 
         // Start the essential tasks.
