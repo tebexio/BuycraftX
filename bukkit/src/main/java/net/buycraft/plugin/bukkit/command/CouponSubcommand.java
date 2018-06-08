@@ -1,6 +1,5 @@
 package net.buycraft.plugin.bukkit.command;
 
-import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
@@ -10,9 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class CouponSubcommand implements Subcommand {
@@ -28,9 +25,6 @@ public class CouponSubcommand implements Subcommand {
         }
 
         switch (args[0]) {
-            case "list":
-                listCoupons(sender, args);
-                break;
             case "create":
                 createCoupon(sender, args);
                 break;
@@ -41,22 +35,6 @@ public class CouponSubcommand implements Subcommand {
                 sender.sendMessage(ChatColor.RED + plugin.getI18n().get("usage_coupon_subcommands"));
                 break;
         }
-    }
-
-    private void listCoupons(final CommandSender sender, String[] args) {
-        if (args.length != 1) {
-            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_params"));
-            return;
-        }
-
-        List<Coupon> couponList = plugin.getCouponUpdateTask().getListing();
-
-        List<String> codes = new ArrayList<>();
-        for (Coupon coupon : couponList) {
-            codes.add(coupon.getCode());
-        }
-
-        sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("coupon_listing", Joiner.on(", ").join(codes)));
     }
 
     private void createCoupon(final CommandSender sender, String[] args) {
@@ -76,8 +54,6 @@ public class CouponSubcommand implements Subcommand {
                 try {
                     plugin.getApiClient().createCoupon(coupon);
                     sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
-
-                    plugin.getPlatform().executeAsync(plugin.getCouponUpdateTask());
                 } catch (ApiException | IOException e) {
                     sender.sendMessage(ChatColor.RED + e.getMessage());
 
@@ -92,22 +68,16 @@ public class CouponSubcommand implements Subcommand {
             return;
         }
 
-        final Coupon coupon = plugin.getCouponUpdateTask().getCouponByCode(args[1]);
-        if (coupon == null) {
-            sender.sendMessage(ChatColor.RED + plugin.getI18n().get("coupon_not_found"));
-            return;
-        }
+        final String code = args[1];
 
         plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().deleteCoupon(coupon.getId());
+                    plugin.getApiClient().deleteCoupon(code);
                     sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_deleted"));
-
-                    plugin.getPlatform().executeAsync(plugin.getCouponUpdateTask());
                 } catch (ApiException | IOException e) {
-                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
+                    sender.sendMessage(ChatColor.RED + e.getMessage());
                     return;
                 }
             }
