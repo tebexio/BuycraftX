@@ -8,7 +8,9 @@ import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.data.responses.Listing;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -49,7 +51,14 @@ public class ListingUpdateTask implements Runnable {
     }
 
     public Package getPackageById(int id) {
-        for (Category category : getListing().getCategories()) {
+        List<Category> categories = getListing().getCategories();
+
+        if(categories == null) {
+            System.out.println("Could not get a list of categories when searching for package " + id + ".");
+            return null;
+        }
+
+        for (Category category : categories) {
             Package p = doSearch(id, category);
             if (p != null)
                 return p;
