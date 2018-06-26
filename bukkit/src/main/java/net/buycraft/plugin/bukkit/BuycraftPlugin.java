@@ -295,6 +295,12 @@ public class BuycraftPlugin extends JavaPlugin {
         }
 
         try {
+            this.duePlayerFetcherTask.cancel();
+        } catch (Exception e) {
+            // silence the exception
+        }
+
+        try {
             recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Can't save purchase signs, continuing anyway");
