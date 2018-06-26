@@ -23,7 +23,6 @@ import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
-import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
@@ -105,8 +104,6 @@ public class BuycraftPlugin {
     private PostCompletedCommandsTask completedCommandsTask;
     @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
-    @Getter
-    private CouponUpdateTask couponUpdateTask;
 
     @Listener
     public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
@@ -172,15 +169,11 @@ public class BuycraftPlugin {
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).execute(playerJoinCheckTask).submit(this);
         listingUpdateTask = new ListingUpdateTask(platform, null);
-        couponUpdateTask = new CouponUpdateTask(platform, null, configuration.isVerbose());
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run();
-            couponUpdateTask.run();
         }
         Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60 * 20).intervalTicks(20 * 60 * 20).execute(listingUpdateTask).async()
-                .submit(this);
-        Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60).intervalTicks(20 * 60 * 20).execute(couponUpdateTask).async()
                 .submit(this);
 
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
@@ -317,9 +310,6 @@ public class BuycraftPlugin {
 
     private CommandSpec buildCouponCommands() {
         CouponCmd cmd = new CouponCmd(this);
-        CommandSpec listing = CommandSpec.builder()
-                .executor(cmd::listCoupons)
-                .build();
         CommandSpec create = CommandSpec.builder()
                 .executor(cmd::createCoupon)
                 .arguments(GenericArguments.allOf(GenericArguments.string(Text.of("args"))))
@@ -331,7 +321,6 @@ public class BuycraftPlugin {
         return CommandSpec.builder()
                 .description(Text.of(i18n.get("usage_coupon")))
                 .permission("buycraft.admin")
-                .child(listing, "list")
                 .child(create, "create")
                 .child(delete, "delete")
                 .build();

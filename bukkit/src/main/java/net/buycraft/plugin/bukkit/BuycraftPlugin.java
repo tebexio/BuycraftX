@@ -35,13 +35,13 @@ import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
 import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
-import net.buycraft.plugin.shared.tasks.CouponUpdateTask;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import okhttp3.OkHttpClient;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,10 +63,10 @@ public class BuycraftPlugin extends JavaPlugin {
     private ApiClient apiClient;
     @Getter
     private DuePlayerFetcher duePlayerFetcher;
+
+    private BukkitTask duePlayerFetcherTask;
     @Getter
     private ListingUpdateTask listingUpdateTask;
-    @Getter
-    private CouponUpdateTask couponUpdateTask;
     @Getter
     private ServerInformation serverInformation;
     @Getter
@@ -162,11 +162,11 @@ public class BuycraftPlugin extends JavaPlugin {
         }
 
         // Initialize placeholders.
-        placeholderManager.addPlaceholder(new NamePlaceholder());
+        placeholderManager.addPlaceholder(new net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
 
         // Start the essential tasks.
-        getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
+        this.duePlayerFetcherTask = getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
                 configuration.isVerbose()), 20);
         completedCommandsTask = new PostCompletedCommandsTask(platform);
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
@@ -187,13 +187,12 @@ public class BuycraftPlugin extends JavaPlugin {
                 Bukkit.getScheduler().runTask(BuycraftPlugin.this, new BuyNowSignUpdater(BuycraftPlugin.this));
             }
         });
-        couponUpdateTask = new CouponUpdateTask(platform, null, configuration.isVerbose());
+
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             try {
                 // for a first synchronous run
                 listingUpdateTask.run();
-                couponUpdateTask.run();
 
                 // Update GUIs too.
                 viewCategoriesGUI.update();
@@ -203,7 +202,6 @@ public class BuycraftPlugin extends JavaPlugin {
             }
         }
         getServer().getScheduler().runTaskTimerAsynchronously(this, listingUpdateTask, 20 * 60 * 10, 20 * 60 * 10);
-        getServer().getScheduler().runTaskTimerAsynchronously(this, couponUpdateTask, 20 * 60, 20 * 60 * 20);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
@@ -290,6 +288,12 @@ public class BuycraftPlugin extends JavaPlugin {
         if(configuration.isPushCommandsEnabled()) {
             injector.close();
         }
+        try {
+            this.duePlayerFetcherTask.cancel();
+        } catch (Exception e) {
+            // silence the exception
+        }
+
         try {
             recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {

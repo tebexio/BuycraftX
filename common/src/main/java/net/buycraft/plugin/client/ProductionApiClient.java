@@ -223,6 +223,21 @@ public class ProductionApiClient implements ApiClient {
     }
 
     @Override
+    public void deleteCoupon(String id) throws IOException, ApiException {
+        Request request = getBuilder("/coupons/" + id + "/code")
+                .delete()
+                .build();
+
+        Response response = httpClient.newCall(request).execute();
+
+        try (ResponseBody rspBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw handleError(response, rspBody);
+            }
+        }
+    }
+
+    @Override
     public Coupon createCoupon(Coupon coupon) throws IOException, ApiException {
         FormBody.Builder build = new FormBody.Builder()
                 .add("code", coupon.getCode())

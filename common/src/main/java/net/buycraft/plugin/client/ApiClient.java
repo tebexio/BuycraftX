@@ -32,5 +32,7 @@ public interface ApiClient {
 
     void deleteCoupon(int id) throws IOException, ApiException;
 
+    void deleteCoupon(String id) throws IOException, ApiException;
+
     Coupon createCoupon(Coupon coupon) throws IOException, ApiException;
 }

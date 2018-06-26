@@ -22,21 +22,6 @@ public class CouponCmd {
 
     private final BuycraftPlugin plugin;
 
-    public CommandResult listCoupons(CommandSource source, CommandContext ctx) throws CommandException {
-        List<Coupon> couponList = plugin.getCouponUpdateTask().getListing();
-
-        List<String> codes = new ArrayList<>();
-        for (Coupon coupon : couponList) {
-            codes.add(coupon.getCode());
-        }
-
-        source.sendMessage(Text.builder(plugin.getI18n().get("coupon_listing", Joiner.on(", ").join(codes)))
-                .color(TextColors.YELLOW)
-                .build());
-
-        return CommandResult.queryResult(codes.size());
-    }
-
     public CommandResult createCoupon(CommandSource source, CommandContext ctx) throws CommandException {
         Collection<String> argsList = ctx.getAll("args");
         String[] argsArray = argsList.toArray(new String[argsList.size()]);
@@ -58,8 +43,6 @@ public class CouponCmd {
                     source.sendMessage(Text.builder(plugin.getI18n().get("coupon_creation_success", coupon.getCode()))
                             .color(TextColors.GREEN)
                             .build());
-
-                    plugin.getPlatform().executeAsync(plugin.getCouponUpdateTask());
                 } catch (ApiException | IOException e) {
                     source.sendMessage(Text.builder(plugin.getI18n().get("generic_api_operation_error"))
                             .color(TextColors.RED)
@@ -80,25 +63,19 @@ public class CouponCmd {
             return CommandResult.empty();
         }
 
-        final Coupon coupon = plugin.getCouponUpdateTask().getCouponByCode(codeOptional.get());
-        if (coupon == null) {
-            source.sendMessage(Text.builder(plugin.getI18n().get("coupon_not_found"))
-                    .color(TextColors.RED)
-                    .build());
-            return CommandResult.empty();
-        }
+        final String code = codeOptional.get();
 
         plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().deleteCoupon(coupon.getId());
+                    plugin.getApiClient().deleteCoupon(code);
                     source.sendMessage(Text.builder(plugin.getI18n().get("coupon_deleted"))
                             .color(TextColors.GREEN)
                             .build());
-                    plugin.getPlatform().executeAsync(plugin.getCouponUpdateTask());
+
                 } catch (ApiException | IOException e) {
-                    source.sendMessage(Text.builder(plugin.getI18n().get("generic_api_operation_error"))
+                    source.sendMessage(Text.builder(e.getMessage())
                             .color(TextColors.RED)
                             .build());
                 }
