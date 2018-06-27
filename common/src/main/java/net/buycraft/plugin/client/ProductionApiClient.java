@@ -137,7 +137,7 @@ public class ProductionApiClient implements ApiClient {
                 .build();
 
         Response response = httpClient.newBuilder()
-                .connectTimeout(5, TimeUnit.SECONDS)
+                .connectTimeout(6, TimeUnit.SECONDS)
                 .writeTimeout(7, TimeUnit.SECONDS)
                 .readTimeout(7, TimeUnit.SECONDS)
                 .build().newCall(request).execute();
