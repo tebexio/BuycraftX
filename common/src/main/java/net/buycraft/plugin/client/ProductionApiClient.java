@@ -126,10 +126,7 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public void deleteCommand(List<Integer> ids) throws IOException, ApiException {
-        FormBody.Builder builder = new FormBody.Builder()
-                .connectTimeout(6, TimeUnit.SECONDS)
-                .writeTimeout(7, TimeUnit.SECONDS)
-                .readTimeout(7, TimeUnit.SECONDS);
+        FormBody.Builder builder = new FormBody.Builder();
 
         for (Integer id : ids) {
             builder.add("ids[]", id.toString());
@@ -138,7 +135,12 @@ public class ProductionApiClient implements ApiClient {
         Request request = getBuilder("/queue")
                 .method("DELETE", builder.build())
                 .build();
-        Response response = httpClient.newCall(request).execute();
+
+        Response response = httpClient.newBuilder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(7, TimeUnit.SECONDS)
+                .readTimeout(7, TimeUnit.SECONDS)
+                .build().newCall(request).execute();
 
         try (ResponseBody body = response.body()) {
             if (!response.isSuccessful()) {
