@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class ProductionApiClient implements ApiClient {
@@ -125,7 +126,10 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public void deleteCommand(List<Integer> ids) throws IOException, ApiException {
-        FormBody.Builder builder = new FormBody.Builder();
+        FormBody.Builder builder = new FormBody.Builder()
+                .connectTimeout(6, TimeUnit.SECONDS)
+                .writeTimeout(7, TimeUnit.SECONDS)
+                .readTimeout(7, TimeUnit.SECONDS);
 
         for (Integer id : ids) {
             builder.add("ids[]", id.toString());
