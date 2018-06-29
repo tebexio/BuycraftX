@@ -136,17 +136,31 @@ public class ProductionApiClient implements ApiClient {
                 .method("DELETE", builder.build())
                 .build();
 
-        Response response = httpClient.newBuilder()
+
+
+        httpClient.newBuilder()
                 .connectTimeout(6, TimeUnit.SECONDS)
                 .writeTimeout(7, TimeUnit.SECONDS)
                 .readTimeout(7, TimeUnit.SECONDS)
-                .build().newCall(request).execute();
+                .build().newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(final Call call, IOException e) {
+                        // Error
+                        System.out.println("Error when trying to mark commands as complete...");
+                        e.printStackTrace();
+                    }
 
-        try (ResponseBody body = response.body()) {
-            if (!response.isSuccessful()) {
-                throw handleError(response, body);
-            }
-        }
+                    @Override public void onResponse(Call call, Response response) throws IOException {
+                        try (ResponseBody responseBody = response.body()) {
+                            if (!response.isSuccessful()) {
+                                System.out.println("Error when trying to mark commands as complete...");
+                                System.out.println(response.body());
+                            }
+                        }
+                    }
+                });
+
     }
 
     @Override

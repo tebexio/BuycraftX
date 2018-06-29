@@ -14,7 +14,7 @@ import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public class PostCompletedCommandsTask implements Runnable {
-    private static final int MAXIMUM_COMMANDS_TO_POST = 100;
+    private static final int MAXIMUM_COMMANDS_TO_POST = 50;
     private final Queue<Integer> completed = new ConcurrentLinkedQueue<>();
     private final ArrayList<Integer> retainedCompleted = new ArrayList<>();
     private final IBuycraftPlatform platform;
