@@ -5,7 +5,7 @@
     <parent>
         <artifactId>BuycraftX</artifactId>
         <groupId>net.buycraft</groupId>
-        <version>10.6.2</version>
+        <version>11.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,12 +30,6 @@
             <groupId>net.buycraft</groupId>
             <artifactId>buycraftx-common</artifactId>
             <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.bugsnag</groupId>
-            <artifactId>bugsnag</artifactId>
-            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
