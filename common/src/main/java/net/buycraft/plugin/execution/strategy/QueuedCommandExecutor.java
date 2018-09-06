@@ -1,5 +1,6 @@
 package net.buycraft.plugin.execution.strategy;
 
+import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.platform.NoBlocking;
 
@@ -10,8 +11,9 @@ import java.util.logging.Level;
 
 public class QueuedCommandExecutor implements CommandExecutor, Runnable {
     private static final long MAXIMUM_NOTIFICATION_TIME = TimeUnit.MILLISECONDS.toNanos(5);
-    private static final int RUN_MAX_COMMANDS_BLOCKING = 10;
 
+    @Setter
+    private int runMaxCommandsBlocking = 10;
     private final IBuycraftPlatform platform;
     private final boolean blocking;
     private final Set<ToRunQueuedCommand> commandQueue = new LinkedHashSet<>();
@@ -41,7 +43,7 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                     it.remove();
                 }
 
-                if (blocking && runThisTick.size() >= RUN_MAX_COMMANDS_BLOCKING) {
+                if (blocking && runThisTick.size() >= runMaxCommandsBlocking) {
                     break;
                 }
             }
