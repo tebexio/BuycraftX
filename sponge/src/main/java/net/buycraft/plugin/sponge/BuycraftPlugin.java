@@ -2,6 +2,9 @@ package net.buycraft.plugin.sponge;
 
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -27,6 +30,7 @@ import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.buycraft.plugin.sponge.command.*;
+import net.buycraft.plugin.sponge.httplistener.Handler;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
 import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
@@ -46,11 +50,14 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
@@ -159,6 +166,9 @@ public class BuycraftPlugin {
             }
             apiClient = client;
         }
+
+        this.initializeHttpListener();
+
         placeholderManager.addPlaceholder(new NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
         platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
@@ -268,6 +278,16 @@ public class BuycraftPlugin {
             logger.error("Can't save purchase signs, continuing anyway");
         }
         completedCommandsTask.flush();
+    }
+
+    private void initializeHttpListener(){
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8777), 50);
+            server.createContext("/", new Handler());
+            server.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private CommandSpec buildCommands() {
