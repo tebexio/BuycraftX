@@ -51,6 +51,16 @@ public class BuycraftConfiguration {
         return getBoolean("push-commands", false);
     }
 
+    public Integer getPushCommandsPort() {
+        String value = properties.getProperty("push-commands", "8282");
+
+        if(value == null || value.equalsIgnoreCase("false")) {
+            return null;
+        }
+
+        return Integer.valueOf(value);
+    }
+
     public void setServerKey(String key) {
         properties.setProperty("server-key", key);
     }

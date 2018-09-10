@@ -167,7 +167,11 @@ public class BuycraftPlugin {
             apiClient = client;
         }
 
-        this.initializeHttpListener();
+        Integer pushCommandsPort = configuration.getPushCommandsPort();
+
+        if(pushCommandsPort != null) {
+            this.initializeHttpListener(pushCommandsPort);
+        }
 
         placeholderManager.addPlaceholder(new NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
@@ -280,10 +284,10 @@ public class BuycraftPlugin {
         completedCommandsTask.flush();
     }
 
-    private void initializeHttpListener(){
+    private void initializeHttpListener(Integer port){
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(8777), 50);
-            server.createContext("/", new Handler());
+            HttpServer server = HttpServer.create(new InetSocketAddress(port), 50);
+            server.createContext("/", new Handler(this));
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
