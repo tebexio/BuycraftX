@@ -42,7 +42,7 @@ public class Handler implements HttpHandler {
 
     private Object[] handleRequest(HttpExchange ex) {
         if (ex.getRequestURI().toString().equalsIgnoreCase("/ping")) {
-            return new Object[]{200, "Invalid JSON"};
+            return new Object[]{200, "Connected"};
         } else {
             try {
                 String body = IOUtils.toString(ex.getRequestBody(), Charsets.UTF_8);
