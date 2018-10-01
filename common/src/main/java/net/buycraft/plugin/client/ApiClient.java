@@ -1,6 +1,7 @@
 package net.buycraft.plugin.client;
 
 import net.buycraft.plugin.data.Coupon;
+import net.buycraft.plugin.data.GiftCard;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 
@@ -35,4 +36,14 @@ public interface ApiClient {
     void deleteCoupon(String id) throws IOException, ApiException;
 
     Coupon createCoupon(Coupon coupon) throws IOException, ApiException;
+
+    List<GiftCard> getAllGiftCards() throws IOException, ApiException;
+
+    GiftCard createGiftCard(String amount, String note) throws IOException, ApiException;
+
+    GiftCard getGiftCard(int id) throws IOException, ApiException;
+
+    GiftCard topOffGiftCard(int id, String amount)  throws IOException, ApiException;
+
+    GiftCard voidGiftCard(int id) throws IOException, ApiException;
 }
