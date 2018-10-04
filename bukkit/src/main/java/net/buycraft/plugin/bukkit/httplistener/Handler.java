@@ -80,9 +80,15 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
             if (command instanceof JsonObject) {
                 JsonObject commandObject = ((JsonObject) command).getAsJsonObject();
 
+                String uuid = commandObject.get("username").getAsString().replace("-", "");
+
+                if(!plugin.getServerInformation().getAccount().isOnlineMode()){
+                    uuid = null;
+                }
+
                 QueuedPlayer qp = new QueuedPlayer(playerId,
                         commandObject.get("username_name").getAsString(),
-                        commandObject.get("username").getAsString().replace("-", ""));
+                        uuid);
 
 
                 Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
