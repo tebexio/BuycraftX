@@ -32,7 +32,7 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(422));
         ChannelPromise promise = ctx.channel().newPromise();
 
-        if (request.uri().equalsIgnoreCase("/ping")) {
+        if (request.getUri().equalsIgnoreCase("/ping")) {
             response.content().writeBytes(Charsets.UTF_8.encode("Connection Established"));
             response.setStatus(HttpResponseStatus.valueOf(200));
         } else {
