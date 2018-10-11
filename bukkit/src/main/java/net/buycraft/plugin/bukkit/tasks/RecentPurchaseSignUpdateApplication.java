@@ -5,10 +5,7 @@ import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -28,7 +25,8 @@ public class RecentPurchaseSignUpdateApplication implements Runnable {
         Block at = origin.getRelative(BlockFace.UP);
         for (BlockFace face : FACES) {
             Block b = at.getRelative(face);
-            if (b.getType() == Material.SKULL)
+
+            if (b.getType() == Material.PLAYER_HEAD)
                 return b;
         }
         return null;
@@ -47,7 +45,7 @@ public class RecentPurchaseSignUpdateApplication implements Runnable {
                 // Invalid.
                 continue;
             }
-            if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN) {
+            if (block.getType() == Material.LEGACY_SIGN_POST || block.getType() == Material.WALL_SIGN) {
                 Sign sign = (Sign) block.getState();
 
                 if (entry.getValue() != null) {
@@ -66,8 +64,15 @@ public class RecentPurchaseSignUpdateApplication implements Runnable {
                 Block skullBlock = findSkullBlock(block);
                 if (skullBlock != null) {
                     Skull skull = (Skull) skullBlock.getState();
-                    skull.setSkullType(SkullType.PLAYER);
-                    skull.setOwner(entry.getValue() == null ? UNKNOWN_USERNAME : entry.getValue().getPlayer().getName());
+
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(entry.getValue() == null ? UNKNOWN_USERNAME : entry.getValue().getPlayer().getName());
+
+                    skull.setOwningPlayer(offlinePlayer);
+
+                    skull.setType(Material.PLAYER_HEAD);
+
+                    //skull.setSkullType(SkullType.PLAYER);
+                    //skull.setOwner(entry.getValue() == null ? UNKNOWN_USERNAME : entry.getValue().getPlayer().getName());
                     skull.update();
                 }
             } else {

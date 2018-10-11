@@ -73,7 +73,7 @@ public class BuyNowSignListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null) {
             Block b = event.getClickedBlock();
 
-            if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
+            if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.LEGACY_SIGN_POST))
                 return;
 
             SerializedBlockLocation sbl = BukkitSerializedBlockLocation.create(event.getClickedBlock().getLocation());
@@ -114,7 +114,7 @@ public class BuyNowSignListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
+        if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.LEGACY_SIGN_POST) {
             SerializedBlockLocation location = BukkitSerializedBlockLocation.create(event.getBlock().getLocation());
             if (plugin.getBuyNowSignStorage().containsLocation(location)) {
                 if (!event.getPlayer().hasPermission("buycraft.admin")) {
@@ -161,7 +161,7 @@ public class BuyNowSignListener implements Listener {
 
         Block b = BukkitSerializedBlockLocation.toBukkit(sbl).getBlock();
 
-        if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST))
+        if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.LEGACY_SIGN_POST))
             return;
 
         plugin.getBuyNowSignStorage().addSign(new SavedBuyNowSign(sbl, p.getId()));

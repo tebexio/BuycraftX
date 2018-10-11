@@ -38,7 +38,7 @@ public class BuyNowSignUpdater implements Runnable {
 
             Block b = location.getBlock();
 
-            if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST)) {
+            if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.LEGACY_SIGN_POST)) {
                 plugin.getLogger().warning(String.format("Sign at %d, %d, %d in world %s is not a sign in the world!",
                         sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));
                 continue;

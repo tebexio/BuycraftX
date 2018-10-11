@@ -70,7 +70,7 @@ public class RecentPurchaseSignListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
+        if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.LEGACY_SIGN_POST) {
             SerializedBlockLocation location = BukkitSerializedBlockLocation.create(event.getBlock().getLocation());
 
             if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {

@@ -196,13 +196,13 @@ public class CategoryViewGUI {
 
                         if (gui_item != null && !gui_item.equals("")) {
                             if(gui_item.matches("^\\d+$")){
-                                material = Material.getMaterial(Integer.valueOf(gui_item));
+                                material = Material.getMaterial(gui_item);
                             }else if(!gui_item.contains(":")){
                                 material = Material.matchMaterial(gui_item);
                             }else {
                                 String[] parts = gui_item.split(":");
                                 if(parts[0].matches("^\\d+$")){
-                                    material = Material.getMaterial(Integer.valueOf(parts[0]));
+                                    material = Material.getMaterial(parts[0]);
                                 }else{
                                     material = Material.matchMaterial(parts[0]);
                                 }
@@ -236,13 +236,13 @@ public class CategoryViewGUI {
 
                     if (gui_item != null && !gui_item.equals("")) {
                         if(gui_item.matches("^\\d+$")){
-                            material = Material.getMaterial(Integer.valueOf(gui_item));
+                            material = Material.getMaterial(gui_item);
                         }else if(!gui_item.contains(":")){
                             material = Material.matchMaterial(gui_item);
                         }else {
                             String[] parts = gui_item.split(":");
                             if(parts[0].matches("^\\d+$")){
-                                material = Material.getMaterial(Integer.valueOf(parts[0]));
+                                material = Material.getMaterial(parts[0]);
                             }else{
                                 material = Material.matchMaterial(parts[0]);
                             }
@@ -295,7 +295,7 @@ public class CategoryViewGUI {
             }
 
             // Draw a parent or "view all categories" button
-            ItemStack parent = new ItemStack(Material.BOOK_AND_QUILL);
+            ItemStack parent = new ItemStack(Material.LEGACY_BOOK_AND_QUILL);
             ItemMeta meta = parent.getItemMeta();
             meta.setDisplayName(ChatColor.GRAY + (parentId == null ? plugin.getI18n().get("view_all_categories") : plugin.getI18n().get("back_to_parent")));
             parent.setItemMeta(meta);
@@ -369,7 +369,7 @@ public class CategoryViewGUI {
                             categoryMenus.get(category.getId()).get(page + 1).open(player);
                         }
                     });
-                } else if (stack.getType() == Material.BOOK_AND_QUILL) {
+                } else if (stack.getType() == Material.LEGACY_BOOK_AND_QUILL) {
                     if (parentId != null) {
                         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                             @Override

@@ -119,13 +119,13 @@ public class ViewCategoriesGUI implements Listener {
 
             if (gui_item != null && !gui_item.equals("")) {
                 if(gui_item.matches("^\\d+$")){
-                    material = Material.getMaterial(Integer.valueOf(gui_item));
+                    material = Material.getMaterial(gui_item);
                 }else if(!gui_item.contains(":")){
                     material = Material.matchMaterial(gui_item);
                 }else {
                     String[] parts = gui_item.split(":");
                     if(parts[0].matches("^\\d+$")){
-                        material = Material.getMaterial(Integer.valueOf(parts[0]));
+                        material = Material.getMaterial(parts[0]);
                     }else{
                         material = Material.matchMaterial(parts[0]);
                     }

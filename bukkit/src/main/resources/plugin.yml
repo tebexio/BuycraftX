@@ -5,3 +5,4 @@ author: Buycraft
 commands:
   buycraft:
     description: Main command for the Buycraft plugin.
+api-version: 1.13
