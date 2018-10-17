@@ -174,9 +174,10 @@ public class BuycraftPlugin extends JavaPlugin {
         this.duePlayerFetcherTask = getServer().getScheduler().runTaskLaterAsynchronously(this, duePlayerFetcher = new DuePlayerFetcher(platform,
                 configuration.isVerbose()), 20);
         completedCommandsTask = new PostCompletedCommandsTask(platform);
-        QueuedCommandExecutor queuedCommandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
-        queuedCommandExecutor.setRunMaxCommandsBlocking(configuration.getCommandsPerTick());
-        this.commandExecutor = queuedCommandExecutor;
+
+        commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
+        ((QueuedCommandExecutor) commandExecutor).setRunMaxCommandsBlocking(configuration.getCommandsPerTick());
+
         getServer().getScheduler().runTaskTimer(this, (Runnable) this.commandExecutor, 1, 1);
         getServer().getScheduler().runTaskTimerAsynchronously(this, completedCommandsTask, 20, 20);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
