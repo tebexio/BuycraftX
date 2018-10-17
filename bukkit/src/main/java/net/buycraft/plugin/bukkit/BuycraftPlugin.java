@@ -157,8 +157,13 @@ public class BuycraftPlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(check, this); // out!
         }
 
-        if(configuration.isPushCommandsEnabled()){
-            injector.inject();
+        if (configuration.isPushCommandsEnabled()) {
+
+            if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+                injector.inject();
+            } else {
+                getLogger().warning("Push commands cannot be enabled because ProtocolLib is not installed on the server.");
+            }
         }
 
         // Initialize placeholders.

@@ -2,6 +2,7 @@ name: BuycraftX
 main: net.buycraft.plugin.bukkit.BuycraftPlugin
 version: ${project.version}
 author: Buycraft
+softdepend: [ProtocolLib]
 commands:
   buycraft:
     description: Main command for the Buycraft plugin.
