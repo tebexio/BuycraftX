@@ -268,6 +268,7 @@ public class ProductionApiClient implements ApiClient {
                 .add("redeem_unlimited", coupon.getRedeemUnlimited() == 1 ? "true" : "false")
                 .add("expire_never", coupon.getExpireNever() == 1 ? "true" : "false")
                 .add("username", coupon.getUsername() == null ? "" : coupon.getUsername())
+                .add("note", coupon.getNote() == null ? "" : coupon.getNote())
                 .build();
 
         Request request = getBuilder("/coupons")

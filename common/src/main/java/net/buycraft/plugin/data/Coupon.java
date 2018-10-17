@@ -33,6 +33,8 @@ public class Coupon {
 
     @SerializedName("username")
     private final String username;
+    @SerializedName("note")
+    private final String note;
 
     @Value
     public static class Effective {
