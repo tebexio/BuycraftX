@@ -94,6 +94,10 @@ public class BuycraftConfiguration {
         return new BuycraftI18n(getLocale());
     }
 
+    public int getCommandsPerTick() {
+        return Integer.parseInt(properties.getProperty("commands-per-tick", "10"));
+    }
+
     public void fillDefaults() {
         defaultSet("server-key", "INVALID");
         defaultSet("is-bungeecord", "false");
