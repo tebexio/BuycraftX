@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.buycraft.plugin.data.Coupon;
+import net.buycraft.plugin.data.GiftCard;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 import okhttp3.*;
@@ -303,5 +304,66 @@ public class ProductionApiClient implements ApiClient {
                 return gson.fromJson(rspBody.charStream(), CouponSingleListing.class).getData();
             }
         }
+    }
+
+    private GiftCard handleGiftCardResponse(Response response) throws IOException, ApiException {
+        try (ResponseBody rspBody = response.body()) {
+            if (!response.isSuccessful()) {
+                throw handleError(response, rspBody);
+            } else {
+                return gson.fromJson(rspBody.charStream(), GiftCard.class);
+            }
+        }
+    }
+
+    @Override
+    public List<GiftCard> getAllGiftCards() throws IOException, ApiException {
+        GiftCardListing listing = get("/gift-cards", GiftCardListing.class);
+        if(listing == null){
+            return null;
+        }
+        return listing.getData();
+    }
+
+    @Override
+    public GiftCard createGiftCard(String amount, String note) throws IOException, ApiException {
+        FormBody.Builder build = new FormBody.Builder()
+                .add("amount", amount);
+        if (note != null)
+            build.add("note", note);
+
+        RequestBody body = build.build();
+
+        Request request = getBuilder("/gift-cards")
+                .post(body)
+                .build();
+
+        return handleGiftCardResponse(httpClient.newCall(request).execute());
+    }
+
+    @Override
+    public GiftCard getGiftCard(int id) throws IOException, ApiException {
+        Request request = getBuilder("/gift-cards/" + id).build();
+
+        return handleGiftCardResponse(httpClient.newCall(request).execute());
+    }
+
+    @Override
+    public GiftCard topOffGiftCard(int id, String amount) throws IOException, ApiException {
+        RequestBody body = new FormBody.Builder()
+                .add("amount", amount).build();
+
+        Request request = getBuilder("/gift-cards/" + id)
+                .put(body)
+                .build();
+
+        return handleGiftCardResponse(httpClient.newCall(request).execute());
+    }
+
+    @Override
+    public GiftCard voidGiftCard(int id) throws IOException, ApiException {
+        Request request = getBuilder("/gift-cards/" + id).delete().build();
+
+        return handleGiftCardResponse(httpClient.newCall(request).execute());
     }
 }
