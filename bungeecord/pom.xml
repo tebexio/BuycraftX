@@ -5,7 +5,7 @@
     <parent>
         <artifactId>BuycraftX</artifactId>
         <groupId>net.buycraft</groupId>
-        <version>10.6.2</version>
+        <version>11.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -41,10 +41,6 @@
                     </artifactSet>
                     <relocations>
                         <relocation>
-                            <pattern>com.bugsnag</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.bugsnag</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>okhttp3</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.okhttp3</shadedPattern>
                         </relocation>
@@ -76,12 +72,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.8-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>net.buycraft</groupId>
             <artifactId>buycraftx-plugin-shared</artifactId>
             <version>${project.parent.version}</version>
@@ -92,6 +82,13 @@
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.21</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.md_5.bungee</groupId>
+            <artifactId>bungee</artifactId>
+            <version>Latest</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/build/BungeeCord.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

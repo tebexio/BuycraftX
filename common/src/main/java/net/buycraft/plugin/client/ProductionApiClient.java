@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class ProductionApiClient implements ApiClient {
@@ -134,13 +135,32 @@ public class ProductionApiClient implements ApiClient {
         Request request = getBuilder("/queue")
                 .method("DELETE", builder.build())
                 .build();
-        Response response = httpClient.newCall(request).execute();
 
-        try (ResponseBody body = response.body()) {
-            if (!response.isSuccessful()) {
-                throw handleError(response, body);
-            }
-        }
+
+
+        httpClient.newBuilder()
+                .connectTimeout(6, TimeUnit.SECONDS)
+                .writeTimeout(7, TimeUnit.SECONDS)
+                .readTimeout(7, TimeUnit.SECONDS)
+                .build().newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onFailure(final Call call, IOException e) {
+                        // Error
+                        System.out.println("Error when trying to mark commands as complete...");
+                        e.printStackTrace();
+                    }
+
+                    @Override public void onResponse(Call call, Response response) throws IOException {
+                        try (ResponseBody responseBody = response.body()) {
+                            if (!response.isSuccessful()) {
+                                System.out.println("Error when trying to mark commands as complete...");
+                                System.out.println(response.body());
+                            }
+                        }
+                    }
+                });
+
     }
 
     @Override

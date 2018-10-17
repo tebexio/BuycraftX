@@ -5,7 +5,7 @@
     <parent>
         <artifactId>BuycraftX</artifactId>
         <groupId>net.buycraft</groupId>
-        <version>10.6.2</version>
+        <version>11.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -38,10 +38,6 @@
                         </excludes>
                     </artifactSet>
                     <relocations>
-                        <relocation>
-                            <pattern>com.bugsnag</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.bugsnag</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>com.google.gson</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.gson</shadedPattern>
@@ -90,10 +86,17 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.21</version>
-            <scope>compile</scope>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib-API</artifactId>
+            <version>4.3.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.minecraft.utils.io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>Latest</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/build/minecraft_server.1.12.2.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

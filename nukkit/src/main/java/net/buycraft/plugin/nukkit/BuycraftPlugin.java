@@ -3,7 +3,6 @@ package net.buycraft.plugin.nukkit;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.plugin.PluginBase;
-import com.bugsnag.Bugsnag;
 import lombok.Getter;
 import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -88,10 +87,7 @@ public class BuycraftPlugin extends PluginBase {
 
         httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
 
-        // Set up Bugsnag.
-        Bugsnag bugsnag = Setup.bugsnagClient(httpClient, "bukkit", getDescription().getVersion(),
-                getServer().getNukkitVersion(), this::getServerInformation);
-        loggerUtils = new LoggerUtils(getLogger(), bugsnag);
+        loggerUtils = new LoggerUtils(getLogger());
 
         // Initialize API client.
         final String serverKey = configuration.getServerKey();

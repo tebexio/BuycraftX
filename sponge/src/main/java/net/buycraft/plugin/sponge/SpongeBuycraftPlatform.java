@@ -82,12 +82,12 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void log(Level level, String message) {
-        plugin.getLoggerUtils().log(level, message);
+        plugin.getLogger().info(message);
     }
 
     @Override
     public void log(Level level, String message, Throwable throwable) {
-        plugin.getLoggerUtils().log(level, message, throwable);
+        plugin.getLogger().info(message, throwable);
     }
 
     @Override
