@@ -158,7 +158,7 @@ public class CouponUtil {
             }
         }
 
-	String discountMethod = kv.get("discount_application_method");
+	    String discountMethod = kv.get("discount_application_method");
 
         if (discountMethod == null) {
             discountMethod = "0";
@@ -185,6 +185,10 @@ public class CouponUtil {
             throw new IllegalArgumentException("username must be a string");
         }
 
+        if(kv.containsKey("note")) {
+            String note = kv.get("note");
+            builder.note(String.valueOf(note));
+        }
 
         return builder.build();
     }
