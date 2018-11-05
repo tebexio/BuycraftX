@@ -96,12 +96,7 @@ public class BuycraftPlugin extends JavaPlugin {
     @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
 
-    private NettyInjector injector = new NettyInjector() {
-        @Override
-        protected void injectChannel(Channel channel) {
-            channel.pipeline().addFirst(new Decoder(BuycraftPlugin.this));
-        }
-    };
+    private Object injector;
 
     @Override
     public void onEnable() {
@@ -160,7 +155,13 @@ public class BuycraftPlugin extends JavaPlugin {
         if (configuration.isPushCommandsEnabled()) {
 
             if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-                injector.inject();
+                injector = new NettyInjector() {
+                    @Override
+                    protected void injectChannel(Channel channel) {
+                        channel.pipeline().addFirst(new Decoder(BuycraftPlugin.this));
+                    }
+                };
+                ((NettyInjector)injector).inject();
             } else {
                 getLogger().warning("Push commands cannot be enabled because ProtocolLib is not installed on the server.");
             }
@@ -294,7 +295,7 @@ public class BuycraftPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         if(configuration.isPushCommandsEnabled()) {
-            injector.close();
+            ((NettyInjector)injector).close();
         }
         try {
             this.duePlayerFetcherTask.cancel();
