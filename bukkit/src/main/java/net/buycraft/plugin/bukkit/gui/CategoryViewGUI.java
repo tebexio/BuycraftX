@@ -183,7 +183,7 @@ public class CategoryViewGUI {
 
             List<List<Category>> subcatPartition;
             if (!category.getSubcategories().isEmpty()) {
-                subcatPartition = Lists.partition(category.getSubcategories(), 9);
+                subcatPartition = Lists.partition(category.getSubcategories(), 45);
                 if (subcatPartition.size() - 1 >= page) {
                     List<Category> subcats = subcatPartition.get(page);
                     for (int i = 0; i < subcats.size(); i++) {
