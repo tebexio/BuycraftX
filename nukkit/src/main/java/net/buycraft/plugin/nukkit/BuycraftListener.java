@@ -3,12 +3,14 @@ package net.buycraft.plugin.nukkit;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.QueuedPlayer;
 
-@RequiredArgsConstructor
 public class BuycraftListener implements Listener {
     private final BuycraftPlugin plugin;
+
+    public BuycraftListener(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {

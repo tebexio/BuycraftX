@@ -1,7 +1,6 @@
 package net.buycraft.plugin.shared.util;
 
 import com.google.gson.GsonBuilder;
-import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.data.responses.Version;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -10,8 +9,11 @@ import okhttp3.ResponseBody;
 
 import java.io.IOException;
 
-@UtilityClass
-public class VersionUtil {
+public final class VersionUtil {
+    private VersionUtil() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
     public static Version getVersion(OkHttpClient client, String platform, String secret) throws IOException {
         Request request = new Request.Builder()
                 .url("https://plugin.buycraft.net/versions/" + platform)
@@ -19,22 +21,17 @@ public class VersionUtil {
                 .build();
 
         Response response = client.newCall(request).execute();
-
         if (!response.isSuccessful()) {
             response.body().close();
             return null;
         }
 
         try (ResponseBody body = response.body()) {
-            return new GsonBuilder()
-                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-                    .create()
-                    .fromJson(body.string(), Version.class);
+            return new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create().fromJson(body.string(), Version.class);
         }
     }
 
     public static boolean isVersionGreater(String one, String two) {
-
         String[] componentsOne = one.split("\\.");
         String[] componentsTwo = two.split("\\.");
 
@@ -53,15 +50,8 @@ public class VersionUtil {
 
         // Compare the versions
         for (int i = 0; i < verLen; i++) {
-
-            if (numTwo[i] == numOne[i])
-                continue;
-
-            if (numTwo[i] > numOne[i]) {
-                return true;
-            }
-
-            return false;
+            if (numTwo[i] == numOne[i]) continue;
+            return numTwo[i] > numOne[i];
         }
 
         return false;

@@ -53,11 +53,9 @@ public class BuycraftConfiguration {
 
     public Integer getPushCommandsPort() {
         String value = properties.getProperty("push-commands", "8282");
-
-        if(value == null || value.equalsIgnoreCase("false")) {
+        if (value == null || value.equalsIgnoreCase("false")) {
             return null;
         }
-
         return Integer.valueOf(value);
     }
 
@@ -84,7 +82,6 @@ public class BuycraftConfiguration {
     private boolean getBoolean(String key, boolean val) {
         if (!properties.containsKey(key))
             return val;
-
         return Boolean.parseBoolean(properties.getProperty(key));
     }
 

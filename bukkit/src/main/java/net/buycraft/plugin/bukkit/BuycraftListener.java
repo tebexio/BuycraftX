@@ -1,24 +1,18 @@
 package net.buycraft.plugin.bukkit;
 
-import lombok.RequiredArgsConstructor;
-import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
 import net.buycraft.plugin.data.QueuedPlayer;
-import net.buycraft.plugin.execution.PlayerCommandExecutor;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.server.ServerCommandEvent;
 
-
-@RequiredArgsConstructor
 public class BuycraftListener implements Listener {
     private final BuycraftPlugin plugin;
+
+    public BuycraftListener(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {

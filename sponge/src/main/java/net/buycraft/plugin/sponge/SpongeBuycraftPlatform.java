@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.client.ApiClient;
@@ -18,10 +17,12 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class SpongeBuycraftPlatform implements IBuycraftPlatform {
-
     private final BuycraftPlugin plugin;
+
+    public SpongeBuycraftPlatform(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public ApiClient getApiClient() {

@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 public class ReflectionUtils {
-
     @SuppressWarnings("unchecked")
     public static <T> T getFieldValue(Object target, String name) throws IllegalArgumentException, IllegalAccessException {
         Class<?> clazz = target.getClass();
@@ -42,5 +41,4 @@ public class ReflectionUtils {
         setAccessible(Field.class.getDeclaredField("overrideFieldAccessor")).set(field, null);
         setAccessible(field).set(null, newValue);
     }
-
 }

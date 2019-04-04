@@ -1,6 +1,5 @@
 package net.buycraft.plugin.platform.standalone.runner;
 
-import lombok.Getter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
@@ -25,9 +24,7 @@ public class StandaloneBuycraftRunner {
     private final ScheduledExecutorService executorService;
     private final IBuycraftPlatform platform;
     private final boolean verbose;
-    @Getter
     private ServerInformation serverInformation;
-    @Getter
     private DuePlayerFetcher playerFetcher;
 
     StandaloneBuycraftRunner(CommandDispatcher dispatcher, PlayerDeterminer determiner, String apiKey, Logger logger, ScheduledExecutorService executorService, boolean verbose) {
@@ -47,6 +44,14 @@ public class StandaloneBuycraftRunner {
             throw new RuntimeException("Can't fetch account information", e);
         }
         executorService.schedule(playerFetcher = new DuePlayerFetcher(platform, verbose), 1, TimeUnit.SECONDS);
+    }
+
+    public ServerInformation getServerInformation() {
+        return this.serverInformation;
+    }
+
+    public DuePlayerFetcher getPlayerFetcher() {
+        return this.playerFetcher;
     }
 
     @NoBlocking

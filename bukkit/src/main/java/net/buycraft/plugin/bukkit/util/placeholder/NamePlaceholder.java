@@ -6,9 +6,7 @@ import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.execution.placeholder.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class NamePlaceholder implements Placeholder {
@@ -21,7 +19,6 @@ public class NamePlaceholder implements Placeholder {
         }
         
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
-
         if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
             return REPLACE_NAME.matcher(command).replaceAll(player.getName());
         }

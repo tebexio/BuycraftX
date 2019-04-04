@@ -8,7 +8,6 @@ import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
 public abstract class ChannelInitializer extends ChannelInboundHandlerAdapter {
-
     private static InternalLogger logger = InternalLoggerFactory.getInstance(io.netty.channel.ChannelInitializer.class);
 
     @Override
@@ -34,4 +33,3 @@ public abstract class ChannelInitializer extends ChannelInboundHandlerAdapter {
 
     protected abstract void initChannel(Channel channel) throws Exception;
 }
-

@@ -1,11 +1,13 @@
 package net.buycraft.plugin.bukkit.tasks;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 
-@RequiredArgsConstructor
 public class GUIUpdateTask implements Runnable {
     private final BuycraftPlugin plugin;
+
+    public GUIUpdateTask(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void run() {

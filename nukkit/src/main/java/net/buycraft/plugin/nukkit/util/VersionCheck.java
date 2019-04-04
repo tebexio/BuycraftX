@@ -4,8 +4,6 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.utils.TextFormat;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.nukkit.BuycraftPlugin;
 import net.buycraft.plugin.shared.util.VersionUtil;
@@ -15,15 +13,18 @@ import java.util.concurrent.TimeUnit;
 
 import static net.buycraft.plugin.shared.util.VersionUtil.isVersionGreater;
 
-@RequiredArgsConstructor
 public class VersionCheck implements Listener {
     private final BuycraftPlugin plugin;
     private final String pluginVersion;
     private final String secret;
-    @Getter
     private Version lastKnownVersion;
-    @Getter
     private boolean upToDate = true;
+
+    public VersionCheck(final BuycraftPlugin plugin, final String pluginVersion, final String secret) {
+        this.plugin = plugin;
+        this.pluginVersion = pluginVersion;
+        this.secret = secret;
+    }
 
     public void verify() throws IOException {
         if (pluginVersion.endsWith("-SNAPSHOT")) {
@@ -31,17 +32,14 @@ public class VersionCheck implements Listener {
         }
 
         lastKnownVersion = VersionUtil.getVersion(plugin.getHttpClient(), "nukkit", secret);
-
         if (lastKnownVersion == null) {
             return;
         }
 
         // Compare versions
         String latestVersionString = lastKnownVersion.getVersion();
-
         if (!latestVersionString.equals(pluginVersion)) {
             upToDate = !isVersionGreater(pluginVersion, latestVersionString);
-
             if (!upToDate) {
                 plugin.getLogger().info(plugin.getI18n().get("update_available", lastKnownVersion.getVersion()));
             }
@@ -58,5 +56,13 @@ public class VersionCheck implements Listener {
                 }
             }, 3, TimeUnit.SECONDS);
         }
+    }
+
+    public Version getLastKnownVersion() {
+        return this.lastKnownVersion;
+    }
+
+    public boolean isUpToDate() {
+        return this.upToDate;
     }
 }

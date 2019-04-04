@@ -1,6 +1,5 @@
 package net.buycraft.plugin.bukkit.signs.purchases;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateApplication;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
@@ -8,7 +7,6 @@ import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,9 +16,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
-@RequiredArgsConstructor
 public class RecentPurchaseSignListener implements Listener {
     private final BuycraftPlugin plugin;
+
+    public RecentPurchaseSignListener(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
@@ -30,15 +31,11 @@ public class RecentPurchaseSignListener implements Listener {
         } catch (IndexOutOfBoundsException e) {
             return;
         }
-
-        if (!ourSign)
-            return;
-
+        if (!ourSign) return;
         if (!event.getPlayer().hasPermission("buycraft.admin")) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't create Buycraft signs.");
             return;
         }
-
         int pos;
         try {
             pos = Integer.parseInt(StringUtils.trimToEmpty(event.getLine(1)));
@@ -72,7 +69,6 @@ public class RecentPurchaseSignListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.WALL_SIGN || event.getBlock().getType() == Material.SIGN_POST) {
             SerializedBlockLocation location = BukkitSerializedBlockLocation.create(event.getBlock().getLocation());
-
             if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
                 if (!event.getPlayer().hasPermission("buycraft.admin")) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You don't have permission to break this sign.");

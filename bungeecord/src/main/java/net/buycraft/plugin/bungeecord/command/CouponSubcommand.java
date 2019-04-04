@@ -1,7 +1,5 @@
 package net.buycraft.plugin.bungeecord.command;
 
-import com.google.common.base.Joiner;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
@@ -10,15 +8,16 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-@RequiredArgsConstructor
 public class CouponSubcommand implements Subcommand {
     private static final int COUPON_PAGE_LIMIT = 10;
 
     private final BuycraftPlugin plugin;
+
+    public CouponSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -70,7 +69,6 @@ public class CouponSubcommand implements Subcommand {
         }
 
         final String code = args[1];
-
         plugin.getPlatform().executeAsync(new Runnable() {
             @Override
             public void run() {

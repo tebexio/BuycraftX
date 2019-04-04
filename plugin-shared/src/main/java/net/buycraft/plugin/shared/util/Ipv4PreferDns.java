@@ -15,7 +15,6 @@ public class Ipv4PreferDns implements Dns {
     public List<InetAddress> lookup(String hostname) throws UnknownHostException {
         List<InetAddress> addresses = new ArrayList<>();
         addresses.addAll(Arrays.asList(InetAddress.getAllByName(hostname)));
-
         List<InetAddress> v6Addresses = new ArrayList<>();
         for (ListIterator<InetAddress> it = addresses.listIterator(); it.hasNext(); ) {
             InetAddress next = it.next();
@@ -24,7 +23,6 @@ public class Ipv4PreferDns implements Dns {
                 v6Addresses.add(next);
             }
         }
-
         addresses.addAll(v6Addresses);
         return addresses;
     }

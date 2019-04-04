@@ -2,23 +2,22 @@ package net.buycraft.plugin.nukkit.command;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.utils.TextFormat;
-import com.google.common.base.Joiner;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.nukkit.BuycraftPlugin;
 import net.buycraft.plugin.shared.util.CouponUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-@RequiredArgsConstructor
 public class CouponSubcommand implements Subcommand {
     private static final int COUPON_PAGE_LIMIT = 10;
 
     private final BuycraftPlugin plugin;
+
+    public CouponSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -68,7 +67,6 @@ public class CouponSubcommand implements Subcommand {
             sender.sendMessage(TextFormat.RED + plugin.getI18n().get("no_coupon_specified"));
             return;
         }
-
         final String code = args[1];
 
         plugin.getPlatform().executeAsync(new Runnable() {

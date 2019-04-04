@@ -1,6 +1,5 @@
 package net.buycraft.plugin.execution;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
@@ -11,10 +10,14 @@ import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 import java.io.IOException;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class PlayerCommandExecutor implements Runnable {
     private final QueuedPlayer player;
     private final IBuycraftPlatform platform;
+
+    public PlayerCommandExecutor(final QueuedPlayer player, final IBuycraftPlatform platform) {
+        this.player = player;
+        this.platform = platform;
+    }
 
     @Override
     public void run() {
@@ -26,7 +29,6 @@ public class PlayerCommandExecutor implements Runnable {
             platform.log(Level.SEVERE, "Could not fetch command queue for player", e);
             return;
         }
-
         platform.log(Level.INFO, String.format("Fetched %d commands for player '%s'.", information.getCommands().size(), player.getName()));
 
         // Queue commands for later.

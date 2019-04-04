@@ -1,6 +1,5 @@
 package net.buycraft.plugin.bukkit.tasks;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
 import net.buycraft.plugin.data.RecentPayment;
@@ -17,19 +16,22 @@ import org.bukkit.block.Skull;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class RecentPurchaseSignUpdateApplication implements Runnable {
     public static final BlockFace[] FACES = {BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
     private static final String UNKNOWN_USERNAME = "MHF_Question";
     private final BuycraftPlugin plugin;
     private final Map<RecentPurchaseSignPosition, RecentPayment> signToPurchases;
 
+    public RecentPurchaseSignUpdateApplication(final BuycraftPlugin plugin, final Map<RecentPurchaseSignPosition, RecentPayment> signToPurchases) {
+        this.plugin = plugin;
+        this.signToPurchases = signToPurchases;
+    }
+
     private static Block findSkullBlock(Block origin) {
         Block at = origin.getRelative(BlockFace.UP);
         for (BlockFace face : FACES) {
             Block b = at.getRelative(face);
-            if (b.getType() == Material.SKULL)
-                return b;
+            if (b.getType() == Material.SKULL) return b;
         }
         return null;
     }
@@ -49,7 +51,6 @@ public class RecentPurchaseSignUpdateApplication implements Runnable {
             }
             if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN) {
                 Sign sign = (Sign) block.getState();
-
                 if (entry.getValue() != null) {
                     List<String> lines = plugin.getRecentPurchaseSignLayout().format(entry.getValue());
                     for (int i = 0; i < 4; i++) {
@@ -62,7 +63,6 @@ public class RecentPurchaseSignUpdateApplication implements Runnable {
                 }
 
                 sign.update();
-
                 Block skullBlock = findSkullBlock(block);
                 if (skullBlock != null) {
                     Skull skull = (Skull) skullBlock.getState();

@@ -3,7 +3,6 @@ package net.buycraft.plugin.nukkit.command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.utils.TextFormat;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
@@ -11,11 +10,13 @@ import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.nukkit.BuycraftPlugin;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class SecretSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
+
+    public SecretSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {

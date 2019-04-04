@@ -1,12 +1,14 @@
 package net.buycraft.plugin;
 
 import com.google.common.base.Preconditions;
-import lombok.experimental.UtilityClass;
 
 import java.util.UUID;
 
-@UtilityClass
-public class UuidUtil {
+public final class UuidUtil {
+    private UuidUtil() {
+        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
     /**
      * Translates a Mojang-style UUID into an UUID Java can use. The Buycraft plugin API returns all results with
      * Mojang-style UUIDs.

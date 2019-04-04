@@ -1,6 +1,5 @@
 package net.buycraft.plugin.bukkit.tasks;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.util.BukkitSerializedBlockLocation;
 import net.buycraft.plugin.data.Package;
@@ -14,22 +13,23 @@ import org.bukkit.block.Sign;
 import java.util.Currency;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class BuyNowSignUpdater implements Runnable {
     private final BuycraftPlugin plugin;
+
+    public BuyNowSignUpdater(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void run() {
         for (SavedBuyNowSign sign : plugin.getBuyNowSignStorage().getSigns()) {
             Package p = plugin.getListingUpdateTask().getPackageById(sign.getPackageId());
             if (p == null) {
-                plugin.getLogger().warning(String.format("Sign at %d, %d, %d in world %s does not have a valid package assigned to it.",
-                        sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));
+                plugin.getLogger().warning(String.format("Sign at %d, %d, %d in world %s does not have a valid package assigned to it.", sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));
                 continue;
             }
 
             Location location = BukkitSerializedBlockLocation.toBukkit(sign.getLocation());
-
             if (location.getWorld() == null) {
                 plugin.getLogger().warning(String.format("Sign at %d, %d, %d exists in non-existent world %s!",
                         sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));
@@ -37,7 +37,6 @@ public class BuyNowSignUpdater implements Runnable {
             }
 
             Block b = location.getBlock();
-
             if (!(b.getType() == Material.WALL_SIGN || b.getType() == Material.SIGN_POST)) {
                 plugin.getLogger().warning(String.format("Sign at %d, %d, %d in world %s is not a sign in the world!",
                         sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));

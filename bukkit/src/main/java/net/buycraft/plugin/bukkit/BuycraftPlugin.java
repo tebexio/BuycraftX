@@ -2,8 +2,6 @@ package net.buycraft.plugin.bukkit;
 
 import com.google.gson.JsonParseException;
 import io.netty.channel.Channel;
-import lombok.Getter;
-import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
@@ -22,7 +20,6 @@ import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
-import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
@@ -54,48 +51,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class BuycraftPlugin extends JavaPlugin {
-    @Getter
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
-    @Getter
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
-    @Getter
-    @Setter
+
     private ApiClient apiClient;
-    @Getter
     private DuePlayerFetcher duePlayerFetcher;
-
     private BukkitTask duePlayerFetcherTask;
-    @Getter
     private ListingUpdateTask listingUpdateTask;
-    @Getter
     private ServerInformation serverInformation;
-    @Getter
     private CategoryViewGUI categoryViewGUI;
-    @Getter
     private ViewCategoriesGUI viewCategoriesGUI;
-    @Getter
     private RecentPurchaseSignStorage recentPurchaseSignStorage;
-    @Getter
     private OkHttpClient httpClient;
-    @Getter
     private BuyNowSignStorage buyNowSignStorage;
-    @Getter
     private BuyNowSignListener buyNowSignListener;
-    @Getter
     private IBuycraftPlatform platform;
-    @Getter
     private CommandExecutor commandExecutor;
-    @Getter
     private BuycraftI18n i18n;
-    @Getter
     private BuyNowSignLayout buyNowSignLayout = BuyNowSignLayout.DEFAULT;
-    @Getter
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
-    @Getter
     private PostCompletedCommandsTask completedCommandsTask;
-    @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
-
     private Object injector;
 
     @Override
@@ -103,7 +79,6 @@ public class BuycraftPlugin extends JavaPlugin {
         // Pre-initialization.
         GUIUtil.setPlugin(this);
         platform = new BukkitBuycraftPlatform(this);
-
 
         // Initialize configuration.
         getDataFolder().mkdir();
@@ -123,7 +98,6 @@ public class BuycraftPlugin extends JavaPlugin {
         }
 
         i18n = configuration.createI18n();
-
         httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
 
         // Initialize API client.
@@ -153,7 +127,6 @@ public class BuycraftPlugin extends JavaPlugin {
         }
 
         if (configuration.isPushCommandsEnabled()) {
-
             if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
                 injector = new NettyInjector() {
                     @Override
@@ -161,7 +134,7 @@ public class BuycraftPlugin extends JavaPlugin {
                         channel.pipeline().addFirst(new Decoder(BuycraftPlugin.this));
                     }
                 };
-                ((NettyInjector)injector).inject();
+                ((NettyInjector) injector).inject();
             } else {
                 getLogger().warning("Push commands cannot be enabled because ProtocolLib is not installed on the server.");
             }
@@ -281,7 +254,6 @@ public class BuycraftPlugin extends JavaPlugin {
                     String fullPlatformVersion = getServer().getVersion();
                     int start = fullPlatformVersion.indexOf("(MC:");
                     String pv = fullPlatformVersion.substring(start + 5, fullPlatformVersion.length() - 1);
-
                     try {
                         AnalyticsSend.postServerInformation(httpClient, serverKey, platform, getServer().getOnlineMode());
                     } catch (IOException e) {
@@ -294,21 +266,17 @@ public class BuycraftPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if(configuration.isPushCommandsEnabled()) {
-            ((NettyInjector)injector).close();
+        if (configuration.isPushCommandsEnabled()) {
+            ((NettyInjector) injector).close();
         }
         try {
             this.duePlayerFetcherTask.cancel();
-        } catch (Exception e) {
-            // silence the exception
+        } catch (Exception ignored) {
         }
-
         try {
             this.duePlayerFetcherTask.cancel();
-        } catch (Exception e) {
-            // silence the exception
+        } catch (Exception ignored) {
         }
-
         try {
             recentPurchaseSignStorage.save(getDataFolder().toPath().resolve("purchase_signs.json"));
         } catch (IOException e) {
@@ -329,13 +297,92 @@ public class BuycraftPlugin extends JavaPlugin {
 
     public void updateInformation(ApiClient client) throws IOException, ApiException {
         serverInformation = client.getServerInformation();
-
         if (!configuration.isBungeeCord() && getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
             getLogger().log(Level.WARNING, "Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
                     " you may experience issues with packages not applying.");
-            getLogger().log(Level.WARNING, "If you have verified that your set up is correct, you can suppress this message by setting " +
-                    "is-bungeecord=true in your BuycraftX config.properties.");
+            getLogger().log(Level.WARNING, "If you have verified that your set up is correct, you can suppress this message by" +
+                    " setting is-bungeecord=true in your BuycraftX config.properties.");
         }
+    }
+
+    public PlaceholderManager getPlaceholderManager() {
+        return this.placeholderManager;
+    }
+
+    public BuycraftConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    public ApiClient getApiClient() {
+        return this.apiClient;
+    }
+
+    public void setApiClient(final ApiClient apiClient) {
+        this.apiClient = apiClient;
+    }
+
+    public DuePlayerFetcher getDuePlayerFetcher() {
+        return this.duePlayerFetcher;
+    }
+
+    public ListingUpdateTask getListingUpdateTask() {
+        return this.listingUpdateTask;
+    }
+
+    public ServerInformation getServerInformation() {
+        return this.serverInformation;
+    }
+
+    public CategoryViewGUI getCategoryViewGUI() {
+        return this.categoryViewGUI;
+    }
+
+    public ViewCategoriesGUI getViewCategoriesGUI() {
+        return this.viewCategoriesGUI;
+    }
+
+    public RecentPurchaseSignStorage getRecentPurchaseSignStorage() {
+        return this.recentPurchaseSignStorage;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public BuyNowSignStorage getBuyNowSignStorage() {
+        return this.buyNowSignStorage;
+    }
+
+    public BuyNowSignListener getBuyNowSignListener() {
+        return this.buyNowSignListener;
+    }
+
+    public IBuycraftPlatform getPlatform() {
+        return this.platform;
+    }
+
+    public CommandExecutor getCommandExecutor() {
+        return this.commandExecutor;
+    }
+
+    public BuycraftI18n getI18n() {
+        return this.i18n;
+    }
+
+    public BuyNowSignLayout getBuyNowSignLayout() {
+        return this.buyNowSignLayout;
+    }
+
+    public RecentPurchaseSignLayout getRecentPurchaseSignLayout() {
+        return this.recentPurchaseSignLayout;
+    }
+
+    public PostCompletedCommandsTask getCompletedCommandsTask() {
+        return this.completedCommandsTask;
+    }
+
+    public PlayerJoinCheckTask getPlayerJoinCheckTask() {
+        return this.playerJoinCheckTask;
     }
 }

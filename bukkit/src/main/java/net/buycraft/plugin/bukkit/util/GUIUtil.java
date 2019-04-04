@@ -1,10 +1,7 @@
 package net.buycraft.plugin.bukkit.util;
 
 import com.google.common.collect.ImmutableList;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -16,9 +13,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Objects;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GUIUtil {
     private static BuycraftPlugin plugin;
+
+    private GUIUtil() {
+    }
 
     public static void setPlugin(BuycraftPlugin plugin) {
         if (GUIUtil.plugin != null) {
@@ -44,9 +43,7 @@ public class GUIUtil {
     }
 
     public static Inventory getClickedInventory(InventoryClickEvent event) {
-        if (event.getSlot() < 0)
-            return null;
-
+        if (event.getSlot() < 0) return null;
         InventoryView view = event.getView();
 
         if (view.getTopInventory() != null && event.getSlot() < view.getTopInventory().getSize()) {
@@ -73,9 +70,7 @@ public class GUIUtil {
     }
 
     public static String trimName(String name) {
-        if (name.length() <= 32)
-            return name;
-
+        if (name.length() <= 32) return name;
         return name.substring(0, 29) + "...";
     }
 }

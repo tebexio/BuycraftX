@@ -1,7 +1,5 @@
 package net.buycraft.plugin.bukkit;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.command.Subcommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,11 +10,13 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class BuycraftCommand implements CommandExecutor {
-    @Getter
     private final Map<String, Subcommand> subcommandMap = new LinkedHashMap<>();
     private final BuycraftPlugin plugin;
+
+    public BuycraftCommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -39,15 +39,17 @@ public class BuycraftCommand implements CommandExecutor {
         }
 
         showHelp(sender);
-
         return true;
     }
 
     private void showHelp(CommandSender sender) {
         sender.sendMessage(ChatColor.DARK_AQUA + ChatColor.BOLD.toString() + plugin.getI18n().get("usage"));
-
         for (Map.Entry<String, Subcommand> entry : subcommandMap.entrySet()) {
             sender.sendMessage(ChatColor.GREEN + "/buycraft " + entry.getKey() + ChatColor.GRAY + ": " + entry.getValue().getDescription());
         }
+    }
+
+    public Map<String, Subcommand> getSubcommandMap() {
+        return this.subcommandMap;
     }
 }

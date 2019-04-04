@@ -1,13 +1,10 @@
 package net.buycraft.plugin.execution;
 
 import com.google.common.collect.ImmutableList;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.DueQueueInformation;
-import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,7 +14,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class DuePlayerFetcher implements Runnable {
     private static final int FALLBACK_CHECK_BACK_SECS = 300;
     private static final int MAXIMUM_ONLINE_PLAYERS_TO_EXECUTE = 60;
@@ -28,6 +24,11 @@ public class DuePlayerFetcher implements Runnable {
     private final AtomicBoolean inProgress = new AtomicBoolean(false);
     private final boolean verbose;
     private final Random random = new Random();
+
+    public DuePlayerFetcher(final IBuycraftPlatform platform, final boolean verbose) {
+        this.platform = platform;
+        this.verbose = verbose;
+    }
 
     public boolean inProgress() {
         return inProgress.get();
@@ -49,7 +50,6 @@ public class DuePlayerFetcher implements Runnable {
         }
 
         int nextCheck = FALLBACK_CHECK_BACK_SECS;
-
         try {
             if (verbose) {
                 platform.log(Level.INFO, "Fetching all due players...");
@@ -61,7 +61,7 @@ public class DuePlayerFetcher implements Runnable {
             do {
                 try {
                     information = platform.getApiClient().retrieveDueQueue();
-                    if(information == null){
+                    if (information == null) {
                         return;
                     }
                     nextCheck = information.getMeta().getNextCheck();
@@ -99,15 +99,13 @@ public class DuePlayerFetcher implements Runnable {
             processOnlinePlayers();
         } finally {
             inProgress.set(false);
-            if (scheduleAgain)
-                platform.executeAsyncLater(this, nextCheck, TimeUnit.SECONDS);
+            if (scheduleAgain) platform.executeAsyncLater(this, nextCheck, TimeUnit.SECONDS);
         }
     }
 
     private void processOnlinePlayers() {
         // Check for online players and execute their commands.
         List<QueuedPlayer> processNow = new ArrayList<>();
-
         lock.lock();
         try {
             for (Iterator<QueuedPlayer> it = due.values().iterator(); it.hasNext(); ) {

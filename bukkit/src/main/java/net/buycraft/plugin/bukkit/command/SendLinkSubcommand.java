@@ -1,8 +1,6 @@
 package net.buycraft.plugin.bukkit.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
 import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -10,9 +8,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@RequiredArgsConstructor
 public class SendLinkSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
+
+    public SendLinkSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -41,7 +42,6 @@ public class SendLinkSubcommand implements Subcommand {
             return;
         }
     }
-
 
     @Override
     public String getDescription() {

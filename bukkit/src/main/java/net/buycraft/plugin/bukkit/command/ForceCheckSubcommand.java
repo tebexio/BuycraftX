@@ -1,14 +1,15 @@
 package net.buycraft.plugin.bukkit.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-@RequiredArgsConstructor
 public class ForceCheckSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
+
+    public ForceCheckSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {

@@ -44,7 +44,6 @@ public class ReportCommand implements Subcommand {
                 String filename = "report-" + f.format(new Date()) + ".txt";
                 Path p = plugin.getDataFolder().toPath().resolve(filename);
                 String generated = builder.generate();
-
                 try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
                     w.write(generated);
                     sender.sendMessage(ChatColor.YELLOW + plugin.getI18n().get("report_saved", p.toAbsolutePath().toString()));

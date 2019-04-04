@@ -1,10 +1,9 @@
 package net.buycraft.plugin.sponge.tasks;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -15,14 +14,24 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@RequiredArgsConstructor
 public class SendCheckoutLinkTask implements Runnable {
-
-    @NonNull
+    @NotNull
     private final BuycraftPlugin plugin;
     private final int pkgId;
-    @NonNull
+    @NotNull
     private final Player player;
+
+    public SendCheckoutLinkTask(@NotNull final BuycraftPlugin plugin, final int pkgId, @NotNull final Player player) {
+        if (plugin == null) {
+            throw new java.lang.NullPointerException("plugin is marked @NotNull but is null");
+        }
+        if (player == null) {
+            throw new java.lang.NullPointerException("player is marked @NotNull but is null");
+        }
+        this.plugin = plugin;
+        this.pkgId = pkgId;
+        this.player = player;
+    }
 
     @Override
     public void run() {

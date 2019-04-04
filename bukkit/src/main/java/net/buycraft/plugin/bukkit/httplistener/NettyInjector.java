@@ -1,24 +1,14 @@
 package net.buycraft.plugin.bukkit.httplistener;
 
-
+import com.comphenix.protocol.reflect.FuzzyReflection;
+import com.comphenix.protocol.reflect.VolatileField;
+import com.comphenix.protocol.utility.MinecraftReflection;
+import com.google.common.collect.Lists;
+import io.netty.channel.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandler;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
-
-
-import com.comphenix.protocol.reflect.FuzzyReflection;
-import com.comphenix.protocol.reflect.VolatileField;
-import com.comphenix.protocol.utility.MinecraftReflection;
-
-import com.google.common.collect.Lists;
 
 public abstract class NettyInjector {
     // The temporary player factory
@@ -27,7 +17,6 @@ public abstract class NettyInjector {
     // List of network managers
     private volatile List<Object> networkManagers;
     private boolean injected;
-
     private boolean closed;
 
     /**
@@ -90,7 +79,6 @@ public abstract class NettyInjector {
 
             for (VolatileField field : bootstrapFields) {
                 final List<Object> list = (List<Object>) field.getValue();
-
                 // We don't have to override this list
                 if (list == networkManagers) {
                     continue;
@@ -101,7 +89,6 @@ public abstract class NettyInjector {
             }
 
             injected = true;
-
         } catch (Exception e) {
             throw new RuntimeException("Unable to inject channel futures.", e);
         }
@@ -126,10 +113,8 @@ public abstract class NettyInjector {
         // Find and (possibly) proxy every list
         for (Field field : FuzzyReflection.fromObject(serverConnection, true).getFieldListByType(List.class)) {
             VolatileField volatileField = new VolatileField(field, serverConnection, true).toSynchronized();
-
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) volatileField.getValue();
-
             if (list.size() == 0 || list.get(0) instanceof ChannelFuture) {
                 result.add(volatileField);
             }

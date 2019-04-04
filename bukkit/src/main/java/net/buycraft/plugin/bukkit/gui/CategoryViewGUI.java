@@ -3,7 +3,6 @@ package net.buycraft.plugin.bukkit.gui;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.bukkit.tasks.SendCheckoutLink;
 import net.buycraft.plugin.bukkit.util.GUIUtil;
@@ -28,10 +27,13 @@ import java.util.*;
 
 import static net.buycraft.plugin.bukkit.util.GUIUtil.withName;
 
-@RequiredArgsConstructor
 public class CategoryViewGUI {
     private final BuycraftPlugin plugin;
     private final Map<Integer, List<GUIImpl>> categoryMenus = new HashMap<>();
+
+    public CategoryViewGUI(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     private static int calculatePages(Category category) {
         int pagesWithSubcats = (int) Math.ceil(category.getSubcategories().size() / 9D);
@@ -41,9 +43,7 @@ public class CategoryViewGUI {
 
     public GUIImpl getFirstPage(Category category) {
         List<GUIImpl> guis = categoryMenus.get(category.getId());
-        if (guis == null)
-            return null;
-
+        if (guis == null) return null;
         return Iterables.getFirst(guis, null);
     }
 
@@ -195,22 +195,21 @@ public class CategoryViewGUI {
                         short variant = 0;
 
                         if (gui_item != null && !gui_item.equals("")) {
-                            if(gui_item.matches("^\\d+$")){
+                            if (gui_item.matches("^\\d+$")) {
                                 material = Material.getMaterial(Integer.valueOf(gui_item));
-                            }else if(!gui_item.contains(":")){
+                            } else if (!gui_item.contains(":")) {
                                 material = Material.matchMaterial(gui_item);
-                            }else {
+                            } else {
                                 String[] parts = gui_item.split(":");
-                                if(parts[0].matches("^\\d+$")){
+                                if (parts[0].matches("^\\d+$")) {
                                     material = Material.getMaterial(Integer.valueOf(parts[0]));
-                                }else{
+                                } else {
                                     material = Material.matchMaterial(parts[0]);
                                 }
                                 variant = Short.valueOf(parts[1]);
                             }
                         }
-
-                        if(material == null){
+                        if (material == null) {
                             material = Material.matchMaterial("BOOK");
                         }
 
@@ -235,22 +234,22 @@ public class CategoryViewGUI {
                     short variant = 0;
 
                     if (gui_item != null && !gui_item.equals("")) {
-                        if(gui_item.matches("^\\d+$")){
+                        if (gui_item.matches("^\\d+$")) {
                             material = Material.getMaterial(Integer.valueOf(gui_item));
-                        }else if(!gui_item.contains(":")){
+                        } else if (!gui_item.contains(":")) {
                             material = Material.matchMaterial(gui_item);
-                        }else {
+                        } else {
                             String[] parts = gui_item.split(":");
-                            if(parts[0].matches("^\\d+$")){
+                            if (parts[0].matches("^\\d+$")) {
                                 material = Material.getMaterial(Integer.valueOf(parts[0]));
-                            }else{
+                            } else {
                                 material = Material.matchMaterial(parts[0]);
                             }
                             variant = Short.valueOf(parts[1]);
                         }
                     }
 
-                    if(material == null){
+                    if (material == null) {
                         material = Material.matchMaterial("PAPER");
                     }
 
@@ -314,10 +313,7 @@ public class CategoryViewGUI {
                 }
 
                 final Player player = (Player) event.getWhoClicked();
-
-                if (category == null)
-                    return;
-
+                if (category == null) return;
                 ItemStack stack = clickedInventory.getItem(event.getSlot());
                 if (stack == null) {
                     return;

@@ -1,6 +1,5 @@
 package net.buycraft.plugin.execution.strategy;
 
-import lombok.Setter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.platform.NoBlocking;
 
@@ -11,13 +10,11 @@ import java.util.logging.Level;
 
 public class QueuedCommandExecutor implements CommandExecutor, Runnable {
     private static final long MAXIMUM_NOTIFICATION_TIME = TimeUnit.MILLISECONDS.toNanos(5);
-
-    @Setter
-    private int runMaxCommandsBlocking = 10;
     private final IBuycraftPlatform platform;
     private final boolean blocking;
     private final Set<ToRunQueuedCommand> commandQueue = new LinkedHashSet<>();
     private final PostCompletedCommandsTask completedCommandsTask;
+    private int runMaxCommandsBlocking = 10;
 
     public QueuedCommandExecutor(IBuycraftPlatform platform, PostCompletedCommandsTask completedCommandsTask) {
         this.platform = platform;
@@ -37,16 +34,13 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
         List<ToRunQueuedCommand> runThisTick = new ArrayList<>();
         synchronized (commandQueue) {
             ArrayList<Integer> queuedCommandIds = new ArrayList<>();
-
             Set<ToRunQueuedCommand> removeSet = new HashSet<ToRunQueuedCommand>();
 
-
             for (ToRunQueuedCommand command : commandQueue) {
-                if(queuedCommandIds.contains(command.getCommand().getId())){
+                if (queuedCommandIds.contains(command.getCommand().getId())) {
                     removeSet.add(command);
                     continue;
                 }
-
                 queuedCommandIds.add(command.getCommand().getId());
 
                 if (command.canExecute(platform)) {
@@ -61,20 +55,18 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
             }
 
             commandQueue.removeAll(removeSet);
-
         }
-
 
         long start = System.nanoTime();
         for (ToRunQueuedCommand command : runThisTick) {
-            if(completedCommandsTask.getRetained().contains(command.getCommand().getId())){
+            if (completedCommandsTask.getRetained().contains(command.getCommand().getId())) {
                 synchronized (commandQueue) {
                     commandQueue.remove(command);
                 }
                 continue;
             }
 
-            if(command.canExecute(platform)) {
+            if (command.canExecute(platform)) {
                 String finalCommand = platform.getPlaceholderManager().doReplace(command.getPlayer(), command.getCommand());
                 platform.log(Level.INFO, String.format("Dispatching command '%s' for player '%s'.", finalCommand, command.getPlayer().getName()));
                 try {
@@ -99,5 +91,9 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
                         "This likely indicates an issue with one of your server's plugins, which will slow command execution.");
             }
         }
+    }
+
+    public void setRunMaxCommandsBlocking(final int runMaxCommandsBlocking) {
+        this.runMaxCommandsBlocking = runMaxCommandsBlocking;
     }
 }

@@ -1,6 +1,5 @@
 package net.buycraft.plugin.execution;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
@@ -10,9 +9,12 @@ import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 import java.io.IOException;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class ImmediateCommandExecutor implements Runnable {
     private final IBuycraftPlatform platform;
+
+    public ImmediateCommandExecutor(final IBuycraftPlatform platform) {
+        this.platform = platform;
+    }
 
     @Override
     public void run() {
@@ -21,7 +23,6 @@ public class ImmediateCommandExecutor implements Runnable {
         }
 
         QueueInformation information;
-
         try {
             // Retrieve offline command queue.
             information = platform.getApiClient().retrieveOfflineQueue();

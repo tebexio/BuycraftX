@@ -1,6 +1,5 @@
 package net.buycraft.plugin.bukkit.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
@@ -11,11 +10,14 @@ import org.bukkit.command.CommandSender;
 import java.io.IOException;
 import java.util.Arrays;
 
-@RequiredArgsConstructor
 public class CouponSubcommand implements Subcommand {
     private static final int COUPON_PAGE_LIMIT = 10;
 
     private final BuycraftPlugin plugin;
+
+    public CouponSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {

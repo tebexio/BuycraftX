@@ -1,6 +1,5 @@
 package net.buycraft.plugin.testutil;
 
-import lombok.Getter;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
@@ -15,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class SimulatedPlayerBuycraftPlatform implements IBuycraftPlatform {
-    @Getter
     private final Map<String, TestPlayer> testPlayerMap = new HashMap<>();
 
     @Override
@@ -30,27 +28,22 @@ public class SimulatedPlayerBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void dispatchCommand(String command) {
-
     }
 
     @Override
     public void executeAsync(Runnable runnable) {
-
     }
 
     @Override
     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
-
     }
 
     @Override
     public void executeBlocking(Runnable runnable) {
-
     }
 
     @Override
     public void executeBlockingLater(Runnable runnable, long time, TimeUnit unit) {
-
     }
 
     @Override
@@ -70,12 +63,10 @@ public class SimulatedPlayerBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void log(Level level, String message) {
-
     }
 
     @Override
     public void log(Level level, String message, Throwable throwable) {
-
     }
 
     @Override
@@ -96,5 +87,9 @@ public class SimulatedPlayerBuycraftPlatform implements IBuycraftPlatform {
     @Override
     public ServerInformation getServerInformation() {
         return null;
+    }
+
+    public Map<String, TestPlayer> getTestPlayerMap() {
+        return testPlayerMap;
     }
 }

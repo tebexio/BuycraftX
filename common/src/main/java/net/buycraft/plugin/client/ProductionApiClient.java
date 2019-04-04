@@ -2,12 +2,12 @@ package net.buycraft.plugin.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 import okhttp3.*;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -20,13 +20,11 @@ import java.util.logging.Logger;
 public class ProductionApiClient implements ApiClient {
     private static final String API_URL = "https://plugin.buycraft.net";
     private static final String API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";
-
     private final Gson gson = new GsonBuilder()
             .setDateFormat(API_DATE_FORMAT)
             .create();
     private final OkHttpClient httpClient;
     private final String secret;
-
     private Logger logger;
 
     public ProductionApiClient(String secret) {
@@ -74,9 +72,7 @@ public class ProductionApiClient implements ApiClient {
             Request.Builder requestBuilder = getBuilder(endpoint).get();
             if (control != null) requestBuilder.cacheControl(control);
             Request request = requestBuilder.build();
-
             Response response = httpClient.newCall(request).execute();
-
             try (ResponseBody body = response.body()) {
                 if (response.isSuccessful()) {
                     try {
@@ -89,7 +85,7 @@ public class ProductionApiClient implements ApiClient {
                 }
             }
         } catch (Exception e) {
-            if(this.logger != null) {
+            if (this.logger != null) {
                 this.logger.severe("Unable to connect to API. Please check that your secret key is correct.");
             }
             return null;
@@ -104,8 +100,7 @@ public class ProductionApiClient implements ApiClient {
     @Override
     public Listing retrieveListing() throws IOException, ApiException {
         Listing listing = get("/listing", CacheControl.FORCE_NETWORK, Listing.class);
-        if(listing != null)
-        listing.order();
+        if (listing != null) listing.order();
         return listing;
     }
 
@@ -127,17 +122,11 @@ public class ProductionApiClient implements ApiClient {
     @Override
     public void deleteCommand(List<Integer> ids) throws IOException, ApiException {
         FormBody.Builder builder = new FormBody.Builder();
-
         for (Integer id : ids) {
             builder.add("ids[]", id.toString());
         }
 
-        Request request = getBuilder("/queue")
-                .method("DELETE", builder.build())
-                .build();
-
-
-
+        Request request = getBuilder("/queue").method("DELETE", builder.build()).build();
         httpClient.newBuilder()
                 .connectTimeout(6, TimeUnit.SECONDS)
                 .writeTimeout(7, TimeUnit.SECONDS)
@@ -151,7 +140,8 @@ public class ProductionApiClient implements ApiClient {
                         e.printStackTrace();
                     }
 
-                    @Override public void onResponse(Call call, Response response) throws IOException {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
                         try (ResponseBody responseBody = response.body()) {
                             if (!response.isSuccessful()) {
                                 System.out.println("Error when trying to mark commands as complete...");
@@ -160,7 +150,6 @@ public class ProductionApiClient implements ApiClient {
                         }
                     }
                 });
-
     }
 
     @Override
@@ -169,12 +158,8 @@ public class ProductionApiClient implements ApiClient {
                 .add("username", username)
                 .add("package_id", Integer.toString(packageId))
                 .build();
-
-        Request request = getBuilder("/checkout")
-                .post(body)
-                .build();
+        Request request = getBuilder("/checkout").post(body).build();
         Response response = httpClient.newCall(request).execute();
-
         try (ResponseBody rspBody = response.body()) {
             if (!response.isSuccessful()) {
                 throw handleError(response, rspBody);
@@ -191,12 +176,8 @@ public class ProductionApiClient implements ApiClient {
                 .add("category", "true")
                 .add("category_id", Integer.toString(categoryId))
                 .build();
-
-        Request request = getBuilder("/checkout")
-                .post(body)
-                .build();
+        Request request = getBuilder("/checkout").post(body).build();
         Response response = httpClient.newCall(request).execute();
-
         try (ResponseBody rspBody = response.body()) {
             if (!response.isSuccessful()) {
                 throw handleError(response, rspBody);
@@ -215,9 +196,7 @@ public class ProductionApiClient implements ApiClient {
     @Override
     public List<Coupon> getAllCoupons() throws IOException, ApiException {
         CouponListing listing = get("/coupons", CouponListing.class);
-        if(listing == null){
-            return null;
-        }
+        if (listing == null) return null;
         return listing.getData();
     }
 
@@ -232,9 +211,7 @@ public class ProductionApiClient implements ApiClient {
         Request request = getBuilder("/coupons/" + id)
                 .delete()
                 .build();
-
         Response response = httpClient.newCall(request).execute();
-
         try (ResponseBody rspBody = response.body()) {
             if (!response.isSuccessful()) {
                 throw handleError(response, rspBody);
@@ -244,12 +221,8 @@ public class ProductionApiClient implements ApiClient {
 
     @Override
     public void deleteCoupon(String id) throws IOException, ApiException {
-        Request request = getBuilder("/coupons/" + id + "/code")
-                .delete()
-                .build();
-
+        Request request = getBuilder("/coupons/" + id + "/code").delete().build();
         Response response = httpClient.newCall(request).execute();
-
         try (ResponseBody rspBody = response.body()) {
             if (!response.isSuccessful()) {
                 throw handleError(response, rspBody);
@@ -290,12 +263,8 @@ public class ProductionApiClient implements ApiClient {
                 .add("username", coupon.getUsername() == null ? "" : coupon.getUsername())
                 .add("note", coupon.getNote() == null ? "" : coupon.getNote())
                 .build();
-
-        Request request = getBuilder("/coupons")
-                .post(body)
-                .build();
+        Request request = getBuilder("/coupons").post(body).build();
         Response response = httpClient.newCall(request).execute();
-
         try (ResponseBody rspBody = response.body()) {
             if (!response.isSuccessful()) {
                 throw handleError(response, rspBody);

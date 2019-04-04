@@ -72,8 +72,6 @@ public class CouponUtil {
             }
         }
 
-
-
         Coupon.CouponBuilder builder = Coupon.builder()
                 .code(generateCode())
                 .effective(new Coupon.Effective("cart", ImmutableList.<Integer>of(), ImmutableList.<Integer>of()))
@@ -134,7 +132,6 @@ public class CouponUtil {
         if (limitStr == null && expiresStr == null) {
             builder.expire(new Coupon.Expire("timestamp", 0, new Date(System.currentTimeMillis() + 1)));
         }
-
         builder.expireNever(Integer.parseInt(neverExpire));
         builder.redeemUnlimited(Integer.parseInt(unlimitedRedeem));
 
@@ -158,8 +155,7 @@ public class CouponUtil {
             }
         }
 
-	    String discountMethod = kv.get("discount_application_method");
-
+        String discountMethod = kv.get("discount_application_method");
         if (discountMethod == null) {
             discountMethod = "0";
         }
@@ -174,18 +170,16 @@ public class CouponUtil {
         }
 
         String username = kv.get("username");
-
         if (username == null) {
             username = "";
         }
 
         try {
-            builder.username(String.valueOf(username));
+            builder.username(username);
         } catch (Exception e) {
             throw new IllegalArgumentException("username must be a string");
         }
-
-        if(kv.containsKey("note")) {
+        if (kv.containsKey("note")) {
             String note = kv.get("note");
             builder.note(String.valueOf(note));
         }

@@ -1,11 +1,9 @@
 package net.buycraft.plugin.bukkit.tasks;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
-import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,9 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class RecentPurchaseSignUpdateFetcher implements Runnable {
     private final BuycraftPlugin plugin;
+
+    public RecentPurchaseSignUpdateFetcher(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void run() {

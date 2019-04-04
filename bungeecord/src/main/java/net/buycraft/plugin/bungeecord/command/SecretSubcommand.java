@@ -1,6 +1,5 @@
 package net.buycraft.plugin.bungeecord.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
@@ -12,9 +11,12 @@ import net.md_5.bungee.api.CommandSender;
 import java.io.IOException;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class SecretSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
+
+    public SecretSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {

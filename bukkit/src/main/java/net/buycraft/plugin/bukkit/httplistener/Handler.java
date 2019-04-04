@@ -2,30 +2,21 @@ package net.buycraft.plugin.bukkit.httplistener;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import com.google.common.primitives.Chars;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
-import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
-import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
-
     private JsonArray body;
     private BuycraftPlugin plugin;
 
@@ -72,25 +63,16 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         });
     }
 
-
     private Object[] pushCommand() {
         int playerId = 0;
-
         for (JsonElement command : this.body) {
             if (command instanceof JsonObject) {
-                JsonObject commandObject = ((JsonObject) command).getAsJsonObject();
-
+                JsonObject commandObject = command.getAsJsonObject();
                 String uuid = commandObject.get("username").getAsString().replace("-", "");
-
-                if(!plugin.getServerInformation().getAccount().isOnlineMode()){
+                if (!plugin.getServerInformation().getAccount().isOnlineMode()) {
                     uuid = null;
                 }
-
-                QueuedPlayer qp = new QueuedPlayer(playerId,
-                        commandObject.get("username_name").getAsString(),
-                        uuid);
-
-
+                QueuedPlayer qp = new QueuedPlayer(playerId, commandObject.get("username_name").getAsString(), uuid);
                 Map<String, Integer> map = new ConcurrentHashMap<String, Integer>();
                 map.put("delay", commandObject.get("delay").getAsInt());
 
@@ -99,8 +81,7 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 }
 
                 int packageId = 0;
-
-                if(commandObject.has("package") && !commandObject.get("package").isJsonNull()){
+                if (commandObject.has("package") && !commandObject.get("package").isJsonNull()) {
                     packageId = commandObject.get("package").getAsInt();
                 }
 
@@ -110,10 +91,7 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
                         map,
                         commandObject.get("command").getAsString(),
                         qp);
-
-
-                plugin.getCommandExecutor().queue(new ToRunQueuedCommand(qp, qc, commandObject.get("require_online").getAsInt() == 1 ? true : false));
-
+                plugin.getCommandExecutor().queue(new ToRunQueuedCommand(qp, qc, commandObject.get("require_online").getAsInt() == 1));
                 playerId += 1;
             }
         }

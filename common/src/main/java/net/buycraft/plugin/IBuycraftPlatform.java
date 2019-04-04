@@ -6,7 +6,6 @@ import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.platform.PlatformInformation;
-import net.buycraft.plugin.platform.PlatformType;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -112,18 +111,21 @@ public interface IBuycraftPlatform {
 
     /**
      * Returns the current platform information.
+     *
      * @return the platform information
      */
     PlatformInformation getPlatformInformation();
 
     /**
      * Returns the current plugin version.
+     *
      * @return the current plugin version
      */
     String getPluginVersion();
 
     /**
      * Returns the platform's server information.
+     *
      * @return the server information
      */
     ServerInformation getServerInformation();

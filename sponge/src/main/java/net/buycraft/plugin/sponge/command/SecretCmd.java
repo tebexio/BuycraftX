@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.command;
 
-import lombok.AllArgsConstructor;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.client.ProductionApiClient;
@@ -17,16 +16,17 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 
-@AllArgsConstructor
 public class SecretCmd implements CommandExecutor {
-
     private final BuycraftPlugin plugin;
+
+    public SecretCmd(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public CommandResult execute(final CommandSource src, final CommandContext args) throws CommandException {
         if (!(src instanceof ConsoleSource)) {
-            src.sendMessage(
-                    Text.builder(plugin.getI18n().get("secret_console_only")).color(TextColors.RED).build());
+            src.sendMessage(Text.builder(plugin.getI18n().get("secret_console_only")).color(TextColors.RED).build());
         } else {
             if (!args.getOne("secret").isPresent()) {
                 src.sendMessage(Text.builder(plugin.getI18n().get("secret_need_key")).color(TextColors.RED).build());

@@ -1,6 +1,5 @@
 package net.buycraft.plugin.execution.placeholder;
 
-import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 

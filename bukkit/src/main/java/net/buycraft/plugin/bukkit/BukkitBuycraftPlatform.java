@@ -1,14 +1,5 @@
 package net.buycraft.plugin.bukkit;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.UuidUtil;
 import net.buycraft.plugin.client.ApiClient;
@@ -18,11 +9,21 @@ import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.platform.PlatformInformation;
 import net.buycraft.plugin.platform.PlatformType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-@RequiredArgsConstructor
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+
 public class BukkitBuycraftPlatform implements IBuycraftPlatform {
     private static final int MAXIMUM_USABLE_INVENTORY_SIZE = 36;
     private final BuycraftPlugin plugin;
+
+    public BukkitBuycraftPlatform(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public ApiClient getApiClient() {
@@ -74,9 +75,7 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
     @Override
     public int getFreeSlots(QueuedPlayer player) {
         Player player1 = getPlayer(player);
-        if (player1 == null)
-            return -1;
-
+        if (player1 == null) return -1;
         int s = 0;
 
         ItemStack[] contents = player1.getInventory().getContents();
@@ -87,8 +86,7 @@ public class BukkitBuycraftPlatform implements IBuycraftPlatform {
         }
 
         for (ItemStack stack : contents) {
-            if (stack == null)
-                s++;
+            if (stack == null) s++;
         }
         return s;
     }

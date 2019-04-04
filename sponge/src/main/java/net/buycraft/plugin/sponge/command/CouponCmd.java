@@ -1,7 +1,5 @@
 package net.buycraft.plugin.sponge.command;
 
-import com.google.common.base.Joiner;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
@@ -14,13 +12,16 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
 
-@RequiredArgsConstructor
 public class CouponCmd {
     private static final int COUPON_PAGE_LIMIT = 10;
-
     private final BuycraftPlugin plugin;
+
+    public CouponCmd(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     public CommandResult createCoupon(CommandSource source, CommandContext ctx) throws CommandException {
         Collection<String> argsList = ctx.getAll("args");
@@ -57,12 +58,9 @@ public class CouponCmd {
     public CommandResult deleteCoupon(CommandSource source, CommandContext ctx) throws CommandException {
         Optional<String> codeOptional = ctx.getOne("code");
         if (!codeOptional.isPresent()) {
-            source.sendMessage(Text.builder(plugin.getI18n().get("no_coupon_specified"))
-                    .color(TextColors.RED)
-                    .build());
+            source.sendMessage(Text.builder(plugin.getI18n().get("no_coupon_specified")).color(TextColors.RED).build());
             return CommandResult.empty();
         }
-
         final String code = codeOptional.get();
 
         plugin.getPlatform().executeAsync(new Runnable() {
@@ -70,14 +68,9 @@ public class CouponCmd {
             public void run() {
                 try {
                     plugin.getApiClient().deleteCoupon(code);
-                    source.sendMessage(Text.builder(plugin.getI18n().get("coupon_deleted"))
-                            .color(TextColors.GREEN)
-                            .build());
-
+                    source.sendMessage(Text.builder(plugin.getI18n().get("coupon_deleted")).color(TextColors.GREEN).build());
                 } catch (ApiException | IOException e) {
-                    source.sendMessage(Text.builder(e.getMessage())
-                            .color(TextColors.RED)
-                            .build());
+                    source.sendMessage(Text.builder(e.getMessage()).color(TextColors.RED).build());
                 }
             }
         });

@@ -1,11 +1,9 @@
 package net.buycraft.plugin.bukkit.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
 import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -13,9 +11,12 @@ import org.bukkit.command.ConsoleCommandSender;
 import java.io.IOException;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class SecretSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
+
+    public SecretSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {
