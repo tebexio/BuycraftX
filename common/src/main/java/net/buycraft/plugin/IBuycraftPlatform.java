@@ -1,6 +1,5 @@
 package net.buycraft.plugin;
 
-import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -12,11 +11,11 @@ import java.util.logging.Level;
 
 public interface IBuycraftPlatform {
     /**
-     * Retrieves the {@link ApiClient} used to handle requests to the Buycraft plugin API.
+     * Retrieves the {@link BuyCraftAPI} used to handle requests to the Buycraft plugin API.
      *
-     * @return the {@link ApiClient} object
+     * @return the {@link BuyCraftAPI} object
      */
-    ApiClient getApiClient();
+    BuyCraftAPI getApiClient();
 
     /**
      * Retrieves the {@link PlaceholderManager} to use when executing commands.

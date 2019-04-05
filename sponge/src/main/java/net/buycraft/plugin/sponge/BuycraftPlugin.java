@@ -3,10 +3,8 @@ package net.buycraft.plugin.sponge;
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import com.sun.net.httpserver.HttpServer;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -60,7 +58,7 @@ public class BuycraftPlugin {
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
 
-    private ApiClient apiClient;
+    private BuyCraftAPI apiClient;
     private DuePlayerFetcher duePlayerFetcher;
     private ListingUpdateTask listingUpdateTask;
     private ServerInformation serverInformation;
@@ -119,10 +117,10 @@ public class BuycraftPlugin {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
-            ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
-            } catch (IOException | ApiException e) {
+            } catch (IOException e) {
                 getLogger().error(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;
@@ -312,8 +310,8 @@ public class BuycraftPlugin {
         configuration.save(baseDirectory.resolve("config.properties"));
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
+    public void updateInformation(BuyCraftAPI client) throws IOException {
+        serverInformation = client.getServerInformation().execute().body();
         if (!configuration.isBungeeCord() && Sponge.getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
             getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
@@ -331,11 +329,11 @@ public class BuycraftPlugin {
         return this.configuration;
     }
 
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return this.apiClient;
     }
 
-    public void setApiClient(final ApiClient apiClient) {
+    public void setApiClient(final BuyCraftAPI apiClient) {
         this.apiClient = apiClient;
     }
 

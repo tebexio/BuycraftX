@@ -1,9 +1,7 @@
 package net.buycraft.plugin.bungeecord.command;
 
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -33,10 +31,10 @@ public class SecretSubcommand implements Subcommand {
         plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
             @Override
             public void run() {
-                ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
+                BuyCraftAPI client = BuyCraftAPI.create(args[0], plugin.getHttpClient());
                 try {
                     plugin.updateInformation(client);
-                } catch (IOException | ApiException e) {
+                } catch (IOException e) {
                     plugin.getLogger().log(Level.SEVERE, "Unable to verify secret", e);
                     sender.sendMessage(ChatColor.RED + plugin.getI18n().get("secret_does_not_work"));
                     return;

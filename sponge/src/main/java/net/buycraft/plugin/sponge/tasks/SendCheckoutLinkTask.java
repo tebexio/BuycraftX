@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.tasks;
 
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -37,8 +36,8 @@ public class SendCheckoutLinkTask implements Runnable {
     public void run() {
         CheckoutUrlResponse response;
         try {
-            response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId);
-        } catch (IOException | ApiException e) {
+            response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId).execute().body();
+        } catch (IOException e) {
             player.sendMessage(
                     Text.builder(plugin.getI18n().get("cant_check_out")).color(TextColors.RED).build());
             return;

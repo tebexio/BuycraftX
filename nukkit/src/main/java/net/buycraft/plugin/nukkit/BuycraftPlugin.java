@@ -3,10 +3,8 @@ package net.buycraft.plugin.nukkit;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.plugin.PluginBase;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -35,7 +33,7 @@ public class BuycraftPlugin extends PluginBase {
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
 
-    private ApiClient apiClient;
+    private BuyCraftAPI apiClient;
     private DuePlayerFetcher duePlayerFetcher;
     private ServerInformation serverInformation;
     private OkHttpClient httpClient;
@@ -77,10 +75,10 @@ public class BuycraftPlugin extends PluginBase {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
-            final ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            final BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
-            } catch (IOException | ApiException e) {
+            } catch (IOException e) {
                 getLogger().error(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;
@@ -153,8 +151,8 @@ public class BuycraftPlugin extends PluginBase {
         configuration.save(configPath);
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
+    public void updateInformation(BuyCraftAPI client) throws IOException {
+        serverInformation = client.getServerInformation().execute().body();
     }
 
     public PlaceholderManager getPlaceholderManager() {
@@ -165,11 +163,11 @@ public class BuycraftPlugin extends PluginBase {
         return this.configuration;
     }
 
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return this.apiClient;
     }
 
-    public void setApiClient(final ApiClient apiClient) {
+    public void setApiClient(final BuyCraftAPI apiClient) {
         this.apiClient = apiClient;
     }
 

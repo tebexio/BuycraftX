@@ -1,7 +1,6 @@
 package net.buycraft.plugin.execution;
 
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.QueueInformation;
@@ -23,8 +22,8 @@ public class PlayerCommandExecutor implements Runnable {
     public void run() {
         QueueInformation information;
         try {
-            information = platform.getApiClient().getPlayerQueue(player.getId());
-        } catch (IOException | ApiException e) {
+            information = platform.getApiClient().getPlayerQueue(player.getId()).execute().body();
+        } catch (IOException e) {
             // TODO: Implement retry logic.
             platform.log(Level.SEVERE, "Could not fetch command queue for player", e);
             return;

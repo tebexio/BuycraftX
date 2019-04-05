@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.command;
 
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
@@ -40,11 +39,11 @@ public class CouponCmd {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().createCoupon(coupon);
+                    plugin.getApiClient().createCoupon(coupon).execute();
                     source.sendMessage(Text.builder(plugin.getI18n().get("coupon_creation_success", coupon.getCode()))
                             .color(TextColors.GREEN)
                             .build());
-                } catch (ApiException | IOException e) {
+                } catch (IOException e) {
                     source.sendMessage(Text.builder(plugin.getI18n().get("generic_api_operation_error"))
                             .color(TextColors.RED)
                             .build());
@@ -67,9 +66,9 @@ public class CouponCmd {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().deleteCoupon(code);
+                    plugin.getApiClient().deleteCoupon(code).execute();
                     source.sendMessage(Text.builder(plugin.getI18n().get("coupon_deleted")).color(TextColors.GREEN).build());
-                } catch (ApiException | IOException e) {
+                } catch (IOException e) {
                     source.sendMessage(Text.builder(e.getMessage()).color(TextColors.RED).build());
                 }
             }

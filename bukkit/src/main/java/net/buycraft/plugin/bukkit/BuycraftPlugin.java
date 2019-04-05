@@ -2,6 +2,7 @@ package net.buycraft.plugin.bukkit;
 
 import com.google.gson.JsonParseException;
 import io.netty.channel.Channel;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bukkit.command.*;
 import net.buycraft.plugin.bukkit.gui.CategoryViewGUI;
@@ -15,9 +16,6 @@ import net.buycraft.plugin.bukkit.tasks.GUIUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
 import net.buycraft.plugin.bukkit.util.GUIUtil;
 import net.buycraft.plugin.bukkit.util.VersionCheck;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -54,7 +52,7 @@ public class BuycraftPlugin extends JavaPlugin {
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
 
-    private ApiClient apiClient;
+    private BuyCraftAPI apiClient;
     private DuePlayerFetcher duePlayerFetcher;
     private BukkitTask duePlayerFetcherTask;
     private ListingUpdateTask listingUpdateTask;
@@ -106,7 +104,7 @@ public class BuycraftPlugin extends JavaPlugin {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
-            ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient, this.getLogger());
+            BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
             } catch (Exception e) {
@@ -295,8 +293,8 @@ public class BuycraftPlugin extends JavaPlugin {
         configuration.save(configPath);
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
+    public void updateInformation(BuyCraftAPI client) throws IOException {
+        serverInformation = client.getServerInformation().execute().body();
         if (!configuration.isBungeeCord() && getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
             getLogger().log(Level.WARNING, "Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
@@ -314,11 +312,11 @@ public class BuycraftPlugin extends JavaPlugin {
         return this.configuration;
     }
 
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return this.apiClient;
     }
 
-    public void setApiClient(final ApiClient apiClient) {
+    public void setApiClient(final BuyCraftAPI apiClient) {
         this.apiClient = apiClient;
     }
 

@@ -1,8 +1,7 @@
 package net.buycraft.plugin.bukkit.command;
 
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -34,7 +33,7 @@ public class SecretSubcommand implements Subcommand {
             @Override
             public void run() {
                 String currentKey = plugin.getConfiguration().getServerKey();
-                ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
+                BuyCraftAPI client = BuyCraftAPI.create(args[0], plugin.getHttpClient());
                 try {
                     plugin.updateInformation(client);
                 } catch (Exception e) {

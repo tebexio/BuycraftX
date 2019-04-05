@@ -3,9 +3,7 @@ package net.buycraft.plugin.nukkit.command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.utils.TextFormat;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.nukkit.BuycraftPlugin;
 
@@ -34,10 +32,10 @@ public class SecretSubcommand implements Subcommand {
             @Override
             public void run() {
                 String currentKey = plugin.getConfiguration().getServerKey();
-                ApiClient client = new ProductionApiClient(args[0], plugin.getHttpClient());
+                BuyCraftAPI client = BuyCraftAPI.create(args[0], plugin.getHttpClient());
                 try {
                     plugin.updateInformation(client);
-                } catch (IOException | ApiException e) {
+                } catch (IOException e) {
                     plugin.getLogger().error("Unable to verify secret", e);
                     sender.sendMessage(TextFormat.RED + plugin.getI18n().get("secret_does_not_work"));
                     return;

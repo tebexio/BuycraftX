@@ -1,12 +1,10 @@
 package net.buycraft.plugin.bungeecord;
 
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bungeecord.command.*;
 import net.buycraft.plugin.bungeecord.httplistener.BungeeNettyChannelInjector;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -38,7 +36,7 @@ import java.util.logging.Level;
 public class BuycraftPlugin extends Plugin {
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
-    private ApiClient apiClient;
+    private BuyCraftAPI apiClient;
     private DuePlayerFetcher duePlayerFetcher;
     private ServerInformation serverInformation;
     private OkHttpClient httpClient;
@@ -100,7 +98,7 @@ public class BuycraftPlugin extends Plugin {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
-            final ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            final BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             // Hack due to SecurityManager shenanigans.
             try {
                 runTaskToAppeaseBungeeSecurityManager(new Callable<Void>() {
@@ -193,8 +191,8 @@ public class BuycraftPlugin extends Plugin {
         configuration.save(configPath);
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
+    public void updateInformation(BuyCraftAPI client) throws IOException {
+        serverInformation = client.getServerInformation().execute().body();
     }
 
     public PlaceholderManager getPlaceholderManager() {
@@ -205,11 +203,11 @@ public class BuycraftPlugin extends Plugin {
         return this.configuration;
     }
 
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return this.apiClient;
     }
 
-    public void setApiClient(final ApiClient apiClient) {
+    public void setApiClient(final BuyCraftAPI apiClient) {
         this.apiClient = apiClient;
     }
 

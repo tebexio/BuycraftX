@@ -1,7 +1,6 @@
 package net.buycraft.plugin.shared.tasks;
 
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.data.responses.Listing;
@@ -30,8 +29,8 @@ public class ListingUpdateTask implements Runnable {
         }
 
         try {
-            listing.set(platform.getApiClient().retrieveListing());
-        } catch (IOException | ApiException e) {
+            listing.set(platform.getApiClient().retrieveListing().execute().body());
+        } catch (IOException e) {
             platform.log(Level.SEVERE, "Error whilst retrieving listing", e);
             return;
         }

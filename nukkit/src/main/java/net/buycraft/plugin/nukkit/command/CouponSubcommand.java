@@ -2,7 +2,6 @@ package net.buycraft.plugin.nukkit.command;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.utils.TextFormat;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.nukkit.BuycraftPlugin;
 import net.buycraft.plugin.shared.util.CouponUtil;
@@ -53,9 +52,9 @@ public class CouponSubcommand implements Subcommand {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().createCoupon(coupon);
+                    plugin.getApiClient().createCoupon(coupon).execute();
                     sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
-                } catch (ApiException | IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(TextFormat.RED + plugin.getI18n().get("generic_api_operation_error"));
                 }
             }
@@ -73,9 +72,9 @@ public class CouponSubcommand implements Subcommand {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().deleteCoupon(code);
+                    plugin.getApiClient().deleteCoupon(code).execute();
                     sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("coupon_deleted"));
-                } catch (ApiException | IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(TextFormat.RED + e.getMessage());
                     return;
                 }

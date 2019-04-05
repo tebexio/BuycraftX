@@ -1,8 +1,8 @@
 package net.buycraft.plugin.sponge;
 
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.UuidUtil;
-import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -25,7 +25,7 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
     }
 
     @Override
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return plugin.getApiClient();
     }
 

@@ -1,8 +1,6 @@
 package net.buycraft.plugin.sponge.command;
 
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.command.CommandException;
@@ -35,10 +33,10 @@ public class SecretCmd implements CommandExecutor {
                     @Override
                     public void run() {
                         String currentKey = plugin.getConfiguration().getServerKey();
-                        ApiClient client = new ProductionApiClient((String) args.getOne("secret").get(), plugin.getHttpClient());
+                        BuyCraftAPI client = BuyCraftAPI.create((String) args.getOne("secret").get(), plugin.getHttpClient());
                         try {
                             plugin.updateInformation(client);
-                        } catch (IOException | ApiException e) {
+                        } catch (IOException e) {
                             plugin.getLogger().error("Unable to verify secret", e);
                             src.sendMessage(Text.builder(plugin.getI18n().get("secret_does_not_work")).color(TextColors.RED).build());
                             return;

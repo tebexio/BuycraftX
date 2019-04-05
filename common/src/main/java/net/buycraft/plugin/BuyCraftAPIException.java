@@ -1,40 +1,40 @@
-package net.buycraft.plugin.client;
+package net.buycraft.plugin;
 
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class ApiException extends Exception {
+public class BuyCraftAPIException extends RuntimeException {
     private Request sentRequest;
     private Response receivedResponse;
     private String responseBody;
 
-    public ApiException() {
+    public BuyCraftAPIException() {
     }
 
-    public ApiException(String message) {
+    public BuyCraftAPIException(String message) {
         super(message);
     }
 
-    public ApiException(String message, Throwable cause) {
+    public BuyCraftAPIException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ApiException(Throwable cause) {
+    public BuyCraftAPIException(Throwable cause) {
         super(cause);
     }
 
-    public ApiException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public BuyCraftAPIException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public ApiException(String message, Request sentRequest, Response receivedResponse, String responseBody) {
+    public BuyCraftAPIException(String message, Request sentRequest, Response receivedResponse, String responseBody) {
         super(message);
         this.sentRequest = sentRequest;
         this.receivedResponse = receivedResponse;
         this.responseBody = responseBody;
     }
 
-    public ApiException(String message, Throwable cause, Request sentRequest, Response receivedResponse, String responseBody) {
+    public BuyCraftAPIException(String message, Throwable cause, Request sentRequest, Response receivedResponse, String responseBody) {
         super(message, cause);
         this.sentRequest = sentRequest;
         this.receivedResponse = receivedResponse;

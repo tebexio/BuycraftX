@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.tasks;
 
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
@@ -37,8 +36,8 @@ public class SignUpdater implements Runnable {
 
         List<RecentPayment> payments;
         try {
-            payments = plugin.getApiClient().getRecentPayments(Math.min(100, maxPos.getAsInt()));
-        } catch (IOException | ApiException e) {
+            payments = plugin.getApiClient().getRecentPayments(Math.min(100, maxPos.getAsInt())).execute().body();
+        } catch (IOException e) {
             plugin.getLogger().error("Could not fetch recent purchases", e);
             return;
         }

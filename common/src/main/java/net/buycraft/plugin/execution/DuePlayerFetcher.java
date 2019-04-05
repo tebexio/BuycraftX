@@ -2,7 +2,6 @@ package net.buycraft.plugin.execution;
 
 import com.google.common.collect.ImmutableList;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.DueQueueInformation;
 
@@ -60,12 +59,12 @@ public class DuePlayerFetcher implements Runnable {
             DueQueueInformation information;
             do {
                 try {
-                    information = platform.getApiClient().retrieveDueQueue();
+                    information = platform.getApiClient().retrieveDueQueue().execute().body();
                     if (information == null) {
                         return;
                     }
                     nextCheck = information.getMeta().getNextCheck();
-                } catch (IOException | ApiException e) {
+                } catch (IOException e) {
                     platform.log(Level.SEVERE, "Could not fetch due players queue", e);
                     return;
                 }

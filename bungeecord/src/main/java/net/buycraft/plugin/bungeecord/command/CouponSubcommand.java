@@ -1,7 +1,6 @@
 package net.buycraft.plugin.bungeecord.command;
 
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
 import net.md_5.bungee.api.ChatColor;
@@ -53,9 +52,9 @@ public class CouponSubcommand implements Subcommand {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().createCoupon(coupon);
+                    plugin.getApiClient().createCoupon(coupon).execute().body();
                     sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
-                } catch (ApiException | IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
                 }
             }
@@ -73,9 +72,9 @@ public class CouponSubcommand implements Subcommand {
             @Override
             public void run() {
                 try {
-                    plugin.getApiClient().deleteCoupon(code);
+                    plugin.getApiClient().deleteCoupon(code).execute().body();
                     sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_deleted"));
-                } catch (ApiException | IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.RED + e.getMessage());
                     return;
                 }

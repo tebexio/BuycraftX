@@ -1,7 +1,6 @@
 package net.buycraft.plugin.execution;
 
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.responses.QueueInformation;
 import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
@@ -25,8 +24,8 @@ public class ImmediateCommandExecutor implements Runnable {
         QueueInformation information;
         try {
             // Retrieve offline command queue.
-            information = platform.getApiClient().retrieveOfflineQueue();
-        } catch (IOException | ApiException e) {
+            information = platform.getApiClient().retrieveOfflineQueue().execute().body();
+        } catch (IOException e) {
             platform.log(Level.SEVERE, "Could not fetch command queue", e);
             return;
         }

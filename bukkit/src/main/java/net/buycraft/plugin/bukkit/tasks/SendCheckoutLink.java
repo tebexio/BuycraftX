@@ -1,7 +1,6 @@
 package net.buycraft.plugin.bukkit.tasks;
 
 import net.buycraft.plugin.bukkit.BuycraftPlugin;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -37,11 +36,11 @@ public class SendCheckoutLink implements Runnable {
         CheckoutUrlResponse response;
         try {
             if (!isCategory) {
-                response = plugin.getApiClient().getCheckoutUri(player.getName(), id);
+                response = plugin.getApiClient().getCheckoutUri(player.getName(), id).execute().body();
             } else {
-                response = plugin.getApiClient().getCategoryUri(player.getName(), id);
+                response = plugin.getApiClient().getCategoryUri(player.getName(), id).execute().body();
             }
-        } catch (IOException | ApiException e) {
+        } catch (IOException e) {
             if (sender == null)
                 player.sendMessage(ChatColor.RED + plugin.getI18n().get("cant_check_out") + " " + e.getMessage());
             else

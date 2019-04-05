@@ -1,7 +1,7 @@
 package net.buycraft.plugin.testutil;
 
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -17,7 +17,7 @@ public class SimulatedPlayerBuycraftPlatform implements IBuycraftPlatform {
     private final Map<String, TestPlayer> testPlayerMap = new HashMap<>();
 
     @Override
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return null;
     }
 
