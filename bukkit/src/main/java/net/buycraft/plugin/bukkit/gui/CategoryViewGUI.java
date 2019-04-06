@@ -189,7 +189,7 @@ public class CategoryViewGUI {
                     for (int i = 0; i < subcats.size(); i++) {
                         Category subcat = subcats.get(i);
                         
-                        String gui_item = subcats.get(i).getGui_item();
+                        String gui_item = subcats.get(i).getGuiItem();
 
                         Material material = Material.matchMaterial("BOOK");
                         short variant = 0;

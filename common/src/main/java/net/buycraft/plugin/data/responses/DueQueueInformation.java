@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import net.buycraft.plugin.data.QueuedPlayer;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class DueQueueInformation {
     private final QueueInformationMeta meta;
@@ -23,32 +24,25 @@ public final class DueQueueInformation {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof DueQueueInformation)) return false;
-        final DueQueueInformation other = (DueQueueInformation) o;
-        final java.lang.Object this$meta = this.getMeta();
-        final java.lang.Object other$meta = other.getMeta();
-        if (this$meta == null ? other$meta != null : !this$meta.equals(other$meta)) return false;
-        final java.lang.Object this$players = this.getPlayers();
-        final java.lang.Object other$players = other.getPlayers();
-        if (this$players == null ? other$players != null : !this$players.equals(other$players)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DueQueueInformation that = (DueQueueInformation) o;
+
+        if (!Objects.equals(meta, that.meta)) return false;
+        return Objects.equals(players, that.players);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $meta = this.getMeta();
-        result = result * PRIME + ($meta == null ? 43 : $meta.hashCode());
-        final java.lang.Object $players = this.getPlayers();
-        result = result * PRIME + ($players == null ? 43 : $players.hashCode());
+        int result = meta != null ? meta.hashCode() : 0;
+        result = 31 * result + (players != null ? players.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "DueQueueInformation(meta=" + this.getMeta() + ", players=" + this.getPlayers() + ")";
     }
 
@@ -78,7 +72,7 @@ public final class DueQueueInformation {
         }
 
         @Override
-        public boolean equals(final java.lang.Object o) {
+        public boolean equals(final Object o) {
             if (o == this) return true;
             if (!(o instanceof DueQueueInformation.QueueInformationMeta)) return false;
             final DueQueueInformation.QueueInformationMeta other = (DueQueueInformation.QueueInformationMeta) o;
@@ -99,7 +93,7 @@ public final class DueQueueInformation {
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "DueQueueInformation.QueueInformationMeta(executeOffline=" + this.isExecuteOffline() + ", nextCheck=" + this.getNextCheck() + ", more=" + this.isMore() + ")";
         }
     }

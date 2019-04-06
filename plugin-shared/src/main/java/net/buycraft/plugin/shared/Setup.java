@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class Setup {
     private Setup() {
-        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static OkHttpClient okhttp(File base) {

@@ -24,19 +24,19 @@ public class StandaloneBuycraftRunnerBuilder {
 
     StandaloneBuycraftRunnerBuilder(@NotNull final CommandDispatcher dispatcher, @NotNull final PlayerDeterminer determiner, @NotNull final String apiKey, @NotNull final Logger logger, @NotNull final ScheduledExecutorService executorService, @NotNull final boolean verbose) {
         if (dispatcher == null) {
-            throw new java.lang.NullPointerException("dispatcher is marked @NotNull but is null");
+            throw new NullPointerException("dispatcher is marked @NotNull but is null");
         }
         if (determiner == null) {
-            throw new java.lang.NullPointerException("determiner is marked @NotNull but is null");
+            throw new NullPointerException("determiner is marked @NotNull but is null");
         }
         if (apiKey == null) {
-            throw new java.lang.NullPointerException("apiKey is marked @NotNull but is null");
+            throw new NullPointerException("apiKey is marked @NotNull but is null");
         }
         if (logger == null) {
-            throw new java.lang.NullPointerException("logger is marked @NotNull but is null");
+            throw new NullPointerException("logger is marked @NotNull but is null");
         }
         if (executorService == null) {
-            throw new java.lang.NullPointerException("executorService is marked @NotNull but is null");
+            throw new NullPointerException("executorService is marked @NotNull but is null");
         }
         this.dispatcher = dispatcher;
         this.determiner = determiner;
@@ -69,7 +69,7 @@ public class StandaloneBuycraftRunnerBuilder {
 
         public StandaloneBuycraftRunnerBuilderBuilder dispatcher(@NotNull final CommandDispatcher dispatcher) {
             if (dispatcher == null) {
-                throw new java.lang.NullPointerException("dispatcher is marked @NotNull but is null");
+                throw new NullPointerException("dispatcher is marked @NotNull but is null");
             }
             this.dispatcher = dispatcher;
             return this;
@@ -77,7 +77,7 @@ public class StandaloneBuycraftRunnerBuilder {
 
         public StandaloneBuycraftRunnerBuilderBuilder determiner(@NotNull final PlayerDeterminer determiner) {
             if (determiner == null) {
-                throw new java.lang.NullPointerException("determiner is marked @NotNull but is null");
+                throw new NullPointerException("determiner is marked @NotNull but is null");
             }
             this.determiner = determiner;
             return this;
@@ -85,7 +85,7 @@ public class StandaloneBuycraftRunnerBuilder {
 
         public StandaloneBuycraftRunnerBuilderBuilder apiKey(@NotNull final String apiKey) {
             if (apiKey == null) {
-                throw new java.lang.NullPointerException("apiKey is marked @NotNull but is null");
+                throw new NullPointerException("apiKey is marked @NotNull but is null");
             }
             this.apiKey = apiKey;
             return this;
@@ -93,7 +93,7 @@ public class StandaloneBuycraftRunnerBuilder {
 
         public StandaloneBuycraftRunnerBuilderBuilder logger(@NotNull final Logger logger) {
             if (logger == null) {
-                throw new java.lang.NullPointerException("logger is marked @NotNull but is null");
+                throw new NullPointerException("logger is marked @NotNull but is null");
             }
             this.logger = logger;
             return this;
@@ -101,7 +101,7 @@ public class StandaloneBuycraftRunnerBuilder {
 
         public StandaloneBuycraftRunnerBuilderBuilder executorService(@NotNull final ScheduledExecutorService executorService) {
             if (executorService == null) {
-                throw new java.lang.NullPointerException("executorService is marked @NotNull but is null");
+                throw new NullPointerException("executorService is marked @NotNull but is null");
             }
             this.executorService = executorService;
             return this;
@@ -117,7 +117,7 @@ public class StandaloneBuycraftRunnerBuilder {
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "StandaloneBuycraftRunnerBuilder.StandaloneBuycraftRunnerBuilderBuilder(dispatcher=" + this.dispatcher + ", determiner=" + this.determiner + ", apiKey=" + this.apiKey + ", logger=" + this.logger + ", executorService=" + this.executorService + ", verbose=" + this.verbose + ")";
         }
     }

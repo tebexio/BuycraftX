@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public final class UuidUtil {
     private UuidUtil() {
-        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     /**

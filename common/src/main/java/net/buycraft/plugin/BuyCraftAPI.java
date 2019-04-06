@@ -8,8 +8,10 @@ import net.buycraft.plugin.data.responses.*;
 import okhttp3.*;
 import retrofit2.Call;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.*;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
@@ -27,38 +29,46 @@ public interface BuyCraftAPI {
 
     public static BuyCraftAPI create(final String secret, OkHttpClient client) {
         OkHttpClient.Builder clientBuilder = client != null ? client.newBuilder() : new OkHttpClient.Builder();
+        //noinspection Convert2Lambda
         return new Retrofit.Builder()
                 .baseUrl(API_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(clientBuilder
-                        .addInterceptor(chain -> {
-                            Request original = chain.request();
+                        .addInterceptor(new Interceptor() {
+                            @Override
+                            public Response intercept(Chain chain) throws IOException {
+                                Request original = chain.request();
 
-                            Request request = original.newBuilder()
-                                    .header("X-Buycraft-Secret", secret)
-                                    .header("Accept", "application/json")
-                                    .header("User-Agent", "BuycraftX")
-                                    .method(original.method(), original.body())
-                                    .build();
+                                Request request = original.newBuilder()
+                                        .header("X-Buycraft-Secret", secret)
+                                        .header("Accept", "application/json")
+                                        .header("User-Agent", "BuycraftX")
+                                        .method(original.method(), original.body())
+                                        .build();
 
-                            return chain.proceed(request);
-                        })
-                        .addInterceptor(chain -> {
-                            Response response = chain.proceed(chain.request());
-                            if (!response.isSuccessful()) {
-                                ResponseBody body = response.body();
-                                String in = body.string();
-                                if (!Objects.equals(response.header("Content-Type"), "application/json")) {
-                                    throw new BuyCraftAPIException("Unexpected content-type " + response.header("Content-Type"), response.request(), response, in);
-                                }
-                                BuycraftError error = gson.fromJson(in, BuycraftError.class);
-                                if (error != null) {
-                                    throw new BuyCraftAPIException(error.getErrorMessage(), response.request(), response, in);
-                                } else {
-                                    throw new BuyCraftAPIException("Unknown error occurred whilst deserializing error object.", response.request(), response, in);
-                                }
+                                return chain.proceed(request);
                             }
+                        })
+                        .addInterceptor(new Interceptor() {
+                            @Override
+                            public Response intercept(Chain chain) throws IOException {
+                                Response response = chain.proceed(chain.request());
+                                if (!response.isSuccessful()) {
+                                    ResponseBody body = response.body();
+                                    String in = body.string();
+                                    if (!Objects.equals(response.header("Content-Type"), "application/json")) {
+                                        throw new BuyCraftAPIException("Unexpected content-type " + response.header("Content-Type"), response.request(), response, in);
+                                    }
+                                    BuycraftError error = gson.fromJson(in, BuycraftError.class);
+                                    if (error != null) {
+                                        throw new BuyCraftAPIException(error.getErrorMessage(), response.request(), response, in);
+                                    } else {
+                                        throw new BuyCraftAPIException("Unknown error occurred whilst deserializing error object.", response.request(), response, in);
+                                    }
+                                }
 
-                            return response;
+                                return response;
+                            }
                         }).build())
                 .build().create(BuyCraftAPI.class);
     }

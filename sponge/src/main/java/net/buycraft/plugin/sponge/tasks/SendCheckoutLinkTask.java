@@ -22,10 +22,10 @@ public class SendCheckoutLinkTask implements Runnable {
 
     public SendCheckoutLinkTask(@NotNull final BuycraftPlugin plugin, final int pkgId, @NotNull final Player player) {
         if (plugin == null) {
-            throw new java.lang.NullPointerException("plugin is marked @NotNull but is null");
+            throw new NullPointerException("plugin is marked @NotNull but is null");
         }
         if (player == null) {
-            throw new java.lang.NullPointerException("player is marked @NotNull but is null");
+            throw new NullPointerException("player is marked @NotNull but is null");
         }
         this.plugin = plugin;
         this.pkgId = pkgId;

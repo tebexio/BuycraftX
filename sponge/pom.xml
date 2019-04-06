@@ -36,7 +36,7 @@
                         </relocation>
                         <relocation>
                             <pattern>retrofit2</pattern>
-                            <shadedPatrtern>net.buycraft.plugin.internal.retrofit2</shadedPatrtern>
+                            <shadedPattern>net.buycraft.plugin.internal.retrofit2</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.fasterxml.jackson</pattern>

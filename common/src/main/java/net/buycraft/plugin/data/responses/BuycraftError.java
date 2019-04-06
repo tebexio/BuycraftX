@@ -2,6 +2,8 @@ package net.buycraft.plugin.data.responses;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public final class BuycraftError {
     @SerializedName("error_code")
     private final int errorCode;
@@ -22,30 +24,26 @@ public final class BuycraftError {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof BuycraftError)) return false;
-        final BuycraftError other = (BuycraftError) o;
-        if (this.getErrorCode() != other.getErrorCode()) return false;
-        final java.lang.Object this$errorMessage = this.getErrorMessage();
-        final java.lang.Object other$errorMessage = other.getErrorMessage();
-        if (this$errorMessage == null ? other$errorMessage != null : !this$errorMessage.equals(other$errorMessage))
-            return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BuycraftError that = (BuycraftError) o;
+
+        if (errorCode != that.errorCode) return false;
+        return Objects.equals(errorMessage, that.errorMessage);
+
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + this.getErrorCode();
-        final java.lang.Object $errorMessage = this.getErrorMessage();
-        result = result * PRIME + ($errorMessage == null ? 43 : $errorMessage.hashCode());
+        int result = errorCode;
+        result = 31 * result + (errorMessage != null ? errorMessage.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "BuycraftError(errorCode=" + this.getErrorCode() + ", errorMessage=" + this.getErrorMessage() + ")";
     }
 }

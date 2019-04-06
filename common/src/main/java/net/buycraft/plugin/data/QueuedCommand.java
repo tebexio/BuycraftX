@@ -3,6 +3,7 @@ package net.buycraft.plugin.data;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;
+import java.util.Objects;
 
 public final class QueuedCommand {
     private final int id;
@@ -48,44 +49,33 @@ public final class QueuedCommand {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof QueuedCommand)) return false;
-        final QueuedCommand other = (QueuedCommand) o;
-        if (this.getId() != other.getId()) return false;
-        if (this.getPaymentId() != other.getPaymentId()) return false;
-        if (this.getPackageId() != other.getPackageId()) return false;
-        final java.lang.Object this$conditions = this.getConditions();
-        final java.lang.Object other$conditions = other.getConditions();
-        if (this$conditions == null ? other$conditions != null : !this$conditions.equals(other$conditions))
-            return false;
-        final java.lang.Object this$command = this.getCommand();
-        final java.lang.Object other$command = other.getCommand();
-        if (this$command == null ? other$command != null : !this$command.equals(other$command)) return false;
-        final java.lang.Object this$player = this.getPlayer();
-        final java.lang.Object other$player = other.getPlayer();
-        if (this$player == null ? other$player != null : !this$player.equals(other$player)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QueuedCommand that = (QueuedCommand) o;
+
+        if (id != that.id) return false;
+        if (paymentId != that.paymentId) return false;
+        if (packageId != that.packageId) return false;
+        if (!Objects.equals(conditions, that.conditions)) return false;
+        if (!Objects.equals(command, that.command)) return false;
+        return Objects.equals(player, that.player);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + this.getId();
-        result = result * PRIME + this.getPaymentId();
-        result = result * PRIME + this.getPackageId();
-        final java.lang.Object $conditions = this.getConditions();
-        result = result * PRIME + ($conditions == null ? 43 : $conditions.hashCode());
-        final java.lang.Object $command = this.getCommand();
-        result = result * PRIME + ($command == null ? 43 : $command.hashCode());
-        final java.lang.Object $player = this.getPlayer();
-        result = result * PRIME + ($player == null ? 43 : $player.hashCode());
+        int result = id;
+        result = 31 * result + paymentId;
+        result = 31 * result + packageId;
+        result = 31 * result + (conditions != null ? conditions.hashCode() : 0);
+        result = 31 * result + (command != null ? command.hashCode() : 0);
+        result = 31 * result + (player != null ? player.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "QueuedCommand(id=" + this.getId() + ", paymentId=" + this.getPaymentId() + ", packageId=" + this.getPackageId() + ", conditions=" + this.getConditions() + ", command=" + this.getCommand() + ", player=" + this.getPlayer() + ")";
     }
 }

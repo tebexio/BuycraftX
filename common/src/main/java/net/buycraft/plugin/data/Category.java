@@ -1,6 +1,7 @@
 package net.buycraft.plugin.data;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,15 +13,16 @@ public final class Category implements Comparable<Category> {
     private final String name;
     private final List<Package> packages;
     private final List<Category> subcategories;
-    private final String gui_item;
+    @SerializedName("gui_item")
+    private final String guiItem;
 
-    public Category(final int id, final int order, final String name, final List<Package> packages, final List<Category> subcategories, final String gui_item) {
+    public Category(final int id, final int order, final String name, final List<Package> packages, final List<Category> subcategories, final String guiItem) {
         this.id = id;
         this.order = order;
         this.name = name;
         this.packages = packages;
         this.subcategories = subcategories;
-        this.gui_item = gui_item;
+        this.guiItem = guiItem;
     }
 
     @Override
@@ -59,52 +61,38 @@ public final class Category implements Comparable<Category> {
         return this.packages;
     }
 
-    public String getGui_item() {
-        return this.gui_item;
+    public String getGuiItem() {
+        return this.guiItem;
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof Category)) return false;
-        final Category other = (Category) o;
-        if (this.getId() != other.getId()) return false;
-        if (this.getOrder() != other.getOrder()) return false;
-        final java.lang.Object this$name = this.getName();
-        final java.lang.Object other$name = other.getName();
-        if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
-        final java.lang.Object this$packages = this.getPackages();
-        final java.lang.Object other$packages = other.getPackages();
-        if (this$packages == null ? other$packages != null : !this$packages.equals(other$packages)) return false;
-        final java.lang.Object this$subcategories = this.getSubcategories();
-        final java.lang.Object other$subcategories = other.getSubcategories();
-        if (this$subcategories == null ? other$subcategories != null : !this$subcategories.equals(other$subcategories))
-            return false;
-        final java.lang.Object this$gui_item = this.getGui_item();
-        final java.lang.Object other$gui_item = other.getGui_item();
-        if (this$gui_item == null ? other$gui_item != null : !this$gui_item.equals(other$gui_item)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Category category = (Category) o;
+
+        if (id != category.id) return false;
+        if (order != category.order) return false;
+        if (!Objects.equals(name, category.name)) return false;
+        if (!Objects.equals(packages, category.packages)) return false;
+        if (!Objects.equals(subcategories, category.subcategories)) return false;
+        return Objects.equals(guiItem, category.guiItem);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + this.getId();
-        result = result * PRIME + this.getOrder();
-        final java.lang.Object $name = this.getName();
-        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-        final java.lang.Object $packages = this.getPackages();
-        result = result * PRIME + ($packages == null ? 43 : $packages.hashCode());
-        final java.lang.Object $subcategories = this.getSubcategories();
-        result = result * PRIME + ($subcategories == null ? 43 : $subcategories.hashCode());
-        final java.lang.Object $gui_item = this.getGui_item();
-        result = result * PRIME + ($gui_item == null ? 43 : $gui_item.hashCode());
+        int result = id;
+        result = 31 * result + order;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (packages != null ? packages.hashCode() : 0);
+        result = 31 * result + (subcategories != null ? subcategories.hashCode() : 0);
+        result = 31 * result + (guiItem != null ? guiItem.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
-        return "Category(id=" + this.getId() + ", order=" + this.getOrder() + ", name=" + this.getName() + ", packages=" + this.getPackages() + ", subcategories=" + this.getSubcategories() + ", gui_item=" + this.getGui_item() + ")";
+    public String toString() {
+        return "Category(id=" + this.getId() + ", order=" + this.getOrder() + ", name=" + this.getName() + ", packages=" + this.getPackages() + ", subcategories=" + this.getSubcategories() + ", guiItem=" + this.getGuiItem() + ")";
     }
 }

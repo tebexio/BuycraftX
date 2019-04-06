@@ -4,6 +4,7 @@ import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.QueuedCommand;
 import net.buycraft.plugin.data.QueuedPlayer;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public final class ToRunQueuedCommand {
@@ -55,34 +56,27 @@ public final class ToRunQueuedCommand {
     }
 
     @Override
-    public java.lang.String toString() {
-        return "ToRunQueuedCommand(player=" + this.getPlayer() + ", command=" + this.getCommand() + ", requireOnline=" + this.isRequireOnline() + ", queueTime=" + this.getQueueTime() + ")";
-    }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-    @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ToRunQueuedCommand)) return false;
-        final ToRunQueuedCommand other = (ToRunQueuedCommand) o;
-        final java.lang.Object this$player = this.getPlayer();
-        final java.lang.Object other$player = other.getPlayer();
-        if (this$player == null ? other$player != null : !this$player.equals(other$player)) return false;
-        final java.lang.Object this$command = this.getCommand();
-        final java.lang.Object other$command = other.getCommand();
-        if (this$command == null ? other$command != null : !this$command.equals(other$command)) return false;
-        if (this.isRequireOnline() != other.isRequireOnline()) return false;
-        return true;
+        ToRunQueuedCommand that = (ToRunQueuedCommand) o;
+
+        if (requireOnline != that.requireOnline) return false;
+        if (!Objects.equals(player, that.player)) return false;
+        return Objects.equals(command, that.command);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $player = this.getPlayer();
-        result = result * PRIME + ($player == null ? 43 : $player.hashCode());
-        final java.lang.Object $command = this.getCommand();
-        result = result * PRIME + ($command == null ? 43 : $command.hashCode());
-        result = result * PRIME + (this.isRequireOnline() ? 79 : 97);
+        int result = player != null ? player.hashCode() : 0;
+        result = 31 * result + (command != null ? command.hashCode() : 0);
+        result = 31 * result + (requireOnline ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ToRunQueuedCommand(player=" + this.getPlayer() + ", command=" + this.getCommand() + ", requireOnline=" + this.isRequireOnline() + ", queueTime=" + this.getQueueTime() + ")";
     }
 }

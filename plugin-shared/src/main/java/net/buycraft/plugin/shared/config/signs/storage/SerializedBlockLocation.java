@@ -1,5 +1,7 @@
 package net.buycraft.plugin.shared.config.signs.storage;
 
+import java.util.Objects;
+
 public final class SerializedBlockLocation {
     private final String world;
     private final int x;
@@ -30,33 +32,30 @@ public final class SerializedBlockLocation {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof SerializedBlockLocation)) return false;
-        final SerializedBlockLocation other = (SerializedBlockLocation) o;
-        final java.lang.Object this$world = this.getWorld();
-        final java.lang.Object other$world = other.getWorld();
-        if (this$world == null ? other$world != null : !this$world.equals(other$world)) return false;
-        if (this.getX() != other.getX()) return false;
-        if (this.getY() != other.getY()) return false;
-        if (this.getZ() != other.getZ()) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SerializedBlockLocation that = (SerializedBlockLocation) o;
+
+        if (x != that.x) return false;
+        if (y != that.y) return false;
+        if (z != that.z) return false;
+        return Objects.equals(world, that.world);
+
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $world = this.getWorld();
-        result = result * PRIME + ($world == null ? 43 : $world.hashCode());
-        result = result * PRIME + this.getX();
-        result = result * PRIME + this.getY();
-        result = result * PRIME + this.getZ();
+        int result = world != null ? world.hashCode() : 0;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + z;
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "SerializedBlockLocation(world=" + this.getWorld() + ", x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + ")";
     }
 }

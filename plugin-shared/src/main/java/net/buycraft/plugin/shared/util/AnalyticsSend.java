@@ -10,7 +10,7 @@ import java.util.Map;
 
 public final class AnalyticsSend {
     private AnalyticsSend() {
-        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static void sendAnalytics(OkHttpClient client, String secret, Map<String, Object> info) throws IOException {

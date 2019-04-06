@@ -6,7 +6,7 @@ import org.bukkit.Location;
 
 public final class BukkitSerializedBlockLocation {
     private BukkitSerializedBlockLocation() {
-        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static SerializedBlockLocation create(Location location) {

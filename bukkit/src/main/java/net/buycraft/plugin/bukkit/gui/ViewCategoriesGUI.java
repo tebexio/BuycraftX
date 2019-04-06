@@ -105,7 +105,7 @@ public class ViewCategoriesGUI implements Listener {
         }
 
         for (Category category : listing.getCategories()) {
-            String gui_item = category.getGui_item();
+            String gui_item = category.getGuiItem();
 
             Material material = Material.matchMaterial("CHEST");
             short variant = 0;

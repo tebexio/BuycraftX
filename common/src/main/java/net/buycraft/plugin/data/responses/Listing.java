@@ -4,6 +4,7 @@ import net.buycraft.plugin.data.Category;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public final class Listing {
     private final List<Category> categories;
@@ -24,28 +25,22 @@ public final class Listing {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof Listing)) return false;
-        final Listing other = (Listing) o;
-        final java.lang.Object this$categories = this.getCategories();
-        final java.lang.Object other$categories = other.getCategories();
-        if (this$categories == null ? other$categories != null : !this$categories.equals(other$categories))
-            return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Listing listing = (Listing) o;
+
+        return Objects.equals(categories, listing.categories);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $categories = this.getCategories();
-        result = result * PRIME + ($categories == null ? 43 : $categories.hashCode());
-        return result;
+        return categories != null ? categories.hashCode() : 0;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "Listing(categories=" + this.getCategories() + ")";
     }
 }

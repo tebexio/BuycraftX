@@ -3,6 +3,7 @@ package net.buycraft.plugin.data.responses;
 import net.buycraft.plugin.data.Coupon;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class CouponListing {
     private final List<Coupon> data;
@@ -16,27 +17,22 @@ public final class CouponListing {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof CouponListing)) return false;
-        final CouponListing other = (CouponListing) o;
-        final java.lang.Object this$data = this.getData();
-        final java.lang.Object other$data = other.getData();
-        if (this$data == null ? other$data != null : !this$data.equals(other$data)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CouponListing that = (CouponListing) o;
+
+        return Objects.equals(data, that.data);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $data = this.getData();
-        result = result * PRIME + ($data == null ? 43 : $data.hashCode());
-        return result;
+        return data != null ? data.hashCode() : 0;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "CouponListing(data=" + this.getData() + ")";
     }
 }

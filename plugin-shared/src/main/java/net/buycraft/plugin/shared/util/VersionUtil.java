@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public final class VersionUtil {
     private VersionUtil() {
-        throw new java.lang.UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     public static Version getVersion(OkHttpClient client, String platform, String secret) throws IOException {

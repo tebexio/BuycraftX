@@ -1,5 +1,7 @@
 package net.buycraft.plugin.data;
 
+import java.util.Objects;
+
 public final class QueuedPlayer {
     private final int id;
     private final String name;
@@ -24,34 +26,27 @@ public final class QueuedPlayer {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof QueuedPlayer)) return false;
-        final QueuedPlayer other = (QueuedPlayer) o;
-        if (this.getId() != other.getId()) return false;
-        final java.lang.Object this$name = this.getName();
-        final java.lang.Object other$name = other.getName();
-        if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
-        final java.lang.Object this$uuid = this.getUuid();
-        final java.lang.Object other$uuid = other.getUuid();
-        if (this$uuid == null ? other$uuid != null : !this$uuid.equals(other$uuid)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QueuedPlayer that = (QueuedPlayer) o;
+
+        if (id != that.id) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        return Objects.equals(uuid, that.uuid);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + this.getId();
-        final java.lang.Object $name = this.getName();
-        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-        final java.lang.Object $uuid = this.getUuid();
-        result = result * PRIME + ($uuid == null ? 43 : $uuid.hashCode());
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "QueuedPlayer(id=" + this.getId() + ", name=" + this.getName() + ", uuid=" + this.getUuid() + ")";
     }
 }

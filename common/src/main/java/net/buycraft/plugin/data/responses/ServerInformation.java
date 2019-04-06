@@ -2,6 +2,8 @@ package net.buycraft.plugin.data.responses;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public final class ServerInformation {
     private final Account account;
     private final Server server;
@@ -20,32 +22,25 @@ public final class ServerInformation {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ServerInformation)) return false;
-        final ServerInformation other = (ServerInformation) o;
-        final java.lang.Object this$account = this.getAccount();
-        final java.lang.Object other$account = other.getAccount();
-        if (this$account == null ? other$account != null : !this$account.equals(other$account)) return false;
-        final java.lang.Object this$server = this.getServer();
-        final java.lang.Object other$server = other.getServer();
-        if (this$server == null ? other$server != null : !this$server.equals(other$server)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ServerInformation that = (ServerInformation) o;
+
+        if (!Objects.equals(account, that.account)) return false;
+        return Objects.equals(server, that.server);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $account = this.getAccount();
-        result = result * PRIME + ($account == null ? 43 : $account.hashCode());
-        final java.lang.Object $server = this.getServer();
-        result = result * PRIME + ($server == null ? 43 : $server.hashCode());
+        int result = account != null ? account.hashCode() : 0;
+        result = 31 * result + (server != null ? server.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "ServerInformation(account=" + this.getAccount() + ", server=" + this.getServer() + ")";
     }
 
@@ -86,41 +81,31 @@ public final class ServerInformation {
         }
 
         @Override
-        public boolean equals(final java.lang.Object o) {
-            if (o == this) return true;
-            if (!(o instanceof ServerInformation.Account)) return false;
-            final ServerInformation.Account other = (ServerInformation.Account) o;
-            if (this.getId() != other.getId()) return false;
-            final java.lang.Object this$domain = this.getDomain();
-            final java.lang.Object other$domain = other.getDomain();
-            if (this$domain == null ? other$domain != null : !this$domain.equals(other$domain)) return false;
-            final java.lang.Object this$name = this.getName();
-            final java.lang.Object other$name = other.getName();
-            if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
-            final java.lang.Object this$currency = this.getCurrency();
-            final java.lang.Object other$currency = other.getCurrency();
-            if (this$currency == null ? other$currency != null : !this$currency.equals(other$currency)) return false;
-            if (this.isOnlineMode() != other.isOnlineMode()) return false;
-            return true;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Account account = (Account) o;
+
+            if (id != account.id) return false;
+            if (onlineMode != account.onlineMode) return false;
+            if (!Objects.equals(domain, account.domain)) return false;
+            if (!Objects.equals(name, account.name)) return false;
+            return Objects.equals(currency, account.currency);
         }
 
         @Override
         public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            result = result * PRIME + this.getId();
-            final java.lang.Object $domain = this.getDomain();
-            result = result * PRIME + ($domain == null ? 43 : $domain.hashCode());
-            final java.lang.Object $name = this.getName();
-            result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-            final java.lang.Object $currency = this.getCurrency();
-            result = result * PRIME + ($currency == null ? 43 : $currency.hashCode());
-            result = result * PRIME + (this.isOnlineMode() ? 79 : 97);
+            int result = id;
+            result = 31 * result + (domain != null ? domain.hashCode() : 0);
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            result = 31 * result + (currency != null ? currency.hashCode() : 0);
+            result = 31 * result + (onlineMode ? 1 : 0);
             return result;
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "ServerInformation.Account(id=" + this.getId() + ", domain=" + this.getDomain() + ", name=" + this.getName() + ", currency=" + this.getCurrency() + ", onlineMode=" + this.isOnlineMode() + ")";
         }
     }
@@ -143,13 +128,13 @@ public final class ServerInformation {
         }
 
         @Override
-        public boolean equals(final java.lang.Object o) {
+        public boolean equals(final Object o) {
             if (o == this) return true;
             if (!(o instanceof ServerInformation.Server)) return false;
             final ServerInformation.Server other = (ServerInformation.Server) o;
             if (this.getId() != other.getId()) return false;
-            final java.lang.Object this$name = this.getName();
-            final java.lang.Object other$name = other.getName();
+            final Object this$name = this.getName();
+            final Object other$name = other.getName();
             if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
             return true;
         }
@@ -159,13 +144,13 @@ public final class ServerInformation {
             final int PRIME = 59;
             int result = 1;
             result = result * PRIME + this.getId();
-            final java.lang.Object $name = this.getName();
+            final Object $name = this.getName();
             result = result * PRIME + ($name == null ? 43 : $name.hashCode());
             return result;
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "ServerInformation.Server(id=" + this.getId() + ", name=" + this.getName() + ")";
         }
     }
@@ -189,15 +174,15 @@ public final class ServerInformation {
         }
 
         @Override
-        public boolean equals(final java.lang.Object o) {
+        public boolean equals(final Object o) {
             if (o == this) return true;
             if (!(o instanceof ServerInformation.AccountCurrency)) return false;
             final ServerInformation.AccountCurrency other = (ServerInformation.AccountCurrency) o;
-            final java.lang.Object this$iso4217 = this.getIso4217();
-            final java.lang.Object other$iso4217 = other.getIso4217();
+            final Object this$iso4217 = this.getIso4217();
+            final Object other$iso4217 = other.getIso4217();
             if (this$iso4217 == null ? other$iso4217 != null : !this$iso4217.equals(other$iso4217)) return false;
-            final java.lang.Object this$symbol = this.getSymbol();
-            final java.lang.Object other$symbol = other.getSymbol();
+            final Object this$symbol = this.getSymbol();
+            final Object other$symbol = other.getSymbol();
             if (this$symbol == null ? other$symbol != null : !this$symbol.equals(other$symbol)) return false;
             return true;
         }
@@ -206,15 +191,15 @@ public final class ServerInformation {
         public int hashCode() {
             final int PRIME = 59;
             int result = 1;
-            final java.lang.Object $iso4217 = this.getIso4217();
+            final Object $iso4217 = this.getIso4217();
             result = result * PRIME + ($iso4217 == null ? 43 : $iso4217.hashCode());
-            final java.lang.Object $symbol = this.getSymbol();
+            final Object $symbol = this.getSymbol();
             result = result * PRIME + ($symbol == null ? 43 : $symbol.hashCode());
             return result;
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "ServerInformation.AccountCurrency(iso4217=" + this.getIso4217() + ", symbol=" + this.getSymbol() + ")";
         }
     }

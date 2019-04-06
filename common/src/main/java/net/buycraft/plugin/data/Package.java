@@ -59,46 +59,33 @@ public final class Package implements Comparable<Package> {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof Package)) return false;
-        final Package other = (Package) o;
-        if (this.getId() != other.getId()) return false;
-        if (this.getOrder() != other.getOrder()) return false;
-        final java.lang.Object this$name = this.getName();
-        final java.lang.Object other$name = other.getName();
-        if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
-        final java.lang.Object this$price = this.getPrice();
-        final java.lang.Object other$price = other.getPrice();
-        if (this$price == null ? other$price != null : !this$price.equals(other$price)) return false;
-        final java.lang.Object this$sale = this.getSale();
-        final java.lang.Object other$sale = other.getSale();
-        if (this$sale == null ? other$sale != null : !this$sale.equals(other$sale)) return false;
-        final java.lang.Object this$gui_item = this.getGui_item();
-        final java.lang.Object other$gui_item = other.getGui_item();
-        if (this$gui_item == null ? other$gui_item != null : !this$gui_item.equals(other$gui_item)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Package aPackage = (Package) o;
+
+        if (id != aPackage.id) return false;
+        if (order != aPackage.order) return false;
+        if (!Objects.equals(name, aPackage.name)) return false;
+        if (!Objects.equals(price, aPackage.price)) return false;
+        if (!Objects.equals(sale, aPackage.sale)) return false;
+        return Objects.equals(gui_item, aPackage.gui_item);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + this.getId();
-        result = result * PRIME + this.getOrder();
-        final java.lang.Object $name = this.getName();
-        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-        final java.lang.Object $price = this.getPrice();
-        result = result * PRIME + ($price == null ? 43 : $price.hashCode());
-        final java.lang.Object $sale = this.getSale();
-        result = result * PRIME + ($sale == null ? 43 : $sale.hashCode());
-        final java.lang.Object $gui_item = this.getGui_item();
-        result = result * PRIME + ($gui_item == null ? 43 : $gui_item.hashCode());
+        int result = id;
+        result = 31 * result + order;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
+        result = 31 * result + (sale != null ? sale.hashCode() : 0);
+        result = 31 * result + (gui_item != null ? gui_item.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "Package(id=" + this.getId() + ", order=" + this.getOrder() + ", name=" + this.getName() + ", price=" + this.getPrice() + ", sale=" + this.getSale() + ", gui_item=" + this.getGui_item() + ")";
     }
 
@@ -120,29 +107,25 @@ public final class Package implements Comparable<Package> {
         }
 
         @Override
-        public boolean equals(final java.lang.Object o) {
-            if (o == this) return true;
-            if (!(o instanceof Package.Sale)) return false;
-            final Package.Sale other = (Package.Sale) o;
-            if (this.isActive() != other.isActive()) return false;
-            final java.lang.Object this$discount = this.getDiscount();
-            final java.lang.Object other$discount = other.getDiscount();
-            if (this$discount == null ? other$discount != null : !this$discount.equals(other$discount)) return false;
-            return true;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Sale sale = (Sale) o;
+
+            if (active != sale.active) return false;
+            return Objects.equals(discount, sale.discount);
         }
 
         @Override
         public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            result = result * PRIME + (this.isActive() ? 79 : 97);
-            final java.lang.Object $discount = this.getDiscount();
-            result = result * PRIME + ($discount == null ? 43 : $discount.hashCode());
+            int result = (active ? 1 : 0);
+            result = 31 * result + (discount != null ? discount.hashCode() : 0);
             return result;
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "Package.Sale(active=" + this.isActive() + ", discount=" + this.getDiscount() + ")";
         }
     }

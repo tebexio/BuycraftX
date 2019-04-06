@@ -33,19 +33,19 @@ public class ReportBuilder {
 
     ReportBuilder(@NotNull final DuePlayerFetcher duePlayerFetcher, final ListingUpdateTask listingUpdateTask, @NotNull final String ip, final int port, final boolean serverOnlineMode, @NotNull final IBuycraftPlatform platform, @NotNull final BuycraftConfiguration configuration, @NotNull final OkHttpClient client) {
         if (duePlayerFetcher == null) {
-            throw new java.lang.NullPointerException("duePlayerFetcher is marked @NotNull but is null");
+            throw new NullPointerException("duePlayerFetcher is marked @NotNull but is null");
         }
         if (ip == null) {
-            throw new java.lang.NullPointerException("ip is marked @NotNull but is null");
+            throw new NullPointerException("ip is marked @NotNull but is null");
         }
         if (platform == null) {
-            throw new java.lang.NullPointerException("platform is marked @NotNull but is null");
+            throw new NullPointerException("platform is marked @NotNull but is null");
         }
         if (configuration == null) {
-            throw new java.lang.NullPointerException("configuration is marked @NotNull but is null");
+            throw new NullPointerException("configuration is marked @NotNull but is null");
         }
         if (client == null) {
-            throw new java.lang.NullPointerException("client is marked @NotNull but is null");
+            throw new NullPointerException("client is marked @NotNull but is null");
         }
         this.duePlayerFetcher = duePlayerFetcher;
         this.listingUpdateTask = listingUpdateTask;
@@ -134,7 +134,7 @@ public class ReportBuilder {
 
         public ReportBuilderBuilder duePlayerFetcher(@NotNull final DuePlayerFetcher duePlayerFetcher) {
             if (duePlayerFetcher == null) {
-                throw new java.lang.NullPointerException("duePlayerFetcher is marked @NotNull but is null");
+                throw new NullPointerException("duePlayerFetcher is marked @NotNull but is null");
             }
             this.duePlayerFetcher = duePlayerFetcher;
             return this;
@@ -147,7 +147,7 @@ public class ReportBuilder {
 
         public ReportBuilderBuilder ip(@NotNull final String ip) {
             if (ip == null) {
-                throw new java.lang.NullPointerException("ip is marked @NotNull but is null");
+                throw new NullPointerException("ip is marked @NotNull but is null");
             }
             this.ip = ip;
             return this;
@@ -165,7 +165,7 @@ public class ReportBuilder {
 
         public ReportBuilderBuilder platform(@NotNull final IBuycraftPlatform platform) {
             if (platform == null) {
-                throw new java.lang.NullPointerException("platform is marked @NotNull but is null");
+                throw new NullPointerException("platform is marked @NotNull but is null");
             }
             this.platform = platform;
             return this;
@@ -173,7 +173,7 @@ public class ReportBuilder {
 
         public ReportBuilderBuilder configuration(@NotNull final BuycraftConfiguration configuration) {
             if (configuration == null) {
-                throw new java.lang.NullPointerException("configuration is marked @NotNull but is null");
+                throw new NullPointerException("configuration is marked @NotNull but is null");
             }
             this.configuration = configuration;
             return this;
@@ -181,7 +181,7 @@ public class ReportBuilder {
 
         public ReportBuilderBuilder client(@NotNull final OkHttpClient client) {
             if (client == null) {
-                throw new java.lang.NullPointerException("client is marked @NotNull but is null");
+                throw new NullPointerException("client is marked @NotNull but is null");
             }
             this.client = client;
             return this;
@@ -192,7 +192,7 @@ public class ReportBuilder {
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "ReportBuilder.ReportBuilderBuilder(duePlayerFetcher=" + this.duePlayerFetcher + ", listingUpdateTask=" + this.listingUpdateTask + ", ip=" + this.ip + ", port=" + this.port + ", serverOnlineMode=" + this.serverOnlineMode + ", platform=" + this.platform + ", configuration=" + this.configuration + ", client=" + this.client + ")";
         }
     }

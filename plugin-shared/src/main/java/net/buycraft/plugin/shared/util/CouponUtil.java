@@ -72,7 +72,7 @@ public class CouponUtil {
             }
         }
 
-        Coupon.CouponBuilder builder = Coupon.builder()
+        Coupon.Builder builder = Coupon.builder()
                 .code(generateCode())
                 .effective(new Coupon.Effective("cart", ImmutableList.<Integer>of(), ImmutableList.<Integer>of()))
                 .basketType("both")

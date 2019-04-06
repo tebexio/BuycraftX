@@ -3,6 +3,7 @@ package net.buycraft.plugin.data;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class PendingPurchase {
     private final QueuedPlayer player;
@@ -29,37 +30,27 @@ public final class PendingPurchase {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof PendingPurchase)) return false;
-        final PendingPurchase other = (PendingPurchase) o;
-        final java.lang.Object this$player = this.getPlayer();
-        final java.lang.Object other$player = other.getPlayer();
-        if (this$player == null ? other$player != null : !this$player.equals(other$player)) return false;
-        final java.lang.Object this$aPackage = this.getAPackage();
-        final java.lang.Object other$aPackage = other.getAPackage();
-        if (this$aPackage == null ? other$aPackage != null : !this$aPackage.equals(other$aPackage)) return false;
-        final java.lang.Object this$commands = this.getCommands();
-        final java.lang.Object other$commands = other.getCommands();
-        if (this$commands == null ? other$commands != null : !this$commands.equals(other$commands)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PendingPurchase that = (PendingPurchase) o;
+
+        if (!Objects.equals(player, that.player)) return false;
+        if (!Objects.equals(aPackage, that.aPackage)) return false;
+        return Objects.equals(commands, that.commands);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $player = this.getPlayer();
-        result = result * PRIME + ($player == null ? 43 : $player.hashCode());
-        final java.lang.Object $aPackage = this.getAPackage();
-        result = result * PRIME + ($aPackage == null ? 43 : $aPackage.hashCode());
-        final java.lang.Object $commands = this.getCommands();
-        result = result * PRIME + ($commands == null ? 43 : $commands.hashCode());
+        int result = player != null ? player.hashCode() : 0;
+        result = 31 * result + (aPackage != null ? aPackage.hashCode() : 0);
+        result = 31 * result + (commands != null ? commands.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "PendingPurchase(player=" + this.getPlayer() + ", aPackage=" + this.getAPackage() + ", commands=" + this.getCommands() + ")";
     }
 }

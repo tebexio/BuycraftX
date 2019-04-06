@@ -26,10 +26,13 @@
                 <configuration>
                     <artifactSet>
                         <excludes>
-                            <exclude>com.google.code.gson</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
+                        <relocation>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>net.buycraft.plugin.internal.gson</shadedPattern>
+                        </relocation>
                         <relocation>
                             <pattern>okhttp3</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.okhttp3</shadedPattern>
@@ -40,7 +43,7 @@
                         </relocation>
                         <relocation>
                             <pattern>retrofit2</pattern>
-                            <shadedPatrtern>net.buycraft.plugin.internal.retrofit2</shadedPatrtern>
+                            <shadedPattern>net.buycraft.plugin.internal.retrofit2</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.fasterxml.jackson</pattern>
@@ -50,6 +53,7 @@
                             <pattern>org.slf4j</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.slf4j</shadedPattern>
                         </relocation>
+
                     </relocations>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>

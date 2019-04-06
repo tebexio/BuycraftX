@@ -3,6 +3,7 @@ package net.buycraft.plugin.data.responses;
 import net.buycraft.plugin.data.QueuedCommand;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class QueueInformation {
     private final OfflineQueueInformationMeta meta;
@@ -22,32 +23,25 @@ public final class QueueInformation {
     }
 
     @Override
-    public boolean equals(final java.lang.Object o) {
-        if (o == this) return true;
-        if (!(o instanceof QueueInformation)) return false;
-        final QueueInformation other = (QueueInformation) o;
-        final java.lang.Object this$meta = this.getMeta();
-        final java.lang.Object other$meta = other.getMeta();
-        if (this$meta == null ? other$meta != null : !this$meta.equals(other$meta)) return false;
-        final java.lang.Object this$commands = this.getCommands();
-        final java.lang.Object other$commands = other.getCommands();
-        if (this$commands == null ? other$commands != null : !this$commands.equals(other$commands)) return false;
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QueueInformation that = (QueueInformation) o;
+
+        if (!Objects.equals(meta, that.meta)) return false;
+        return Objects.equals(commands, that.commands);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final java.lang.Object $meta = this.getMeta();
-        result = result * PRIME + ($meta == null ? 43 : $meta.hashCode());
-        final java.lang.Object $commands = this.getCommands();
-        result = result * PRIME + ($commands == null ? 43 : $commands.hashCode());
+        int result = meta != null ? meta.hashCode() : 0;
+        result = 31 * result + (commands != null ? commands.hashCode() : 0);
         return result;
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "QueueInformation(meta=" + this.getMeta() + ", commands=" + this.getCommands() + ")";
     }
 
@@ -63,24 +57,22 @@ public final class QueueInformation {
         }
 
         @Override
-        public boolean equals(final java.lang.Object o) {
-            if (o == this) return true;
-            if (!(o instanceof QueueInformation.OfflineQueueInformationMeta)) return false;
-            final QueueInformation.OfflineQueueInformationMeta other = (QueueInformation.OfflineQueueInformationMeta) o;
-            if (this.isLimited() != other.isLimited()) return false;
-            return true;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            OfflineQueueInformationMeta that = (OfflineQueueInformationMeta) o;
+
+            return limited == that.limited;
         }
 
         @Override
         public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            result = result * PRIME + (this.isLimited() ? 79 : 97);
-            return result;
+            return (limited ? 1 : 0);
         }
 
         @Override
-        public java.lang.String toString() {
+        public String toString() {
             return "QueueInformation.OfflineQueueInformationMeta(limited=" + this.isLimited() + ")";
         }
     }
