@@ -24,7 +24,7 @@ public class CouponCmd {
 
     public CommandResult createCoupon(CommandSource source, CommandContext ctx) throws CommandException {
         Collection<String> argsList = ctx.getAll("args");
-        String[] argsArray = argsList.toArray(new String[argsList.size()]);
+        String[] argsArray = argsList.toArray(new String[0]);
         final Coupon coupon;
         try {
             coupon = CouponUtil.parseArguments(argsArray);
@@ -35,19 +35,16 @@ public class CouponCmd {
             return CommandResult.empty();
         }
 
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    plugin.getApiClient().createCoupon(coupon).execute();
-                    source.sendMessage(Text.builder(plugin.getI18n().get("coupon_creation_success", coupon.getCode()))
-                            .color(TextColors.GREEN)
-                            .build());
-                } catch (IOException e) {
-                    source.sendMessage(Text.builder(plugin.getI18n().get("generic_api_operation_error"))
-                            .color(TextColors.RED)
-                            .build());
-                }
+        plugin.getPlatform().executeAsync(() -> {
+            try {
+                plugin.getApiClient().createCoupon(coupon).execute();
+                source.sendMessage(Text.builder(plugin.getI18n().get("coupon_creation_success", coupon.getCode()))
+                        .color(TextColors.GREEN)
+                        .build());
+            } catch (IOException e) {
+                source.sendMessage(Text.builder(plugin.getI18n().get("generic_api_operation_error"))
+                        .color(TextColors.RED)
+                        .build());
             }
         });
 
@@ -62,15 +59,12 @@ public class CouponCmd {
         }
         final String code = codeOptional.get();
 
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    plugin.getApiClient().deleteCoupon(code).execute();
-                    source.sendMessage(Text.builder(plugin.getI18n().get("coupon_deleted")).color(TextColors.GREEN).build());
-                } catch (IOException e) {
-                    source.sendMessage(Text.builder(e.getMessage()).color(TextColors.RED).build());
-                }
+        plugin.getPlatform().executeAsync(() -> {
+            try {
+                plugin.getApiClient().deleteCoupon(code).execute();
+                source.sendMessage(Text.builder(plugin.getI18n().get("coupon_deleted")).color(TextColors.GREEN).build());
+            } catch (IOException e) {
+                source.sendMessage(Text.builder(e.getMessage()).color(TextColors.RED).build());
             }
         });
 

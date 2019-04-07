@@ -49,12 +49,8 @@ public class VersionCheck implements Listener {
     @EventHandler
     public void onPostLogin(final PostLoginEvent event) {
         if (event.getPlayer().hasPermission("buycraft.admin") && !upToDate) {
-            plugin.getPlatform().executeAsyncLater(new Runnable() {
-                @Override
-                public void run() {
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + plugin.getI18n().get("update_available", lastKnownVersion.getVersion()));
-                }
-            }, 3, TimeUnit.SECONDS);
+            plugin.getPlatform().executeAsyncLater(() ->
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + plugin.getI18n().get("update_available", lastKnownVersion.getVersion())), 3, TimeUnit.SECONDS);
         }
     }
 

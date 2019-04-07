@@ -121,14 +121,11 @@ public class BuycraftPlugin extends PluginBase {
 
         // Send data to Keen IO
         if (serverInformation != null) {
-            getServer().getScheduler().scheduleDelayedRepeatingTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        AnalyticsSend.postServerInformation(httpClient, serverKey, platform, false);
-                    } catch (IOException e) {
-                        getLogger().warning("Can't send analytics", e);
-                    }
+            getServer().getScheduler().scheduleDelayedRepeatingTask(this, () -> {
+                try {
+                    AnalyticsSend.postServerInformation(httpClient, serverKey, platform, false);
+                } catch (IOException e) {
+                    getLogger().warning("Can't send analytics", e);
                 }
             }, 0, 20 * 60 * 60 * 24);
         }

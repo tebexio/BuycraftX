@@ -102,7 +102,7 @@ public class RecentPurchaseSignListener {
 
     @Listener
     public void onBlockBreak(ChangeBlockEvent.Break event) {
-        event.getTransactions().stream().forEach(trans -> {
+        event.getTransactions().forEach(trans -> {
             if ((trans.getOriginal().getState().getType().equals(BlockTypes.WALL_SIGN) || trans.getOriginal().getState().getType().equals(BlockTypes.STANDING_SIGN))) {
                 Optional<Location<World>> locationOptional = trans.getOriginal().getLocation();
                 Optional<Player> playerOptional = event.getCause().first(Player.class);

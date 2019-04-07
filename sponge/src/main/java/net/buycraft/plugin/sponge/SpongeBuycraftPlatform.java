@@ -73,12 +73,7 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public int getFreeSlots(QueuedPlayer player) {
-        Optional<Player> player1 = getPlayer(player);
-        if (!player1.isPresent()) {
-            return -1;
-        } else {
-            return Math.max(0, 36 - player1.get().getInventory().size());
-        }
+        return getPlayer(player).map(value -> Math.max(0, 36 - value.getInventory().size())).orElse(-1);
     }
 
     @Override

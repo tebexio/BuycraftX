@@ -68,8 +68,6 @@ public class BuyNowSignListener {
             return;
         }
 
-
-
         plugin.getBuyNowSignStorage().addSign(new SavedBuyNowSign(
                 SpongeSerializedBlockLocation.create(event.getTargetTile().getLocation()),
                 pos));
@@ -113,7 +111,7 @@ public class BuyNowSignListener {
 
     @Listener
     public void onBlockBreak(ChangeBlockEvent.Break event) {
-        event.getTransactions().stream().forEach(trans -> {
+        event.getTransactions().forEach(trans -> {
             if ((trans.getOriginal().getState().getType().equals(BlockTypes.WALL_SIGN) || trans.getOriginal().getState().getType().equals(BlockTypes.STANDING_SIGN))) {
                 Optional<Location<World>> locationOptional = trans.getOriginal().getLocation();
                 Optional<Player> playerOptional = event.getCause().first(Player.class);

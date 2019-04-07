@@ -12,6 +12,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 
 public class SendCheckoutLinkTask implements Runnable {
     @NotNull
@@ -21,15 +22,9 @@ public class SendCheckoutLinkTask implements Runnable {
     private final Player player;
 
     public SendCheckoutLinkTask(@NotNull final BuycraftPlugin plugin, final int pkgId, @NotNull final Player player) {
-        if (plugin == null) {
-            throw new NullPointerException("plugin is marked @NotNull but is null");
-        }
-        if (player == null) {
-            throw new NullPointerException("player is marked @NotNull but is null");
-        }
-        this.plugin = plugin;
+        this.plugin = Objects.requireNonNull(plugin);
         this.pkgId = pkgId;
-        this.player = player;
+        this.player = Objects.requireNonNull(player);
     }
 
     @Override

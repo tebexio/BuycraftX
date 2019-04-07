@@ -32,7 +32,7 @@ public final class Category implements Comparable<Category> {
     }
 
     public List<Category> getSubcategories() {
-        return subcategories == null ? ImmutableList.<Category>of() : subcategories;
+        return subcategories == null ? ImmutableList.of() : subcategories;
     }
 
     public void order() {

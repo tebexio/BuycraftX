@@ -39,7 +39,6 @@ public class BuycraftCommand extends Command {
         }
 
         showHelp(sender);
-        return;
     }
 
     private void showHelp(CommandSender sender) {

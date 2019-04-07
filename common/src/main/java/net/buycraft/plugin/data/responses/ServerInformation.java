@@ -128,24 +128,20 @@ public final class ServerInformation {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (o == this) return true;
-            if (!(o instanceof ServerInformation.Server)) return false;
-            final ServerInformation.Server other = (ServerInformation.Server) o;
-            if (this.getId() != other.getId()) return false;
-            final Object this$name = this.getName();
-            final Object other$name = other.getName();
-            if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
-            return true;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Server server = (Server) o;
+
+            if (id != server.id) return false;
+            return Objects.equals(name, server.name);
         }
 
         @Override
         public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            result = result * PRIME + this.getId();
-            final Object $name = this.getName();
-            result = result * PRIME + ($name == null ? 43 : $name.hashCode());
+            int result = id;
+            result = 31 * result + (name != null ? name.hashCode() : 0);
             return result;
         }
 
@@ -174,27 +170,20 @@ public final class ServerInformation {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (o == this) return true;
-            if (!(o instanceof ServerInformation.AccountCurrency)) return false;
-            final ServerInformation.AccountCurrency other = (ServerInformation.AccountCurrency) o;
-            final Object this$iso4217 = this.getIso4217();
-            final Object other$iso4217 = other.getIso4217();
-            if (this$iso4217 == null ? other$iso4217 != null : !this$iso4217.equals(other$iso4217)) return false;
-            final Object this$symbol = this.getSymbol();
-            final Object other$symbol = other.getSymbol();
-            if (this$symbol == null ? other$symbol != null : !this$symbol.equals(other$symbol)) return false;
-            return true;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            AccountCurrency that = (AccountCurrency) o;
+
+            if (!Objects.equals(iso4217, that.iso4217)) return false;
+            return Objects.equals(symbol, that.symbol);
         }
 
         @Override
         public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            final Object $iso4217 = this.getIso4217();
-            result = result * PRIME + ($iso4217 == null ? 43 : $iso4217.hashCode());
-            final Object $symbol = this.getSymbol();
-            result = result * PRIME + ($symbol == null ? 43 : $symbol.hashCode());
+            int result = iso4217 != null ? iso4217.hashCode() : 0;
+            result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
             return result;
         }
 

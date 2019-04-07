@@ -1,10 +1,10 @@
 package net.buycraft.plugin.shared.util;
 
-import com.google.common.base.Optional;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by meyerzinn on 2/17/16.
@@ -29,7 +29,7 @@ public class Node {
     }
 
     public Optional<Node> getParent() {
-        return Optional.fromNullable(parent);
+        return Optional.ofNullable(parent);
     }
 
     public List<Category> getSubcategories() {

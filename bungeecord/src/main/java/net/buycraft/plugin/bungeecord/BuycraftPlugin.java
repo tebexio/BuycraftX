@@ -69,16 +69,11 @@ public class BuycraftPlugin extends Plugin {
 
         // This has to be done in a different thread due to the SecurityManager.
         try {
-            httpClient = runTaskToAppeaseBungeeSecurityManager(new Callable<OkHttpClient>() {
-                @Override
-                public OkHttpClient call() throws Exception {
-                    return Setup.okhttpBuilder()
-                            .cache(new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10))
-                            .connectionPool(new ConnectionPool())
-                            .dispatcher(new Dispatcher(getExecutorService()))
-                            .build();
-                }
-            });
+            httpClient = runTaskToAppeaseBungeeSecurityManager(() -> Setup.okhttpBuilder()
+                    .cache(new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10))
+                    .connectionPool(new ConnectionPool())
+                    .dispatcher(new Dispatcher(getExecutorService()))
+                    .build());
         } catch (ExecutionException e) {
             // We must bail early
             throw new RuntimeException("Can't create HTTP client", e);
@@ -101,12 +96,9 @@ public class BuycraftPlugin extends Plugin {
             final BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             // Hack due to SecurityManager shenanigans.
             try {
-                runTaskToAppeaseBungeeSecurityManager(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        updateInformation(client);
-                        return null;
-                    }
+                runTaskToAppeaseBungeeSecurityManager((Callable<Void>) () -> {
+                    updateInformation(client);
+                    return null;
                 });
             } catch (ExecutionException e) {
                 getLogger().severe(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
@@ -118,12 +110,9 @@ public class BuycraftPlugin extends Plugin {
         if (configuration.isCheckForUpdates()) {
             final VersionCheck check = new VersionCheck(this, getDescription().getVersion(), configuration.getServerKey());
             try {
-                runTaskToAppeaseBungeeSecurityManager(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        check.verify();
-                        return null;
-                    }
+                runTaskToAppeaseBungeeSecurityManager((Callable<Void>) () -> {
+                    check.verify();
+                    return null;
                 });
             } catch (ExecutionException e) {
                 getLogger().log(Level.SEVERE, "Can't check for updates", e);
@@ -158,14 +147,11 @@ public class BuycraftPlugin extends Plugin {
 
         // Send data to Keen IO
         if (serverInformation != null) {
-            getProxy().getScheduler().schedule(this, new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        AnalyticsSend.postServerInformation(httpClient, serverKey, platform, getProxy().getConfig().isOnlineMode());
-                    } catch (IOException e) {
-                        getLogger().log(Level.WARNING, "Can't send analytics", e);
-                    }
+            getProxy().getScheduler().schedule(this, () -> {
+                try {
+                    AnalyticsSend.postServerInformation(httpClient, serverKey, platform, getProxy().getConfig().isOnlineMode());
+                } catch (IOException e) {
+                    getLogger().log(Level.WARNING, "Can't send analytics", e);
                 }
             }, 0, 1, TimeUnit.DAYS);
         }

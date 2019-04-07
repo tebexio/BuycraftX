@@ -48,15 +48,12 @@ public class CouponSubcommand implements Subcommand {
             return;
         }
 
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    plugin.getApiClient().createCoupon(coupon).execute();
-                    sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
-                } catch (IOException e) {
-                    sender.sendMessage(TextFormat.RED + plugin.getI18n().get("generic_api_operation_error"));
-                }
+        plugin.getPlatform().executeAsync(() -> {
+            try {
+                plugin.getApiClient().createCoupon(coupon).execute();
+                sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
+            } catch (IOException e) {
+                sender.sendMessage(TextFormat.RED + plugin.getI18n().get("generic_api_operation_error"));
             }
         });
     }
@@ -68,16 +65,12 @@ public class CouponSubcommand implements Subcommand {
         }
         final String code = args[1];
 
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    plugin.getApiClient().deleteCoupon(code).execute();
-                    sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("coupon_deleted"));
-                } catch (IOException e) {
-                    sender.sendMessage(TextFormat.RED + e.getMessage());
-                    return;
-                }
+        plugin.getPlatform().executeAsync(() -> {
+            try {
+                plugin.getApiClient().deleteCoupon(code).execute();
+                sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("coupon_deleted"));
+            } catch (IOException e) {
+                sender.sendMessage(TextFormat.RED + e.getMessage());
             }
         });
     }

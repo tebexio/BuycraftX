@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("UnnecessaryInterfaceModifier")
 public interface BuyCraftAPI {
     static final String API_URL = "https://plugin.buycraft.net";
     static final String API_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";

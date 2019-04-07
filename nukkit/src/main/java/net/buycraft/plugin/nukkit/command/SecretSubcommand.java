@@ -28,38 +28,35 @@ public class SecretSubcommand implements Subcommand {
             return;
         }
 
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                String currentKey = plugin.getConfiguration().getServerKey();
-                BuyCraftAPI client = BuyCraftAPI.create(args[0], plugin.getHttpClient());
-                try {
-                    plugin.updateInformation(client);
-                } catch (IOException e) {
-                    plugin.getLogger().error("Unable to verify secret", e);
-                    sender.sendMessage(TextFormat.RED + plugin.getI18n().get("secret_does_not_work"));
-                    return;
-                }
-
-                ServerInformation information = plugin.getServerInformation();
-                plugin.setApiClient(client);
-                plugin.getConfiguration().setServerKey(args[0]);
-                try {
-                    plugin.saveConfiguration();
-                } catch (IOException e) {
-                    sender.sendMessage(TextFormat.RED + plugin.getI18n().get("secret_cant_be_saved"));
-                }
-
-                sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("secret_success",
-                        information.getServer().getName(), information.getAccount().getName()));
-
-                boolean repeatChecks = false;
-                if (currentKey == "INVALID") {
-                    repeatChecks = true;
-                }
-
-                plugin.getDuePlayerFetcher().run(repeatChecks);
+        plugin.getPlatform().executeAsync(() -> {
+            String currentKey = plugin.getConfiguration().getServerKey();
+            BuyCraftAPI client = BuyCraftAPI.create(args[0], plugin.getHttpClient());
+            try {
+                plugin.updateInformation(client);
+            } catch (IOException e) {
+                plugin.getLogger().error("Unable to verify secret", e);
+                sender.sendMessage(TextFormat.RED + plugin.getI18n().get("secret_does_not_work"));
+                return;
             }
+
+            ServerInformation information = plugin.getServerInformation();
+            plugin.setApiClient(client);
+            plugin.getConfiguration().setServerKey(args[0]);
+            try {
+                plugin.saveConfiguration();
+            } catch (IOException e) {
+                sender.sendMessage(TextFormat.RED + plugin.getI18n().get("secret_cant_be_saved"));
+            }
+
+            sender.sendMessage(TextFormat.GREEN + plugin.getI18n().get("secret_success",
+                    information.getServer().getName(), information.getAccount().getName()));
+
+            boolean repeatChecks = false;
+            if (currentKey.equals("INVALID")) {
+                repeatChecks = true;
+            }
+
+            plugin.getDuePlayerFetcher().run(repeatChecks);
         });
     }
 

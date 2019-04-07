@@ -72,23 +72,22 @@ public final class DueQueueInformation {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (o == this) return true;
-            if (!(o instanceof DueQueueInformation.QueueInformationMeta)) return false;
-            final DueQueueInformation.QueueInformationMeta other = (DueQueueInformation.QueueInformationMeta) o;
-            if (this.isExecuteOffline() != other.isExecuteOffline()) return false;
-            if (this.getNextCheck() != other.getNextCheck()) return false;
-            if (this.isMore() != other.isMore()) return false;
-            return true;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            QueueInformationMeta that = (QueueInformationMeta) o;
+
+            if (executeOffline != that.executeOffline) return false;
+            if (nextCheck != that.nextCheck) return false;
+            return more == that.more;
         }
 
         @Override
         public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            result = result * PRIME + (this.isExecuteOffline() ? 79 : 97);
-            result = result * PRIME + this.getNextCheck();
-            result = result * PRIME + (this.isMore() ? 79 : 97);
+            int result = (executeOffline ? 1 : 0);
+            result = 31 * result + nextCheck;
+            result = 31 * result + (more ? 1 : 0);
             return result;
         }
 

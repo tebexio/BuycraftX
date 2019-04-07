@@ -55,12 +55,7 @@ class Handler extends SimpleChannelInboundHandler<FullHttpRequest> {
         }
 
         ctx.channel().writeAndFlush(response, promise);
-        promise.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                future.channel().close();
-            }
-        });
+        promise.addListener((ChannelFutureListener) future -> future.channel().close());
     }
 
     private Object[] pushCommand() {

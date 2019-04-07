@@ -2,6 +2,7 @@ package net.buycraft.plugin.platform.standalone.runner;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
@@ -20,29 +21,14 @@ public class StandaloneBuycraftRunnerBuilder {
     @NotNull
     private final ScheduledExecutorService executorService;
     @NotNull
-    private boolean verbose = true;
+    private boolean verbose;
 
     StandaloneBuycraftRunnerBuilder(@NotNull final CommandDispatcher dispatcher, @NotNull final PlayerDeterminer determiner, @NotNull final String apiKey, @NotNull final Logger logger, @NotNull final ScheduledExecutorService executorService, @NotNull final boolean verbose) {
-        if (dispatcher == null) {
-            throw new NullPointerException("dispatcher is marked @NotNull but is null");
-        }
-        if (determiner == null) {
-            throw new NullPointerException("determiner is marked @NotNull but is null");
-        }
-        if (apiKey == null) {
-            throw new NullPointerException("apiKey is marked @NotNull but is null");
-        }
-        if (logger == null) {
-            throw new NullPointerException("logger is marked @NotNull but is null");
-        }
-        if (executorService == null) {
-            throw new NullPointerException("executorService is marked @NotNull but is null");
-        }
-        this.dispatcher = dispatcher;
-        this.determiner = determiner;
-        this.apiKey = apiKey;
-        this.logger = logger;
-        this.executorService = executorService;
+        this.dispatcher = Objects.requireNonNull(dispatcher);
+        this.determiner = Objects.requireNonNull(determiner);
+        this.apiKey = Objects.requireNonNull(apiKey);
+        this.logger = Objects.requireNonNull(logger);
+        this.executorService = Objects.requireNonNull(executorService);
         this.verbose = verbose;
     }
 
@@ -68,42 +54,27 @@ public class StandaloneBuycraftRunnerBuilder {
         }
 
         public StandaloneBuycraftRunnerBuilderBuilder dispatcher(@NotNull final CommandDispatcher dispatcher) {
-            if (dispatcher == null) {
-                throw new NullPointerException("dispatcher is marked @NotNull but is null");
-            }
-            this.dispatcher = dispatcher;
+            this.dispatcher = Objects.requireNonNull(dispatcher);
             return this;
         }
 
         public StandaloneBuycraftRunnerBuilderBuilder determiner(@NotNull final PlayerDeterminer determiner) {
-            if (determiner == null) {
-                throw new NullPointerException("determiner is marked @NotNull but is null");
-            }
-            this.determiner = determiner;
+            this.determiner = Objects.requireNonNull(determiner);
             return this;
         }
 
         public StandaloneBuycraftRunnerBuilderBuilder apiKey(@NotNull final String apiKey) {
-            if (apiKey == null) {
-                throw new NullPointerException("apiKey is marked @NotNull but is null");
-            }
-            this.apiKey = apiKey;
+            this.apiKey = Objects.requireNonNull(apiKey);
             return this;
         }
 
         public StandaloneBuycraftRunnerBuilderBuilder logger(@NotNull final Logger logger) {
-            if (logger == null) {
-                throw new NullPointerException("logger is marked @NotNull but is null");
-            }
-            this.logger = logger;
+            this.logger = Objects.requireNonNull(logger);
             return this;
         }
 
         public StandaloneBuycraftRunnerBuilderBuilder executorService(@NotNull final ScheduledExecutorService executorService) {
-            if (executorService == null) {
-                throw new NullPointerException("executorService is marked @NotNull but is null");
-            }
-            this.executorService = executorService;
+            this.executorService = Objects.requireNonNull(executorService);
             return this;
         }
 

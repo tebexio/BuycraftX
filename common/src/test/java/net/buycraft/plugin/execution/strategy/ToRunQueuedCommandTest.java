@@ -11,9 +11,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ToRunQueuedCommandTest {
-    private static final QueuedCommand TEST_INSTANT_COMMAND = new QueuedCommand(0, 0, 0, ImmutableMap.<String, Integer>of(), "",
+    private static final QueuedCommand TEST_INSTANT_COMMAND = new QueuedCommand(0, 0, 0, ImmutableMap.of(), "",
             null);
-    private static final QueuedCommand TEST_REQUIRE_ONLINE_COMMAND = new QueuedCommand(0, 0, 0, ImmutableMap.<String, Integer>of(), "",
+    private static final QueuedCommand TEST_REQUIRE_ONLINE_COMMAND = new QueuedCommand(0, 0, 0, ImmutableMap.of(), "",
             new QueuedPlayer(0, "TestOnline", null));
 
     private SimulatedPlayerBuycraftPlatform platform;
