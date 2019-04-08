@@ -90,15 +90,15 @@ public interface BuyCraftAPI {
     public Call<QueueInformation> getPlayerQueue(@Path("id") int id);
 
     @FormUrlEncoded
-    @DELETE("/queue")
+    @HTTP(method = "DELETE", path = "/queue", hasBody = true)
     public Call<Void> deleteCommands(@Field("id") List<Integer> ids);
 
     @FormUrlEncoded
-    @GET("/checkout")
+    @POST("/checkout")
     public Call<CheckoutUrlResponse> getCheckoutUri(@Field("username") String username, @Field("package_id") int packageId);
 
     @FormUrlEncoded
-    @GET("/checkout")
+    @POST("/checkout")
     public Call<CheckoutUrlResponse> getCategoryUri(@Field("username") String username, @Field("category_id") int categoryId); //TODO Figure out category=true
 
     @GET("/payments")
