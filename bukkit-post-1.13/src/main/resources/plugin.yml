@@ -3,6 +3,7 @@ main: net.buycraft.plugin.bukkit.BuycraftPlugin
 version: ${project.version}
 author: Buycraft
 softdepend: [ProtocolLib]
+api-version: "1.13"
 commands:
   buycraft:
     description: Main command for the Buycraft plugin.

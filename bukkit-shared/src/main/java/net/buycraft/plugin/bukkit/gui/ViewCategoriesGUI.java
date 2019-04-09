@@ -105,32 +105,12 @@ public class ViewCategoriesGUI implements Listener {
         }
 
         for (Category category : listing.getCategories()) {
-            String gui_item = category.getGuiItem();
-
-            Material material = Material.matchMaterial("CHEST");
-            short variant = 0;
-
-            if (gui_item != null && !gui_item.equals("")) {
-                if (gui_item.matches("^\\d+$")) {
-                    material = Material.getMaterial(Integer.valueOf(gui_item));
-                } else if (!gui_item.contains(":")) {
-                    material = Material.matchMaterial(gui_item);
-                } else {
-                    String[] parts = gui_item.split(":");
-                    if (parts[0].matches("^\\d+$")) {
-                        material = Material.getMaterial(Integer.valueOf(parts[0]));
-                    } else {
-                        material = Material.matchMaterial(parts[0]);
-                    }
-                    variant = Short.valueOf(parts[1]);
-                }
+            ItemStack stack = plugin.getPlatform().createItemFromMaterialString(category.getGuiItem());
+            if (stack == null) {
+                stack = new ItemStack(Material.CHEST);
             }
 
-            if (material == null) {
-                material = Material.matchMaterial("CHEST");
-            }
-
-            inventory.setItem(inventory.firstEmpty(), withName(material, ChatColor.YELLOW + category.getName(), variant));
+            inventory.setItem(inventory.firstEmpty(), withName(stack, ChatColor.YELLOW + category.getName()));
         }
     }
 

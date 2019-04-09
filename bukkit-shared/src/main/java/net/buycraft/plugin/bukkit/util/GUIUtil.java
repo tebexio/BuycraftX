@@ -48,16 +48,7 @@ public class GUIUtil {
         }
     }
 
-    public static ItemStack withName(Material material, String name) {
-        ItemStack stack = new ItemStack(material);
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(name);
-        stack.setItemMeta(meta);
-        return stack;
-    }
-
-    public static ItemStack withName(Material material, String name, short variant) {
-        ItemStack stack = new ItemStack(material, 1, variant);
+    public static ItemStack withName(ItemStack stack, String name) {
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName(name);
         stack.setItemMeta(meta);

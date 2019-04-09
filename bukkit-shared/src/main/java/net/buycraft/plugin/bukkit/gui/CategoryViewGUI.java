@@ -188,32 +188,13 @@ public class CategoryViewGUI {
                     List<Category> subcats = subcatPartition.get(page);
                     for (int i = 0; i < subcats.size(); i++) {
                         Category subcat = subcats.get(i);
-                        
-                        String gui_item = subcats.get(i).getGuiItem();
 
-                        Material material = Material.matchMaterial("BOOK");
-                        short variant = 0;
-
-                        if (gui_item != null && !gui_item.equals("")) {
-                            if (gui_item.matches("^\\d+$")) {
-                                material = Material.getMaterial(Integer.valueOf(gui_item));
-                            } else if (!gui_item.contains(":")) {
-                                material = Material.matchMaterial(gui_item);
-                            } else {
-                                String[] parts = gui_item.split(":");
-                                if (parts[0].matches("^\\d+$")) {
-                                    material = Material.getMaterial(Integer.valueOf(parts[0]));
-                                } else {
-                                    material = Material.matchMaterial(parts[0]);
-                                }
-                                variant = Short.valueOf(parts[1]);
-                            }
-                        }
-                        if (material == null) {
-                            material = Material.matchMaterial("BOOK");
+                        ItemStack stack = plugin.getPlatform().createItemFromMaterialString(subcats.get(i).getGuiItem());
+                        if (stack == null) {
+                            stack = new ItemStack(Material.CHEST);
                         }
 
-                        inventory.setItem(i, withName(material, ChatColor.YELLOW + subcat.getName(), variant));
+                        inventory.setItem(i, withName(stack, ChatColor.YELLOW + subcat.getName()));
                     }
                 }
             } else {
@@ -228,32 +209,11 @@ public class CategoryViewGUI {
                 for (int i = 0; i < packages.size(); i++) {
                     Package p = packages.get(i);
 
-                    String gui_item = p.getGui_item();
-
-                    Material material = Material.matchMaterial("PAPER");
-                    short variant = 0;
-
-                    if (gui_item != null && !gui_item.equals("")) {
-                        if (gui_item.matches("^\\d+$")) {
-                            material = Material.getMaterial(Integer.valueOf(gui_item));
-                        } else if (!gui_item.contains(":")) {
-                            material = Material.matchMaterial(gui_item);
-                        } else {
-                            String[] parts = gui_item.split(":");
-                            if (parts[0].matches("^\\d+$")) {
-                                material = Material.getMaterial(Integer.valueOf(parts[0]));
-                            } else {
-                                material = Material.matchMaterial(parts[0]);
-                            }
-                            variant = Short.valueOf(parts[1]);
-                        }
+                    ItemStack stack = plugin.getPlatform().createItemFromMaterialString(p.getGui_item());
+                    if (stack == null) {
+                        stack = new ItemStack(Material.PAPER);
                     }
 
-                    if (material == null) {
-                        material = Material.matchMaterial("PAPER");
-                    }
-
-                    ItemStack stack = new ItemStack(material, 1, variant);
                     ItemMeta meta = stack.getItemMeta();
                     meta.setDisplayName(ChatColor.GREEN + p.getName());
 
@@ -285,16 +245,16 @@ public class CategoryViewGUI {
             int bottomBase = base + 36;
             if (page > 0) {
                 // Definitely draw a previous button
-                inventory.setItem(bottomBase + 1, withName(Material.NETHER_STAR, ChatColor.AQUA + plugin.getI18n().get("previous_page")));
+                inventory.setItem(bottomBase + 1, withName(new ItemStack(Material.NETHER_STAR), ChatColor.AQUA + plugin.getI18n().get("previous_page")));
             }
 
             if (subcatPartition.size() - 1 > page || packagePartition.size() - 1 > page) {
                 // Definitely draw a next button
-                inventory.setItem(bottomBase + 7, withName(Material.NETHER_STAR, ChatColor.AQUA + plugin.getI18n().get("next_page")));
+                inventory.setItem(bottomBase + 7, withName(new ItemStack(Material.NETHER_STAR), ChatColor.AQUA + plugin.getI18n().get("next_page")));
             }
 
             // Draw a parent or "view all categories" button
-            ItemStack parent = new ItemStack(Material.BOOK_AND_QUILL);
+            ItemStack parent = new ItemStack(plugin.getPlatform().getGUIViewAllMaterial());
             ItemMeta meta = parent.getItemMeta();
             meta.setDisplayName(ChatColor.GRAY + (parentId == null ? plugin.getI18n().get("view_all_categories") : plugin.getI18n().get("back_to_parent")));
             parent.setItemMeta(meta);

@@ -91,7 +91,7 @@ public interface BuyCraftAPI {
 
     @FormUrlEncoded
     @HTTP(method = "DELETE", path = "/queue", hasBody = true)
-    public Call<Void> deleteCommands(@Field("id") List<Integer> ids);
+    public Call<Void> deleteCommands(@Field("ids[]") List<Integer> ids);
 
     @FormUrlEncoded
     @POST("/checkout")

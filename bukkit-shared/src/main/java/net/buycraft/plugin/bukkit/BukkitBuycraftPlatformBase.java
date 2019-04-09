@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -96,6 +97,10 @@ public abstract class BukkitBuycraftPlatformBase implements IBuycraftPlatform {
     public abstract Material getPlayerSkullMaterial();
 
     public abstract ImmutableSet<Material> getSignMaterials();
+
+    public abstract Material getGUIViewAllMaterial();
+
+    public abstract ItemStack createItemFromMaterialString(String materialData);
 
     @Override
     public void log(Level level, String message) {
