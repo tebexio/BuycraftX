@@ -65,7 +65,11 @@ public class RecentPurchaseSignUpdateApplication implements Runnable {
                 Block skullBlock = findSkullBlock(block);
                 if (skullBlock != null) {
                     Skull skull = (Skull) skullBlock.getState();
-                    skull.setSkullType(SkullType.PLAYER);
+                    try {
+                        if (skull.getSkullType() != SkullType.PLAYER) skull.setSkullType(SkullType.PLAYER);
+                    } catch (UnsupportedOperationException e) {
+                        continue;
+                    }
                     skull.setOwner(entry.getValue() == null ? UNKNOWN_USERNAME : entry.getValue().getPlayer().getName());
                     skull.update();
                 }
