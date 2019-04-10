@@ -15,6 +15,7 @@ import net.buycraft.plugin.bukkit.tasks.GUIUpdateTask;
 import net.buycraft.plugin.bukkit.tasks.RecentPurchaseSignUpdateFetcher;
 import net.buycraft.plugin.bukkit.util.GUIUtil;
 import net.buycraft.plugin.bukkit.util.VersionCheck;
+import net.buycraft.plugin.bukkit.util.placeholder.BukkitNamePlaceholder;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -138,7 +139,7 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
         }
 
         // Initialize placeholders.
-        placeholderManager.addPlaceholder(new net.buycraft.plugin.bukkit.util.placeholder.NamePlaceholder());
+        placeholderManager.addPlaceholder(new BukkitNamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
 
         // Start the essential tasks.
@@ -257,9 +258,6 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (configuration.isPushCommandsEnabled()) {
-            ((NettyInjector) injector).close();
-        }
         try {
             this.duePlayerFetcherTask.cancel();
         } catch (Exception ignored) {
@@ -277,6 +275,9 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
             buyNowSignStorage.save(getDataFolder().toPath().resolve("buy_now_signs.json"));
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Can't save buy now signs, continuing anyway", e);
+        }
+        if (configuration.isPushCommandsEnabled()) {
+            ((NettyInjector) injector).close();
         }
         completedCommandsTask.flush();
     }

@@ -209,7 +209,7 @@ public class CategoryViewGUI {
                 for (int i = 0; i < packages.size(); i++) {
                     Package p = packages.get(i);
 
-                    ItemStack stack = plugin.getPlatform().createItemFromMaterialString(p.getGui_item());
+                    ItemStack stack = plugin.getPlatform().createItemFromMaterialString(p.getGuiItem());
                     if (stack == null) {
                         stack = new ItemStack(Material.PAPER);
                     }

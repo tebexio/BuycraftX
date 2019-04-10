@@ -9,7 +9,7 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.regex.Pattern;
 
-public class NamePlaceholder implements Placeholder {
+public class BukkitNamePlaceholder implements Placeholder {
     private static final Pattern REPLACE_NAME = Pattern.compile("[{\\(<\\[](name|player|username)[}\\)>\\]]", Pattern.CASE_INSENSITIVE);
 
     @Override

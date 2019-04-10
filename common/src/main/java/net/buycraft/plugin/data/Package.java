@@ -54,7 +54,7 @@ public final class Package implements Comparable<Package> {
         return this.sale;
     }
 
-    public String getGui_item() {
+    public String getGuiItem() {
         return this.gui_item;
     }
 
@@ -86,7 +86,7 @@ public final class Package implements Comparable<Package> {
 
     @Override
     public String toString() {
-        return "Package(id=" + this.getId() + ", order=" + this.getOrder() + ", name=" + this.getName() + ", price=" + this.getPrice() + ", sale=" + this.getSale() + ", gui_item=" + this.getGui_item() + ")";
+        return "Package(id=" + this.getId() + ", order=" + this.getOrder() + ", name=" + this.getName() + ", price=" + this.getPrice() + ", sale=" + this.getSale() + ", gui_item=" + this.getGuiItem() + ")";
     }
 
     public static final class Sale {
