@@ -23,7 +23,7 @@ public class SendLinkSubcommand implements Subcommand {
         }
 
         if (args.length != 3 || !(args[1].equalsIgnoreCase("package") || args[1].equalsIgnoreCase("category")) || !StringUtils.isNumeric(args[2])) {
-            sender.sendMessage(ChatColor.RED + "Incorrect syntax: /buycraft sendlink <player> package|category <id>");
+            sender.sendMessage(ChatColor.RED + "Incorrect syntax: /tebex sendlink <player> package|category <id>");
             return;
         }
 

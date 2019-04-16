@@ -21,7 +21,7 @@ public class BuycraftCommand implements CommandExecutor {
     private void showHelp(CommandSender sender) {
         sender.sendMessage(TextFormat.DARK_AQUA + TextFormat.BOLD.toString() + plugin.getI18n().get("usage"));
         for (Map.Entry<String, Subcommand> entry : subcommandMap.entrySet()) {
-            sender.sendMessage(TextFormat.GREEN + "/buycraft " + entry.getKey() + TextFormat.GRAY + ": " + entry.getValue().getDescription());
+            sender.sendMessage(TextFormat.GREEN + "/tebex " + entry.getKey() + TextFormat.GRAY + ": " + entry.getValue().getDescription());
         }
     }
 

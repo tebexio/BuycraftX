@@ -218,7 +218,7 @@ public class BuycraftPlugin {
         Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
         Sponge.getEventManager().registerListeners(this, new BuyNowSignListener(this));
 
-        Sponge.getCommandManager().register(this, buildCommands(), "buycraft");
+        Sponge.getCommandManager().register(this, buildCommands(), "tebex", "buycraft");
         Sponge.getCommandManager().register(this, CommandSpec.builder()
                 .description(Text.of(i18n.get("usage_sponge_listing")))
                 .executor(new ListPackagesCmd(this))
@@ -278,7 +278,7 @@ public class BuycraftPlugin {
                 .build();
         CommandSpec coupon = buildCouponCommands();
         return CommandSpec.builder()
-                .description(Text.of("Main command for the Buycraft plugin."))
+                .description(Text.of("Main command for the Tebex plugin."))
                 .child(report, "report")
                 .child(secret, "secret")
                 .child(refresh, "refresh")

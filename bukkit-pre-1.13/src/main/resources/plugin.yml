@@ -4,5 +4,6 @@ version: ${project.version}
 author: Buycraft
 softdepend: [ProtocolLib]
 commands:
-  buycraft:
-    description: Main command for the Buycraft plugin.
+  tebex:
+    aliases: [buycraft]
+    description: Main command for the Tebex plugin.
