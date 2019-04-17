@@ -1,9 +1,7 @@
 package net.buycraft.plugin.platform.standalone.runner;
 
-import lombok.Getter;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
@@ -25,9 +23,7 @@ public class StandaloneBuycraftRunner {
     private final ScheduledExecutorService executorService;
     private final IBuycraftPlatform platform;
     private final boolean verbose;
-    @Getter
     private ServerInformation serverInformation;
-    @Getter
     private DuePlayerFetcher playerFetcher;
 
     StandaloneBuycraftRunner(CommandDispatcher dispatcher, PlayerDeterminer determiner, String apiKey, Logger logger, ScheduledExecutorService executorService, boolean verbose) {
@@ -42,17 +38,25 @@ public class StandaloneBuycraftRunner {
 
     public void initializeTasks() {
         try {
-            serverInformation = platform.getApiClient().getServerInformation();
-        } catch (IOException | ApiException e) {
+            serverInformation = platform.getApiClient().getServerInformation().execute().body();
+        } catch (IOException e) {
             throw new RuntimeException("Can't fetch account information", e);
         }
         executorService.schedule(playerFetcher = new DuePlayerFetcher(platform, verbose), 1, TimeUnit.SECONDS);
     }
 
+    public ServerInformation getServerInformation() {
+        return this.serverInformation;
+    }
+
+    public DuePlayerFetcher getPlayerFetcher() {
+        return this.playerFetcher;
+    }
+
     @NoBlocking
     private class Platform extends StandaloneBuycraftPlatform {
         Platform() {
-            super(new ProductionApiClient(apiKey, new OkHttpClient.Builder()
+            super(BuyCraftAPI.create(apiKey, new OkHttpClient.Builder()
                     .connectTimeout(1, TimeUnit.SECONDS)
                     .writeTimeout(3, TimeUnit.SECONDS)
                     .readTimeout(3, TimeUnit.SECONDS)

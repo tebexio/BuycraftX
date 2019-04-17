@@ -2,15 +2,9 @@ package net.buycraft.plugin.sponge;
 
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import lombok.Getter;
-import lombok.Setter;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -22,20 +16,20 @@ import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
 import net.buycraft.plugin.shared.config.BuycraftI18n;
-import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
-import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
 import net.buycraft.plugin.shared.config.signs.BuyNowSignLayout;
+import net.buycraft.plugin.shared.config.signs.RecentPurchaseSignLayout;
 import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
+import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
 import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.buycraft.plugin.sponge.command.*;
 import net.buycraft.plugin.sponge.httplistener.Handler;
 import net.buycraft.plugin.sponge.logging.LoggerUtils;
-import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.signs.buynow.BuyNowSignListener;
-import net.buycraft.plugin.sponge.tasks.SignUpdater;
+import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.tasks.BuyNowSignUpdater;
+import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.VersionCheck;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -50,66 +44,39 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
 public class BuycraftPlugin {
-
     static final String MAGIC_VERSION = "SET_BY_MAGIC";
-    @Getter
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
-    @Getter
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
-    @Getter
-    @Setter
-    private ApiClient apiClient;
-    @Getter
-    private DuePlayerFetcher duePlayerFetcher;
-    @Getter
-    private ListingUpdateTask listingUpdateTask;
-    @Getter
-    private ServerInformation serverInformation;
-    @Getter
-    private RecentPurchaseSignStorage recentPurchaseSignStorage;
-    @Getter
-    private BuyNowSignStorage buyNowSignStorage;
-    @Getter
-    private OkHttpClient httpClient;
-    @Getter
-    private IBuycraftPlatform platform;
-    @Getter
-    private CommandExecutor commandExecutor;
 
-    @Getter
+    private BuyCraftAPI apiClient;
+    private DuePlayerFetcher duePlayerFetcher;
+    private ListingUpdateTask listingUpdateTask;
+    private ServerInformation serverInformation;
+    private RecentPurchaseSignStorage recentPurchaseSignStorage;
+    private BuyNowSignStorage buyNowSignStorage;
+    private OkHttpClient httpClient;
+    private IBuycraftPlatform platform;
+    private CommandExecutor commandExecutor;
     @Inject
     private Logger logger;
-    @Getter
     private LoggerUtils loggerUtils;
-
-    @Getter
     @Inject
     @ConfigDir(sharedRoot = false)
     private Path baseDirectory;
-
-    @Getter
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
-
-    @Getter
     private BuyNowSignLayout buyNowSignLayout = BuyNowSignLayout.DEFAULT;
-
-    @Getter
     private BuycraftI18n i18n;
-
     private PostCompletedCommandsTask completedCommandsTask;
-    @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
 
     @Listener
@@ -119,7 +86,6 @@ public class BuycraftPlugin {
             try {
                 Files.createDirectory(baseDirectory);
             } catch (FileAlreadyExistsException ignored) {
-
             }
             Path configPath = baseDirectory.resolve("config.properties");
             try {
@@ -133,14 +99,10 @@ public class BuycraftPlugin {
             getLogger().error("Unable to load configuration! The plugin will disable itself now.", e);
             return;
         }
-
         i18n = configuration.createI18n();
-
         httpClient = Setup.okhttp(baseDirectory.resolve("cache").toFile());
-
         // Check for latest version.
         String curVersion = getClass().getAnnotation(Plugin.class).version();
-
         if (configuration.isCheckForUpdates()) {
             VersionCheck check = new VersionCheck(this, curVersion, configuration.getServerKey());
             try {
@@ -150,29 +112,23 @@ public class BuycraftPlugin {
             }
             Sponge.getEventManager().registerListeners(this, check);
         }
-
-
-
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
-            ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
-            } catch (IOException | ApiException e) {
+            } catch (IOException e) {
                 getLogger().error(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;
         }
-
         Integer pushCommandsPort = configuration.getPushCommandsPort();
-
-        if(pushCommandsPort != null) {
+        if (pushCommandsPort != null) {
             this.initializeHttpListener(pushCommandsPort);
         }
-
         placeholderManager.addPlaceholder(new NamePlaceholder());
         placeholderManager.addPlaceholder(new UuidPlaceholder());
         platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
@@ -187,8 +143,10 @@ public class BuycraftPlugin {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run();
         }
-        Sponge.getScheduler().createTaskBuilder().delayTicks(20 * 60 * 20).intervalTicks(20 * 60 * 20).execute(listingUpdateTask).async()
-                .submit(this);
+        Sponge.getScheduler().createTaskBuilder()
+                .delayTicks(20 * 60 * 20)
+                .intervalTicks(20 * 60 * 20)
+                .execute(listingUpdateTask).async().submit(this);
 
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
@@ -218,7 +176,6 @@ public class BuycraftPlugin {
                 Files.copy(getClass().getClassLoader().getResourceAsStream("sign_layouts/recentpurchase.txt"), rpPath);
             } catch (FileAlreadyExistsException ignored) {
             }
-
             try {
                 Files.copy(getClass().getClassLoader().getResourceAsStream("sign_layouts/buynow.txt"), bnPath);
             } catch (FileAlreadyExistsException ignored) {
@@ -261,7 +218,7 @@ public class BuycraftPlugin {
         Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
         Sponge.getEventManager().registerListeners(this, new BuyNowSignListener(this));
 
-        Sponge.getCommandManager().register(this, buildCommands(), "buycraft");
+        Sponge.getCommandManager().register(this, buildCommands(), "tebex", "buycraft");
         Sponge.getCommandManager().register(this, CommandSpec.builder()
                 .description(Text.of(i18n.get("usage_sponge_listing")))
                 .executor(new ListPackagesCmd(this))
@@ -275,7 +232,6 @@ public class BuycraftPlugin {
         } catch (IOException e) {
             logger.error("Can't save purchase signs, continuing anyway");
         }
-
         try {
             buyNowSignStorage.save(baseDirectory.resolve("buy_now_signs.json"));
         } catch (IOException e) {
@@ -284,7 +240,7 @@ public class BuycraftPlugin {
         completedCommandsTask.flush();
     }
 
-    private void initializeHttpListener(Integer port){
+    private void initializeHttpListener(Integer port) {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 50);
             server.createContext("/", new Handler(this));
@@ -322,7 +278,7 @@ public class BuycraftPlugin {
                 .build();
         CommandSpec coupon = buildCouponCommands();
         return CommandSpec.builder()
-                .description(Text.of("Main command for the Buycraft plugin."))
+                .description(Text.of("Main command for the Tebex plugin."))
                 .child(report, "report")
                 .child(secret, "secret")
                 .child(refresh, "refresh")
@@ -354,9 +310,8 @@ public class BuycraftPlugin {
         configuration.save(baseDirectory.resolve("config.properties"));
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
-
+    public void updateInformation(BuyCraftAPI client) throws IOException {
+        serverInformation = client.getServerInformation().execute().body();
         if (!configuration.isBungeeCord() && Sponge.getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
             getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
@@ -366,4 +321,79 @@ public class BuycraftPlugin {
         }
     }
 
+    public PlaceholderManager getPlaceholderManager() {
+        return this.placeholderManager;
+    }
+
+    public BuycraftConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    public BuyCraftAPI getApiClient() {
+        return this.apiClient;
+    }
+
+    public void setApiClient(final BuyCraftAPI apiClient) {
+        this.apiClient = apiClient;
+    }
+
+    public DuePlayerFetcher getDuePlayerFetcher() {
+        return this.duePlayerFetcher;
+    }
+
+    public ListingUpdateTask getListingUpdateTask() {
+        return this.listingUpdateTask;
+    }
+
+    public ServerInformation getServerInformation() {
+        return this.serverInformation;
+    }
+
+    public RecentPurchaseSignStorage getRecentPurchaseSignStorage() {
+        return this.recentPurchaseSignStorage;
+    }
+
+    public BuyNowSignStorage getBuyNowSignStorage() {
+        return this.buyNowSignStorage;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public IBuycraftPlatform getPlatform() {
+        return this.platform;
+    }
+
+    public CommandExecutor getCommandExecutor() {
+        return this.commandExecutor;
+    }
+
+    public Logger getLogger() {
+        return this.logger;
+    }
+
+    public LoggerUtils getLoggerUtils() {
+        return this.loggerUtils;
+    }
+
+    public Path getBaseDirectory() {
+        return this.baseDirectory;
+    }
+
+    public RecentPurchaseSignLayout getRecentPurchaseSignLayout() {
+        return this.recentPurchaseSignLayout;
+    }
+
+    public BuyNowSignLayout getBuyNowSignLayout() {
+        return this.buyNowSignLayout;
+    }
+
+    public BuycraftI18n getI18n() {
+        return this.i18n;
+    }
+
+    public PlayerJoinCheckTask getPlayerJoinCheckTask() {
+        return this.playerJoinCheckTask;
+    }
 }

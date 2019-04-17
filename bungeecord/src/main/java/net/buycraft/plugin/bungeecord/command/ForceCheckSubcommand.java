@@ -1,13 +1,15 @@
 package net.buycraft.plugin.bungeecord.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
-@RequiredArgsConstructor
 public class ForceCheckSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
+
+    public ForceCheckSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -26,12 +28,7 @@ public class ForceCheckSubcommand implements Subcommand {
             return;
         }
 
-        plugin.getProxy().getScheduler().runAsync(plugin, new Runnable() {
-            @Override
-            public void run() {
-                plugin.getDuePlayerFetcher().run(false);
-            }
-        });
+        plugin.getProxy().getScheduler().runAsync(plugin, () -> plugin.getDuePlayerFetcher().run(false));
         sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("forcecheck_queued"));
     }
 

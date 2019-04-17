@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.util;
 
-import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
@@ -9,8 +8,11 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 import java.util.UUID;
 
-@UtilityClass
-public class SpongeSerializedBlockLocation {
+public final class SpongeSerializedBlockLocation {
+    private SpongeSerializedBlockLocation() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
     public static SerializedBlockLocation create(Location<World> location) {
         return new SerializedBlockLocation(location.getExtent().getUniqueId().toString(), location.getBlockX(), location.getBlockY(),
                 location.getBlockZ());
@@ -21,7 +23,6 @@ public class SpongeSerializedBlockLocation {
         if (!world.isPresent()) {
             throw new IllegalStateException();
         }
-        return new Location<>(world.get(), location.getX(), location.getY(),
-                location.getZ());
+        return new Location<>(world.get(), location.getX(), location.getY(), location.getZ());
     }
 }

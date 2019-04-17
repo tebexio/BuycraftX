@@ -38,7 +38,6 @@ import java.util.Properties;
  * Used purely to set the version value on the Plugin. Don't bother touching.
  */
 public class Transform extends ClassTransformer {
-
     private String version;
 
     @Override

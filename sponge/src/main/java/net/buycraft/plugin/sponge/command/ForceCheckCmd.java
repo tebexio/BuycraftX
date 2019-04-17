@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -11,9 +10,12 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-@RequiredArgsConstructor
 public class ForceCheckCmd implements CommandExecutor {
     private final BuycraftPlugin plugin;
+
+    public ForceCheckCmd(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
@@ -28,7 +30,6 @@ public class ForceCheckCmd implements CommandExecutor {
         }
 
         Sponge.getScheduler().createTaskBuilder().execute(() -> plugin.getDuePlayerFetcher().run(false)).async().submit(plugin);
-
         sender.sendMessage(Text.builder(plugin.getI18n().get("forcecheck_queued")).color(TextColors.GREEN).build());
         return CommandResult.success();
     }

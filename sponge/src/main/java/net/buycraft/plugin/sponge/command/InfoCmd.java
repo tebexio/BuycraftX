@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.command;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -15,9 +14,12 @@ import org.spongepowered.api.text.format.TextColors;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@RequiredArgsConstructor
 public class InfoCmd implements CommandExecutor {
     private final BuycraftPlugin plugin;
+
+    public InfoCmd(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
@@ -32,7 +34,6 @@ public class InfoCmd implements CommandExecutor {
         }
 
         String webstoreURL = plugin.getServerInformation().getAccount().getDomain();
-
         try {
             LiteralText webstore = Text.builder(webstoreURL)
                     .color(TextColors.GREEN)

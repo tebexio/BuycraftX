@@ -1,7 +1,5 @@
 package net.buycraft.plugin.sponge.tasks;
 
-import lombok.AllArgsConstructor;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
@@ -14,9 +12,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 public class SignUpdater implements Runnable {
     private final BuycraftPlugin plugin;
+
+    public SignUpdater(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void run() {
@@ -35,8 +36,8 @@ public class SignUpdater implements Runnable {
 
         List<RecentPayment> payments;
         try {
-            payments = plugin.getApiClient().getRecentPayments(Math.min(100, maxPos.getAsInt()));
-        } catch (IOException | ApiException e) {
+            payments = plugin.getApiClient().getRecentPayments(Math.min(100, maxPos.getAsInt())).execute().body();
+        } catch (IOException e) {
             plugin.getLogger().error("Could not fetch recent purchases", e);
             return;
         }
@@ -51,9 +52,7 @@ public class SignUpdater implements Runnable {
         }
 
         // Now look up game profiles so that heads can be properly displayed.
-        Set<String> usernames = payments.stream()
-                .map(payment -> payment.getPlayer().getName())
-                .collect(Collectors.toSet());
+        Set<String> usernames = payments.stream().map(payment -> payment.getPlayer().getName()).collect(Collectors.toSet());
         // Add MHF_Question too.
         usernames.add("MHF_Question");
         CompletableFuture<Collection<GameProfile>> future = Sponge.getServer().getGameProfileManager().getAllByName(usernames, true);

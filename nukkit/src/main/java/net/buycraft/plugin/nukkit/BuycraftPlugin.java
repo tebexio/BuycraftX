@@ -3,17 +3,12 @@ package net.buycraft.plugin.nukkit;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.plugin.PluginBase;
-import lombok.Getter;
-import lombok.Setter;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
-import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.placeholder.XuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
@@ -32,34 +27,21 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class BuycraftPlugin extends PluginBase {
-    @Getter
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
-    @Getter
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
-    @Getter
-    @Setter
-    private ApiClient apiClient;
-    @Getter
+
+    private BuyCraftAPI apiClient;
     private DuePlayerFetcher duePlayerFetcher;
-    @Getter
     private ServerInformation serverInformation;
-    @Getter
     private OkHttpClient httpClient;
-    @Getter
     private IBuycraftPlatform platform;
-    @Getter
     private CommandExecutor commandExecutor;
-    @Getter
     private BuycraftI18n i18n;
     private PostCompletedCommandsTask completedCommandsTask;
-    @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
-    @Getter
     private LoggerUtils loggerUtils;
     private BuycraftCommand command;
 
@@ -84,9 +66,7 @@ public class BuycraftPlugin extends PluginBase {
         }
 
         i18n = configuration.createI18n();
-
         httpClient = Setup.okhttp(new File(getDataFolder(), "cache"));
-
         loggerUtils = new LoggerUtils(getLogger());
 
         // Initialize API client.
@@ -95,10 +75,10 @@ public class BuycraftPlugin extends PluginBase {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
-            final ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            final BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
-            } catch (IOException | ApiException e) {
+            } catch (IOException e) {
                 getLogger().error(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
             }
             apiClient = client;
@@ -141,14 +121,11 @@ public class BuycraftPlugin extends PluginBase {
 
         // Send data to Keen IO
         if (serverInformation != null) {
-            getServer().getScheduler().scheduleDelayedRepeatingTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        AnalyticsSend.postServerInformation(httpClient, serverKey, platform, false);
-                    } catch (IOException e) {
-                        getLogger().warning("Can't send analytics", e);
-                    }
+            getServer().getScheduler().scheduleDelayedRepeatingTask(this, () -> {
+                try {
+                    AnalyticsSend.postServerInformation(httpClient, serverKey, platform, false);
+                } catch (IOException e) {
+                    getLogger().warning("Can't send analytics", e);
                 }
             }, 0, 20 * 60 * 60 * 24);
         }
@@ -171,7 +148,55 @@ public class BuycraftPlugin extends PluginBase {
         configuration.save(configPath);
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
+    public void updateInformation(BuyCraftAPI client) throws IOException {
+        serverInformation = client.getServerInformation().execute().body();
+    }
+
+    public PlaceholderManager getPlaceholderManager() {
+        return this.placeholderManager;
+    }
+
+    public BuycraftConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    public BuyCraftAPI getApiClient() {
+        return this.apiClient;
+    }
+
+    public void setApiClient(final BuyCraftAPI apiClient) {
+        this.apiClient = apiClient;
+    }
+
+    public DuePlayerFetcher getDuePlayerFetcher() {
+        return this.duePlayerFetcher;
+    }
+
+    public ServerInformation getServerInformation() {
+        return this.serverInformation;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public IBuycraftPlatform getPlatform() {
+        return this.platform;
+    }
+
+    public CommandExecutor getCommandExecutor() {
+        return this.commandExecutor;
+    }
+
+    public BuycraftI18n getI18n() {
+        return this.i18n;
+    }
+
+    public PlayerJoinCheckTask getPlayerJoinCheckTask() {
+        return this.playerJoinCheckTask;
+    }
+
+    public LoggerUtils getLoggerUtils() {
+        return this.loggerUtils;
     }
 }

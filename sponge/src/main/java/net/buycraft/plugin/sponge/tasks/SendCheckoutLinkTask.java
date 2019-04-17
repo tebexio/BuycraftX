@@ -1,10 +1,8 @@
 package net.buycraft.plugin.sponge.tasks;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.responses.CheckoutUrlResponse;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -14,22 +12,27 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 
-@RequiredArgsConstructor
 public class SendCheckoutLinkTask implements Runnable {
-
-    @NonNull
+    @NotNull
     private final BuycraftPlugin plugin;
     private final int pkgId;
-    @NonNull
+    @NotNull
     private final Player player;
+
+    public SendCheckoutLinkTask(@NotNull final BuycraftPlugin plugin, final int pkgId, @NotNull final Player player) {
+        this.plugin = Objects.requireNonNull(plugin);
+        this.pkgId = pkgId;
+        this.player = Objects.requireNonNull(player);
+    }
 
     @Override
     public void run() {
         CheckoutUrlResponse response;
         try {
-            response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId);
-        } catch (IOException | ApiException e) {
+            response = plugin.getApiClient().getCheckoutUri(player.getName(), pkgId).execute().body();
+        } catch (IOException e) {
             player.sendMessage(
                     Text.builder(plugin.getI18n().get("cant_check_out")).color(TextColors.RED).build());
             return;

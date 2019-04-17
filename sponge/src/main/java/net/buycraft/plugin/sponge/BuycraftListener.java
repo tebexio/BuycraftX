@@ -1,15 +1,15 @@
 package net.buycraft.plugin.sponge;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.data.QueuedPlayer;
-import net.buycraft.plugin.execution.PlayerCommandExecutor;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
-@RequiredArgsConstructor
 public class BuycraftListener {
-
     private final BuycraftPlugin plugin;
+
+    public BuycraftListener(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Listener
     public void onPlayerJoinEvent(ClientConnectionEvent.Join event) {

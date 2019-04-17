@@ -1,7 +1,6 @@
 package net.buycraft.plugin.shared.util;
 
 import com.google.gson.Gson;
-import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.IBuycraftPlatform;
 import okhttp3.*;
 
@@ -9,8 +8,11 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@UtilityClass
-public class AnalyticsSend {
+public final class AnalyticsSend {
+    private AnalyticsSend() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
     public static void sendAnalytics(OkHttpClient client, String secret, Map<String, Object> info) throws IOException {
         Response response = client.newCall(new Request.Builder()
                 .url("https://plugin.buycraft.net/analytics/startup")

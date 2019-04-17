@@ -1,10 +1,8 @@
 package net.buycraft.plugin.platform.standalone.runner;
 
-import lombok.experimental.UtilityClass;
 import net.buycraft.plugin.data.QueuedPlayer;
 
-@UtilityClass
-public class StandaloneUtilities {
+public final class StandaloneUtilities {
     /**
      * A {@link PlayerDeterminer} that always claims that no players are online.
      */
@@ -19,4 +17,8 @@ public class StandaloneUtilities {
             return -1;
         }
     };
+
+    private StandaloneUtilities() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 }

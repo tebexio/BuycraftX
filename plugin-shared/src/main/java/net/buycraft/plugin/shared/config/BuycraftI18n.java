@@ -1,7 +1,5 @@
 package net.buycraft.plugin.shared.config;
 
-import lombok.Getter;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -13,9 +11,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 public class BuycraftI18n {
-    @Getter
     private ResourceBundle bundle;
-    @Getter
     private ResourceBundle userBundle;
 
     public BuycraftI18n(Locale locale) {
@@ -34,5 +30,13 @@ public class BuycraftI18n {
 
     public ResourceBundle getBundleFor(String message) {
         return userBundle != null && userBundle.containsKey(message) ? userBundle : bundle;
+    }
+
+    public ResourceBundle getBundle() {
+        return this.bundle;
+    }
+
+    public ResourceBundle getUserBundle() {
+        return this.userBundle;
     }
 }

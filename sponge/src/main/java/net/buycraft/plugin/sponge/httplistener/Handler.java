@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Handler implements HttpHandler {
-
     private BuycraftPlugin plugin;
 
     public Handler(BuycraftPlugin plugin) {
@@ -39,7 +38,6 @@ public class Handler implements HttpHandler {
         httpExchange.close();
     }
 
-
     private Object[] handleRequest(HttpExchange ex) {
         if (ex.getRequestURI().toString().equalsIgnoreCase("/ping")) {
             return new Object[]{200, "Connected"};
@@ -48,7 +46,7 @@ public class Handler implements HttpHandler {
                 String body = IOUtils.toString(ex.getRequestBody(), Charsets.UTF_8);
                 String hash = Hashing.sha256().hashString(body.concat(plugin.getConfiguration().getServerKey()), Charsets.UTF_8).toString();
 
-                if(!ex.getRequestHeaders().containsKey("X-Signature")) {
+                if (!ex.getRequestHeaders().containsKey("X-Signature")) {
                     return new Object[]{422, "X-Signature header missing"};
                 }
 
@@ -67,7 +65,6 @@ public class Handler implements HttpHandler {
                 } else {
                     return new Object[]{422, "Invalid signature"};
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
                 return new Object[]{422, "Error: " + e.getMessage()};
@@ -76,14 +73,11 @@ public class Handler implements HttpHandler {
         return new Object[]{422, "Error"};
     }
 
-
     private Object[] pushCommand(JsonArray jsonBody) {
         int playerId = 0;
-
         for (JsonElement command : jsonBody) {
             if (command instanceof JsonObject) {
-                JsonObject commandObject = ((JsonObject) command).getAsJsonObject();
-
+                JsonObject commandObject = command.getAsJsonObject();
                 QueuedPlayer qp = new QueuedPlayer(playerId,
                         commandObject.get("username_name").getAsString(),
                         commandObject.get("username").getAsString().replace("-", ""));
@@ -109,9 +103,7 @@ public class Handler implements HttpHandler {
                         commandObject.get("command").getAsString(),
                         qp);
 
-
-                plugin.getCommandExecutor().queue(new ToRunQueuedCommand(qp, qc, commandObject.get("require_online").getAsInt() == 1 ? true : false));
-
+                plugin.getCommandExecutor().queue(new ToRunQueuedCommand(qp, qc, commandObject.get("require_online").getAsInt() == 1));
                 playerId += 1;
             }
         }

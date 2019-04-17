@@ -2,8 +2,8 @@ package net.buycraft.plugin.nukkit;
 
 import cn.nukkit.Player;
 import cn.nukkit.scheduler.AsyncTask;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -11,7 +11,6 @@ import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.platform.PlatformInformation;
 import net.buycraft.plugin.platform.PlatformType;
 
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -23,7 +22,7 @@ public class NukkitBuycraftPlatform implements IBuycraftPlatform {
     }
 
     @Override
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return plugin.getApiClient();
     }
 
@@ -49,14 +48,13 @@ public class NukkitBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
-        plugin.getServer().getScheduler().scheduleDelayedTask(plugin, () -> {
-            plugin.getServer().getScheduler().scheduleAsyncTask(plugin, new AsyncTask() {
-                @Override
-                public void onRun() {
-                    runnable.run();
-                }
-            });
-        }, (int) (unit.toMillis(time) / 50));
+        plugin.getServer().getScheduler().scheduleDelayedTask(plugin, () ->
+                plugin.getServer().getScheduler().scheduleAsyncTask(plugin, new AsyncTask() {
+            @Override
+            public void onRun() {
+                runnable.run();
+            }
+        }), (int) (unit.toMillis(time) / 50));
     }
 
     @Override

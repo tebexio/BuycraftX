@@ -1,9 +1,8 @@
 package net.buycraft.plugin.sponge;
 
-import lombok.RequiredArgsConstructor;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.UuidUtil;
-import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -18,13 +17,15 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class SpongeBuycraftPlatform implements IBuycraftPlatform {
-
     private final BuycraftPlugin plugin;
 
+    public SpongeBuycraftPlatform(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return plugin.getApiClient();
     }
 
@@ -72,12 +73,7 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public int getFreeSlots(QueuedPlayer player) {
-        Optional<Player> player1 = getPlayer(player);
-        if (!player1.isPresent()) {
-            return -1;
-        } else {
-            return Math.max(0, 36 - player1.get().getInventory().size());
-        }
+        return getPlayer(player).map(value -> Math.max(0, 36 - value.getInventory().size())).orElse(-1);
     }
 
     @Override

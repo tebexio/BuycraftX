@@ -1,7 +1,7 @@
 package net.buycraft.plugin.platform.standalone;
 
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
-import net.buycraft.plugin.client.ApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
@@ -24,16 +24,16 @@ import java.util.concurrent.TimeUnit;
  * Most applications will find {@code StandaloneBuycraftRunner} and {@code StandaloneBuycraftRunnerBuild} easier to use.
  */
 public abstract class StandaloneBuycraftPlatform implements IBuycraftPlatform {
-    private final ApiClient client;
+    private final BuyCraftAPI client;
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final QueuedCommandExecutor commandExecutor;
     private final ScheduledExecutorService scheduler;
 
-    protected StandaloneBuycraftPlatform(ApiClient client) {
+    protected StandaloneBuycraftPlatform(BuyCraftAPI client) {
         this(client, Executors.newScheduledThreadPool(8));
     }
 
-    protected StandaloneBuycraftPlatform(ApiClient client, ScheduledExecutorService executorService) {
+    protected StandaloneBuycraftPlatform(BuyCraftAPI client, ScheduledExecutorService executorService) {
         this.client = client;
         this.scheduler = executorService;
         this.placeholderManager.addPlaceholder(new NamePlaceholder());
@@ -45,7 +45,7 @@ public abstract class StandaloneBuycraftPlatform implements IBuycraftPlatform {
     }
 
     @Override
-    public ApiClient getApiClient() {
+    public BuyCraftAPI getApiClient() {
         return client;
     }
 

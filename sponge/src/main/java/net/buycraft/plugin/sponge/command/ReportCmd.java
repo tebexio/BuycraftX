@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.command;
 
-import lombok.AllArgsConstructor;
 import net.buycraft.plugin.shared.util.ReportBuilder;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import org.spongepowered.api.Sponge;
@@ -9,7 +8,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -22,10 +20,12 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@AllArgsConstructor
 public class ReportCmd implements CommandExecutor {
-
     private final BuycraftPlugin plugin;
+
+    public ReportCmd(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public CommandResult execute(final CommandSource src, CommandContext args) throws CommandException {

@@ -1,24 +1,19 @@
 package net.buycraft.plugin.shared.util;
 
-import com.google.common.base.Optional;
-import lombok.Getter;
 import net.buycraft.plugin.data.Category;
 import net.buycraft.plugin.data.Package;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by meyerzinn on 2/17/16.
+ *
  * This was created with the intention of allowing traversal
  */
-
 public class Node {
-
-    @Getter
     private List<Category> subcategories;
-    @Getter
     private List<Package> packages;
-    @Getter
     private String title;
     private Node parent;
 
@@ -34,6 +29,18 @@ public class Node {
     }
 
     public Optional<Node> getParent() {
-        return Optional.fromNullable(parent);
+        return Optional.ofNullable(parent);
+    }
+
+    public List<Category> getSubcategories() {
+        return this.subcategories;
+    }
+
+    public List<Package> getPackages() {
+        return this.packages;
+    }
+
+    public String getTitle() {
+        return this.title;
     }
 }

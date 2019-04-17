@@ -1,8 +1,13 @@
 package net.buycraft.plugin.testutil;
 
-import lombok.Value;
-
-@Value
 public class TestPlayer {
     private final int freeSlots;
+
+    public TestPlayer(int freeSlots) {
+        this.freeSlots = freeSlots;
+    }
+
+    public int getFreeSlots() {
+        return freeSlots;
+    }
 }

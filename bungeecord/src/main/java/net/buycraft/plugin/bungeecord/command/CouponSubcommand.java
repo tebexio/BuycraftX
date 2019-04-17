@@ -1,24 +1,22 @@
 package net.buycraft.plugin.bungeecord.command;
 
-import com.google.common.base.Joiner;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
-import net.buycraft.plugin.client.ApiException;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-@RequiredArgsConstructor
 public class CouponSubcommand implements Subcommand {
     private static final int COUPON_PAGE_LIMIT = 10;
 
     private final BuycraftPlugin plugin;
+
+    public CouponSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -50,15 +48,12 @@ public class CouponSubcommand implements Subcommand {
             return;
         }
 
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    plugin.getApiClient().createCoupon(coupon);
-                    sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
-                } catch (ApiException | IOException e) {
-                    sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
-                }
+        plugin.getPlatform().executeAsync(() -> {
+            try {
+                plugin.getApiClient().createCoupon(coupon).execute().body();
+                sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_creation_success", coupon.getCode()));
+            } catch (IOException e) {
+                sender.sendMessage(ChatColor.RED + plugin.getI18n().get("generic_api_operation_error"));
             }
         });
     }
@@ -70,17 +65,12 @@ public class CouponSubcommand implements Subcommand {
         }
 
         final String code = args[1];
-
-        plugin.getPlatform().executeAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    plugin.getApiClient().deleteCoupon(code);
-                    sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_deleted"));
-                } catch (ApiException | IOException e) {
-                    sender.sendMessage(ChatColor.RED + e.getMessage());
-                    return;
-                }
+        plugin.getPlatform().executeAsync(() -> {
+            try {
+                plugin.getApiClient().deleteCoupon(code).execute().body();
+                sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_deleted"));
+            } catch (IOException e) {
+                sender.sendMessage(ChatColor.RED + e.getMessage());
             }
         });
     }

@@ -1,9 +1,5 @@
 package net.buycraft.plugin.shared;
 
-
-import com.google.common.base.Supplier;
-import lombok.experimental.UtilityClass;
-import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.shared.util.FakeProxySelector;
 import net.buycraft.plugin.shared.util.Ipv4PreferDns;
 import okhttp3.Cache;
@@ -13,14 +9,13 @@ import java.io.File;
 import java.net.ProxySelector;
 import java.util.concurrent.TimeUnit;
 
-@UtilityClass
-public class Setup {
-
+public final class Setup {
+    private Setup() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 
     public static OkHttpClient okhttp(File base) {
-        return okhttpBuilder()
-                .cache(new Cache(new File(base, "cache"), 1024 * 1024 * 10))
-                .build();
+        return okhttpBuilder().cache(new Cache(new File(base, "cache"), 1024 * 1024 * 10)).build();
     }
 
     public static OkHttpClient.Builder okhttpBuilder() {

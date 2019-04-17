@@ -1,15 +1,10 @@
 package net.buycraft.plugin.bungeecord;
 
-import com.google.common.base.Supplier;
-import lombok.Getter;
-import lombok.Setter;
+import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.bungeecord.command.*;
 import net.buycraft.plugin.bungeecord.httplistener.BungeeNettyChannelInjector;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
-import net.buycraft.plugin.client.ApiClient;
-import net.buycraft.plugin.client.ApiException;
-import net.buycraft.plugin.client.ProductionApiClient;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
@@ -31,7 +26,6 @@ import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -40,34 +34,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class BuycraftPlugin extends Plugin {
-    @Getter
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
-    @Getter
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
-    @Getter
-    @Setter
-    private ApiClient apiClient;
-    @Getter
+    private BuyCraftAPI apiClient;
     private DuePlayerFetcher duePlayerFetcher;
-    @Getter
     private ServerInformation serverInformation;
-    @Getter
     private OkHttpClient httpClient;
-    @Getter
     private IBuycraftPlatform platform;
-    @Getter
     private CommandExecutor commandExecutor;
-    @Getter
     private BuycraftI18n i18n;
     private PostCompletedCommandsTask completedCommandsTask;
-    @Getter
     private PlayerJoinCheckTask playerJoinCheckTask;
 
     @Override
     public void onEnable() {
         // Pre-initialization.
         platform = new BungeeCordBuycraftPlatform(this);
-
         // Initialize configuration.
         getDataFolder().mkdir();
         Path configPath = getDataFolder().toPath().resolve("config.properties");
@@ -87,22 +69,17 @@ public class BuycraftPlugin extends Plugin {
 
         // This has to be done in a different thread due to the SecurityManager.
         try {
-            httpClient = runTaskToAppeaseBungeeSecurityManager(new Callable<OkHttpClient>() {
-                @Override
-                public OkHttpClient call() throws Exception {
-                    return Setup.okhttpBuilder()
-                            .cache(new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10))
-                            .connectionPool(new ConnectionPool())
-                            .dispatcher(new Dispatcher(getExecutorService()))
-                            .build();
-                }
-            });
+            httpClient = runTaskToAppeaseBungeeSecurityManager(() -> Setup.okhttpBuilder()
+                    .cache(new Cache(new File(getDataFolder(), "cache"), 1024 * 1024 * 10))
+                    .connectionPool(new ConnectionPool())
+                    .dispatcher(new Dispatcher(getExecutorService()))
+                    .build());
         } catch (ExecutionException e) {
             // We must bail early
             throw new RuntimeException("Can't create HTTP client", e);
         }
 
-        if(configuration.isPushCommandsEnabled()) {
+        if (configuration.isPushCommandsEnabled()) {
             try {
                 BungeeNettyChannelInjector.inject(this);
             } catch (Throwable t) {
@@ -116,15 +93,12 @@ public class BuycraftPlugin extends Plugin {
             getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
-            final ApiClient client = new ProductionApiClient(configuration.getServerKey(), httpClient);
+            final BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             // Hack due to SecurityManager shenanigans.
             try {
-                runTaskToAppeaseBungeeSecurityManager(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        updateInformation(client);
-                        return null;
-                    }
+                runTaskToAppeaseBungeeSecurityManager((Callable<Void>) () -> {
+                    updateInformation(client);
+                    return null;
                 });
             } catch (ExecutionException e) {
                 getLogger().severe(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
@@ -136,12 +110,9 @@ public class BuycraftPlugin extends Plugin {
         if (configuration.isCheckForUpdates()) {
             final VersionCheck check = new VersionCheck(this, getDescription().getVersion(), configuration.getServerKey());
             try {
-                runTaskToAppeaseBungeeSecurityManager(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        check.verify();
-                        return null;
-                    }
+                runTaskToAppeaseBungeeSecurityManager((Callable<Void>) () -> {
+                    check.verify();
+                    return null;
                 });
             } catch (ExecutionException e) {
                 getLogger().log(Level.SEVERE, "Can't check for updates", e);
@@ -176,14 +147,11 @@ public class BuycraftPlugin extends Plugin {
 
         // Send data to Keen IO
         if (serverInformation != null) {
-            getProxy().getScheduler().schedule(this, new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        AnalyticsSend.postServerInformation(httpClient, serverKey, platform, getProxy().getConfig().isOnlineMode());
-                    } catch (IOException e) {
-                        getLogger().log(Level.WARNING, "Can't send analytics", e);
-                    }
+            getProxy().getScheduler().schedule(this, () -> {
+                try {
+                    AnalyticsSend.postServerInformation(httpClient, serverKey, platform, getProxy().getConfig().isOnlineMode());
+                } catch (IOException e) {
+                    getLogger().log(Level.WARNING, "Can't send analytics", e);
                 }
             }, 0, 1, TimeUnit.DAYS);
         }
@@ -209,7 +177,51 @@ public class BuycraftPlugin extends Plugin {
         configuration.save(configPath);
     }
 
-    public void updateInformation(ApiClient client) throws IOException, ApiException {
-        serverInformation = client.getServerInformation();
+    public void updateInformation(BuyCraftAPI client) throws IOException {
+        serverInformation = client.getServerInformation().execute().body();
+    }
+
+    public PlaceholderManager getPlaceholderManager() {
+        return this.placeholderManager;
+    }
+
+    public BuycraftConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
+    public BuyCraftAPI getApiClient() {
+        return this.apiClient;
+    }
+
+    public void setApiClient(final BuyCraftAPI apiClient) {
+        this.apiClient = apiClient;
+    }
+
+    public DuePlayerFetcher getDuePlayerFetcher() {
+        return this.duePlayerFetcher;
+    }
+
+    public ServerInformation getServerInformation() {
+        return this.serverInformation;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public IBuycraftPlatform getPlatform() {
+        return this.platform;
+    }
+
+    public CommandExecutor getCommandExecutor() {
+        return this.commandExecutor;
+    }
+
+    public BuycraftI18n getI18n() {
+        return this.i18n;
+    }
+
+    public PlayerJoinCheckTask getPlayerJoinCheckTask() {
+        return this.playerJoinCheckTask;
     }
 }

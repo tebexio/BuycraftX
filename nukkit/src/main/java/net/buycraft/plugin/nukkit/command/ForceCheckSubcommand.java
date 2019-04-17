@@ -2,12 +2,14 @@ package net.buycraft.plugin.nukkit.command;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.utils.TextFormat;
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.nukkit.BuycraftPlugin;
 
-@RequiredArgsConstructor
 public class ForceCheckSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
+
+    public ForceCheckSubcommand(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {

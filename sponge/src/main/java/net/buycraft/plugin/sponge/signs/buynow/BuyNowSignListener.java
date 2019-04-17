@@ -1,42 +1,38 @@
 package net.buycraft.plugin.sponge.signs.buynow;
 
-import lombok.RequiredArgsConstructor;
 import net.buycraft.plugin.shared.config.signs.storage.SavedBuyNowSign;
 import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import net.buycraft.plugin.sponge.tasks.SignUpdateApplication;
 import net.buycraft.plugin.sponge.tasks.BuyNowSignUpdater;
-import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
 import net.buycraft.plugin.sponge.tasks.SendCheckoutLinkTask;
+import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.block.TargetBlockEvent;
-import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
+import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-
-@RequiredArgsConstructor
 public class BuyNowSignListener {
-
+    private static final long COOLDOWN_MS = 250; // 5 ticks
     private final BuycraftPlugin plugin;
     private final Map<UUID, Long> signCooldowns = new HashMap<>();
-    private static final long COOLDOWN_MS = 250; // 5 ticks
+
+    public BuyNowSignListener(final BuycraftPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Listener
     public void onSignChange(ChangeSignEvent event) {
@@ -53,12 +49,10 @@ public class BuyNowSignListener {
         }
 
         Optional<Player> pl = event.getCause().first(Player.class);
-
         if (!pl.isPresent()) {
             // This change was not caused by a player.
             return;
         }
-
         Player player = pl.get();
 
         if (!player.hasPermission("buycraft.admin")) {
@@ -73,8 +67,6 @@ public class BuyNowSignListener {
             event.getCause().first(Player.class).get().sendMessage(Text.builder("The second line must be a number.").color(TextColors.RED).build());
             return;
         }
-
-
 
         plugin.getBuyNowSignStorage().addSign(new SavedBuyNowSign(
                 SpongeSerializedBlockLocation.create(event.getTargetTile().getLocation()),
@@ -119,31 +111,24 @@ public class BuyNowSignListener {
 
     @Listener
     public void onBlockBreak(ChangeBlockEvent.Break event) {
-
-        event.getTransactions().stream().forEach((trans) -> {
+        event.getTransactions().forEach(trans -> {
             if ((trans.getOriginal().getState().getType().equals(BlockTypes.WALL_SIGN) || trans.getOriginal().getState().getType().equals(BlockTypes.STANDING_SIGN))) {
                 Optional<Location<World>> locationOptional = trans.getOriginal().getLocation();
                 Optional<Player> playerOptional = event.getCause().first(Player.class);
                 if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(locationOptional.get()))) {
                     event.setCancelled(true);
                 }
-
             }
         });
     }
 
     @Listener
-    public void onRightClickBlock(InteractBlockEvent.Secondary event){
-
+    public void onRightClickBlock(InteractBlockEvent.Secondary event) {
         BlockSnapshot b = event.getTargetBlock();
-
         if (!(b.getState().getType().equals(BlockTypes.WALL_SIGN) || b.getState().getType().equals(BlockTypes.STANDING_SIGN))) {
             return;
         }
-
         Player p = event.getCause().first(Player.class).get();
-
-
         SerializedBlockLocation sbl = SpongeSerializedBlockLocation.create(b.getLocation().get());
 
         for (SavedBuyNowSign s : plugin.getBuyNowSignStorage().getSigns()) {
@@ -155,7 +140,6 @@ public class BuyNowSignListener {
                     signCooldowns.put(p.getUniqueId(), now);
                     plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, s.getPackageId(), p));
                 }
-
                 return;
             }
         }
