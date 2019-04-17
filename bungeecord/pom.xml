@@ -11,6 +11,13 @@
 
     <artifactId>buycraftx-bungeecord</artifactId>
 
+    <repositories>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
     <build>
         <resources>
             <resource>
@@ -75,11 +82,16 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md_5.bungee</groupId>
-            <artifactId>bungee</artifactId>
-            <version>Latest</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/build/BungeeCord.jar</systemPath>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.12-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.19.Final</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

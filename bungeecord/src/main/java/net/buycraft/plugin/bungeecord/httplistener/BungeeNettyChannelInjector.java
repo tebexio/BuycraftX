@@ -3,7 +3,6 @@ package net.buycraft.plugin.bungeecord.httplistener;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import net.buycraft.plugin.bungeecord.BuycraftPlugin;
-import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
 
 public class BungeeNettyChannelInjector extends Varint21LengthFieldPrepender {
@@ -13,8 +12,9 @@ public class BungeeNettyChannelInjector extends Varint21LengthFieldPrepender {
         this.plugin = plugin;
     }
 
-    public static void inject(BuycraftPlugin plugin) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        ReflectionUtils.setStaticFinalField(PipelineUtils.class.getDeclaredField("framePrepender"), new BungeeNettyChannelInjector(plugin));
+    public static void inject(BuycraftPlugin plugin) throws ReflectiveOperationException, SecurityException, IllegalArgumentException {
+        Class pipelineUtilsClass = Class.forName("net.md_5.bungee.netty.PipelineUtils");
+        ReflectionUtils.setStaticFinalField(pipelineUtilsClass.getDeclaredField("framePrepender"), new BungeeNettyChannelInjector(plugin));
     }
 
     @Override
