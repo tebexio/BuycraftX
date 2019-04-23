@@ -310,7 +310,7 @@ public class CategoryViewGUI {
                     plugin.getServer().getScheduler().runTask(plugin, () -> categoryMenus.get(category.getId()).get(page - 1).open(player));
                 } else if (displayName.equals(ChatColor.AQUA + plugin.getI18n().get("next_page"))) {
                     plugin.getServer().getScheduler().runTask(plugin, () -> categoryMenus.get(category.getId()).get(page + 1).open(player));
-                } else if (stack.getType() == Material.BOOK_AND_QUILL) {
+                } else if (stack.getType() == plugin.getPlatform().getGUIViewAllMaterial()) {
                     if (parentId != null) {
                         plugin.getServer().getScheduler().runTask(plugin, () -> categoryMenus.get(parentId).get(0).open(player));
                     } else {
