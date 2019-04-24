@@ -1,5 +1,7 @@
 package net.buycraft.plugin.shared.config;
 
+import com.google.common.base.Joiner;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +17,12 @@ public class BuycraftI18n {
     private ResourceBundle userBundle;
 
     public BuycraftI18n(Locale locale) {
-        bundle = ResourceBundle.getBundle("buycraftx_messages", locale);
+        try {
+            bundle = ResourceBundle.getBundle("buycraftx_messages", locale,
+                    BuycraftI18n.class.getClassLoader());
+        } catch (Exception e) {
+            new RuntimeException("Failed to load i18n files! Will be using message ids as a replacement", e).printStackTrace();
+        }
     }
 
     public void loadUserBundle(Path resource) throws IOException {
@@ -25,7 +32,11 @@ public class BuycraftI18n {
     }
 
     public String get(String message, Object... params) {
-        return MessageFormat.format(getBundleFor(message).getString(message), params);
+        try {
+            return MessageFormat.format(getBundleFor(message).getString(message), params);
+        } catch (Exception e) {
+            return "i18n:"+message + "(" + Joiner.on(", ").join(params) + ")";
+        }
     }
 
     public ResourceBundle getBundleFor(String message) {
