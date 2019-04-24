@@ -3,7 +3,7 @@ package net.buycraft.plugin.data;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,9 +36,9 @@ public final class Category implements Comparable<Category> {
     }
 
     public void order() {
-        Collections.sort(packages);
+        packages.sort(Comparator.comparingInt(Package::getOrder));
         if (subcategories != null) {
-            Collections.sort(subcategories);
+            subcategories.sort(Comparator.comparingInt(Category::getOrder));
             for (Category category : subcategories) {
                 category.order();
             }

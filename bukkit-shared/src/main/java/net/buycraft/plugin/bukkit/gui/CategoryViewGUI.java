@@ -186,6 +186,7 @@ public class CategoryViewGUI {
                 subcatPartition = Lists.partition(category.getSubcategories(), 45);
                 if (subcatPartition.size() - 1 >= page) {
                     List<Category> subcats = subcatPartition.get(page);
+                    subcats.sort(Comparator.comparingInt(Category::getOrder));
                     for (int i = 0; i < subcats.size(); i++) {
                         Category subcat = subcats.get(i);
 
@@ -206,6 +207,7 @@ public class CategoryViewGUI {
 
             if (packagePartition.size() - 1 >= page) {
                 List<Package> packages = packagePartition.get(page);
+                packages.sort(Comparator.comparingInt(Package::getOrder));
                 for (int i = 0; i < packages.size(); i++) {
                     Package p = packages.get(i);
 
