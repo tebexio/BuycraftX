@@ -20,8 +20,8 @@ public final class Setup {
 
     public static OkHttpClient.Builder okhttpBuilder() {
         return new OkHttpClient.Builder()
-                .connectTimeout(3, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
+                .connectTimeout(6, TimeUnit.SECONDS)
+                .writeTimeout(7, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .dns(new Ipv4PreferDns())
                 .proxySelector(ProxySelector.getDefault() == null ? FakeProxySelector.INSTANCE : ProxySelector.getDefault());

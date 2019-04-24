@@ -186,6 +186,7 @@ public class CategoryViewGUI {
                 subcatPartition = Lists.partition(category.getSubcategories(), 45);
                 if (subcatPartition.size() - 1 >= page) {
                     List<Category> subcats = subcatPartition.get(page);
+                    subcats.sort(Comparator.comparingInt(Category::getOrder));
                     for (int i = 0; i < subcats.size(); i++) {
                         Category subcat = subcats.get(i);
 
@@ -206,6 +207,7 @@ public class CategoryViewGUI {
 
             if (packagePartition.size() - 1 >= page) {
                 List<Package> packages = packagePartition.get(page);
+                packages.sort(Comparator.comparingInt(Package::getOrder));
                 for (int i = 0; i < packages.size(); i++) {
                     Package p = packages.get(i);
 
@@ -310,7 +312,7 @@ public class CategoryViewGUI {
                     plugin.getServer().getScheduler().runTask(plugin, () -> categoryMenus.get(category.getId()).get(page - 1).open(player));
                 } else if (displayName.equals(ChatColor.AQUA + plugin.getI18n().get("next_page"))) {
                     plugin.getServer().getScheduler().runTask(plugin, () -> categoryMenus.get(category.getId()).get(page + 1).open(player));
-                } else if (stack.getType() == Material.BOOK_AND_QUILL) {
+                } else if (stack.getType() == plugin.getPlatform().getGUIViewAllMaterial()) {
                     if (parentId != null) {
                         plugin.getServer().getScheduler().runTask(plugin, () -> categoryMenus.get(parentId).get(0).open(player));
                     } else {

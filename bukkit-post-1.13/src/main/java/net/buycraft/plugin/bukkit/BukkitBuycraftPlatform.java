@@ -1,14 +1,18 @@
 package net.buycraft.plugin.bukkit;
 
 import com.google.common.collect.ImmutableSet;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class BukkitBuycraftPlatform extends BukkitBuycraftPlatformBase {
-    private static final ImmutableSet<Material> SIGN_MATERIALS = ImmutableSet.of(Material.SIGN, Material.WALL_SIGN);
+    private static final ImmutableSet<Material> SIGN_MATERIALS = ImmutableSet.copyOf(Arrays.stream(Material.values())
+            .filter(material -> !material.name().startsWith("LEGACY_"))
+            .filter(material -> material.name().endsWith("SIGN")) // 1.14 has multiple sign variants now
+            .filter(Material::isBlock)
+            .collect(Collectors.toSet()));
 
     public BukkitBuycraftPlatform(BuycraftPluginBase plugin) {
         super(plugin);
@@ -31,17 +35,17 @@ public class BukkitBuycraftPlatform extends BukkitBuycraftPlatformBase {
 
     @Override
     public ItemStack createItemFromMaterialString(String materialData) {
-        if(materialData == null || materialData.trim().length()<=0) return null;
+        if (materialData == null || materialData.trim().length() <= 0) return null;
 
         Material material;
 
-        if(materialData.contains("[")) {
+        if (materialData.contains("[")) {
             material = Material.matchMaterial(materialData.split("\\[")[0]);
         } else {
             material = Material.matchMaterial(materialData.split(":")[0]);
         }
 
-        if(material == null) return null;
+        if (material == null) return null;
         return new ItemStack(material);
     }
 
