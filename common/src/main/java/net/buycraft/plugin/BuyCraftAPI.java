@@ -56,6 +56,9 @@ public interface BuyCraftAPI {
                                 Response response = chain.proceed(chain.request());
                                 if (!response.isSuccessful()) {
                                     ResponseBody body = response.body();
+                                    if (body == null) {
+                                        throw new BuyCraftAPIException("Unknown error occurred whilst deserializing error object.", response.request(), response, "");
+                                    }
                                     String in = body.string();
                                     if (!Objects.equals(response.header("Content-Type"), "application/json")) {
                                         throw new BuyCraftAPIException("Unexpected content-type " + response.header("Content-Type"), response.request(), response, in);
