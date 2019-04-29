@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.Callable;
 
 class BootstrapList implements List<Object> {
     private List<Object> delegate;

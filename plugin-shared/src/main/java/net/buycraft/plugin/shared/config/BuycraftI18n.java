@@ -35,7 +35,7 @@ public class BuycraftI18n {
         try {
             return MessageFormat.format(getBundleFor(message).getString(message), params);
         } catch (Exception e) {
-            return "i18n:"+message + "(" + Joiner.on(", ").join(params) + ")";
+            return "i18n:" + message + "(" + Joiner.on(", ").join(params) + ")";
         }
     }
 

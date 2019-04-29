@@ -1,0 +1,13 @@
+[
+  {
+    "modid": "buycraft",
+    "name": "Buycraft",
+    "version": "SET_BY_MAGIC",
+    "dependencies": [
+      "spongeapi@7.0.0"
+    ],
+    "requiredMods": [
+      "spongeapi@7.0.0"
+    ]
+  }
+]

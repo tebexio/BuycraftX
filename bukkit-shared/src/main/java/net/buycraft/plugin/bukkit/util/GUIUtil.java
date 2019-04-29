@@ -2,7 +2,6 @@ package net.buycraft.plugin.bukkit.util;
 
 import com.google.common.collect.ImmutableList;
 import net.buycraft.plugin.bukkit.BuycraftPluginBase;
-import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 /**
  * Created by meyerzinn on 2/17/16.
- *
+ * <p>
  * This was created with the intention of allowing traversal
  */
 public class Node {
