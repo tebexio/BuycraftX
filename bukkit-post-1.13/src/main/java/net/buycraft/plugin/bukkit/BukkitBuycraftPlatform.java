@@ -37,12 +37,11 @@ public class BukkitBuycraftPlatform extends BukkitBuycraftPlatformBase {
     public ItemStack createItemFromMaterialString(String materialData) {
         if (materialData == null || materialData.trim().length() <= 0) return null;
 
-        Material material;
+        materialData = materialData.split("\\[")[0].split(":")[0];
 
-        if (materialData.contains("[")) {
-            material = Material.matchMaterial(materialData.split("\\[")[0]);
-        } else {
-            material = Material.matchMaterial(materialData.split(":")[0]);
+        Material material = Material.matchMaterial(materialData);
+        if (material == null) {
+            material = Material.matchMaterial(materialData, true);
         }
 
         if (material == null) return null;
