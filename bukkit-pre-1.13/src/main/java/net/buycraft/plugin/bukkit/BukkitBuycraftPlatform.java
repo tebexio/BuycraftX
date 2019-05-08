@@ -12,6 +12,16 @@ public class BukkitBuycraftPlatform extends BukkitBuycraftPlatformBase {
     }
 
     @Override
+    public boolean ensureCompatibleServerVersion() {
+        try {
+            Class.forName("org.bukkit.entity.Dolphin");
+            return false;
+        } catch (ClassNotFoundException e) {
+            return true;
+        }
+    }
+
+    @Override
     public Material getPlayerSkullMaterial() {
         return Material.SKULL;
     }

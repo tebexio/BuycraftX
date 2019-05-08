@@ -78,6 +78,10 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
         GUIUtil.setPlugin(this);
         platform = createBukkitPlatform();
 
+        if (!platform.ensureCompatibleServerVersion()) {
+            throw new IllegalStateException("Wrong version of plugin used for server version. Please ensure that you downloaded the correct file.");
+        }
+
         // Initialize configuration.
         getDataFolder().mkdir();
         Path configPath = getDataFolder().toPath().resolve("config.properties");
@@ -258,6 +262,7 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (!platform.ensureCompatibleServerVersion()) return;
         try {
             this.duePlayerFetcherTask.cancel();
         } catch (Exception ignored) {
