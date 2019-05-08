@@ -57,7 +57,7 @@ public class VersionCheck {
                     event.getTargetEntity().sendMessage(
                             Text.builder()
                                     .append(Text.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
-                                    .onClick(TextActions.openUrl(new URL("https://server.buycraft.net")))
+                                    .onClick(TextActions.openUrl(new URL("https://server.tebex.io")))
                                     .color(TextColors.YELLOW)
                                     .build());
                 } catch (MalformedURLException e) {

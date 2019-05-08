@@ -105,14 +105,14 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
         // Initialize API client.
         final String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
-            getLogger().info("Looks like this is a fresh setup. Get started by using 'buycraft secret <key>' in the console.");
+            getLogger().info("Looks like this is a fresh setup. Get started by using 'tebex secret <key>' in the console.");
         } else {
             getLogger().info("Validating your server key...");
             BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
             try {
                 updateInformation(client);
             } catch (Exception e) {
-                getLogger().severe(String.format("We can't check if your server can connect to Buycraft: %s", e.getMessage()));
+                getLogger().severe(String.format("We can't check if your server can connect to Tebex: %s", e.getMessage()));
             }
             apiClient = client;
         }
