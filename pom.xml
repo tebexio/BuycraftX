@@ -16,6 +16,7 @@
         <module>bungeecord</module>
         <module>plugin-shared</module>
         <module>nukkit</module>
+        <module>velocity</module>
     </modules>
 
     <repositories>

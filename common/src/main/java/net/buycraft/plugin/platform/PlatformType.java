@@ -8,6 +8,7 @@ public enum PlatformType {
     SPONGE,
     NUKKIT,
     FORGE,
+    VELOCITY,
     NONE;
 
     public String platformName() {
