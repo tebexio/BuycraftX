@@ -165,6 +165,7 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
 
         // Update listing.
         listingUpdateTask = new ListingUpdateTask(platform, () -> {
+            if(!this.isEnabled()) return;
             Bukkit.getScheduler().runTask(this, new GUIUpdateTask(this));
             Bukkit.getScheduler().runTask(this, new BuyNowSignUpdater(this));
         });
