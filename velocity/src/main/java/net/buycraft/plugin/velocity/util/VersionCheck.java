@@ -1,17 +1,14 @@
-package net.buycraft.plugin.sponge.util;
+package net.buycraft.plugin.velocity.util;
 
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.shared.util.VersionUtil;
-import net.buycraft.plugin.sponge.BuycraftPlugin;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
+import net.buycraft.plugin.velocity.BuycraftPlugin;
+import net.kyori.text.TextComponent;
+import net.kyori.text.format.TextColor;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import static net.buycraft.plugin.shared.util.VersionUtil.isVersionGreater;
@@ -34,7 +31,7 @@ public class VersionCheck {
             return; // SNAPSHOT versions ignore updates
         }
 
-        lastKnownVersion = VersionUtil.getVersion(plugin.getHttpClient(), "sponge", secret);
+        lastKnownVersion = VersionUtil.getVersion(plugin.getHttpClient(), "bungeecord", secret);
         if (lastKnownVersion == null) {
             return;
         }
@@ -49,21 +46,11 @@ public class VersionCheck {
         }
     }
 
-    @Listener
-    public void onPlayerJoinEvent(ClientConnectionEvent.Join event) {
-        if (event.getTargetEntity().hasPermission("buycraft.admin") && !upToDate) {
-            plugin.getPlatform().executeAsyncLater(() -> {
-                try {
-                    event.getTargetEntity().sendMessage(
-                            Text.builder()
-                                    .append(Text.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
-                                    .onClick(TextActions.openUrl(new URL("https://server.tebex.io")))
-                                    .color(TextColors.YELLOW)
-                                    .build());
-                } catch (MalformedURLException e) {
-                    throw new AssertionError(e); // seriously?
-                }
-            }, 3, TimeUnit.SECONDS);
+    @Subscribe
+    public void onPlayerJoin(final PostLoginEvent event) {
+        if (event.getPlayer().hasPermission("buycraft.admin") && !upToDate) {
+            plugin.getPlatform().executeAsyncLater(() ->
+                    event.getPlayer().sendMessage(TextComponent.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())).color(TextColor.YELLOW)), 3, TimeUnit.SECONDS);
         }
     }
 

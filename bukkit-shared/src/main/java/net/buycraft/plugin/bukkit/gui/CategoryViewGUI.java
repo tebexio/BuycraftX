@@ -137,7 +137,7 @@ public class CategoryViewGUI {
         private Category category;
 
         public GUIImpl(Integer parentId, int page, Category category) {
-            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), GUIUtil.trimName("Buycraft: " + category.getName()));
+            this.inventory = Bukkit.createInventory(null, calculateSize(category, page), GUIUtil.trimName("Tebex: " + category.getName()));
             this.parentId = parentId;
             this.page = page;
             update(category);

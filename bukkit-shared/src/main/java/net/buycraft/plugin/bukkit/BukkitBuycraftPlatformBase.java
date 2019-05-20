@@ -93,6 +93,8 @@ public abstract class BukkitBuycraftPlatformBase implements IBuycraftPlatform {
         return s;
     }
 
+    public abstract boolean ensureCompatibleServerVersion();
+
     public abstract Material getPlayerSkullMaterial();
 
     public abstract ImmutableSet<Material> getSignMaterials();

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>BuycraftX</artifactId>
@@ -8,9 +9,23 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>buycraftx-sponge</artifactId>
+    <artifactId>buycraftx-velocity</artifactId>
+
+
+    <repositories>
+        <repository>
+            <id>velocity</id>
+            <url>https://repo.velocitypowered.com/snapshots/</url>
+        </repository>
+    </repositories>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -21,7 +36,6 @@
                         <excludes>
                             <exclude>com.google.code.gson</exclude>
                             <exclude>com.google.guava</exclude>
-                            <exclude>org.slf4j</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
@@ -34,15 +48,10 @@
                             <shadedPattern>net.buycraft.plugin.internal.okio</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>retrofit2</pattern>
-                            <shadedPattern>net.buycraft.plugin.internal.retrofit2</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>com.fasterxml.jackson</pattern>
                             <shadedPattern>net.buycraft.plugin.internal.jackson</shadedPattern>
                         </relocation>
                     </relocations>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
                 <executions>
                     <execution>
@@ -82,7 +91,7 @@
                 <dependencies>
                     <dependency>
                         <groupId>net.buycraft</groupId>
-                        <artifactId>buycraftx-sponge</artifactId>
+                        <artifactId>buycraftx-velocity</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
@@ -98,7 +107,7 @@
                             <goal>replace</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/target/classes/mcmod.info</file>
+                            <file>${project.basedir}/target/classes/velocity-plugin.json</file>
                             <token>SET_BY_MAGIC</token>
                             <value>${project.version}</value>
                         </configuration>
@@ -108,25 +117,18 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>sponge-repo</id>
-            <url>https://repo.spongepowered.org/maven</url>
-        </repository>
-    </repositories>
-
     <dependencies>
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
-            <version>7.0.0</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>net.buycraft</groupId>
             <artifactId>buycraftx-plugin-shared</artifactId>
             <version>${project.parent.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>de.icongmbh.oss.maven.plugins</groupId>
