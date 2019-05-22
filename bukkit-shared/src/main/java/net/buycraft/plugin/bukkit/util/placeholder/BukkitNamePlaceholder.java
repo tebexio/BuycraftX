@@ -17,7 +17,7 @@ public class BukkitNamePlaceholder implements Placeholder {
         if (player.getUuid() == null || player.getUuid().equals("")) {
             return REPLACE_NAME.matcher(command).replaceAll(player.getName());
         }
-        
+
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
         if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
             return REPLACE_NAME.matcher(command).replaceAll(player.getName());

@@ -86,7 +86,7 @@ public class BuyNowSignListener implements Listener {
     public void onInventoryClose(final InventoryCloseEvent event) {
         if (settingUpSigns.containsKey(event.getPlayer().getUniqueId())) {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                if ((event.getPlayer().getOpenInventory().getTopInventory() == null || !event.getPlayer().getOpenInventory().getTopInventory().getTitle().startsWith("Buycraft: ")) && settingUpSigns.remove(event.getPlayer().getUniqueId()) != null && event.getPlayer() instanceof Player) {
+                if ((event.getPlayer().getOpenInventory().getTopInventory() == null || !event.getView().getTitle().startsWith("Tebex: ")) && settingUpSigns.remove(event.getPlayer().getUniqueId()) != null && event.getPlayer() instanceof Player) {
                     event.getPlayer().sendMessage(ChatColor.RED + "Buy sign set up cancelled.");
                 }
             }, 3);

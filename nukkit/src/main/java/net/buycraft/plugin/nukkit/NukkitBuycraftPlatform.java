@@ -50,11 +50,11 @@ public class NukkitBuycraftPlatform implements IBuycraftPlatform {
     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
         plugin.getServer().getScheduler().scheduleDelayedTask(plugin, () ->
                 plugin.getServer().getScheduler().scheduleAsyncTask(plugin, new AsyncTask() {
-            @Override
-            public void onRun() {
-                runnable.run();
-            }
-        }), (int) (unit.toMillis(time) / 50));
+                    @Override
+                    public void onRun() {
+                        runnable.run();
+                    }
+                }), (int) (unit.toMillis(time) / 50));
     }
 
     @Override
