@@ -3,6 +3,7 @@ package net.buycraft.plugin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.buycraft.plugin.data.Coupon;
+import net.buycraft.plugin.data.GiftCard;
 import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.data.responses.*;
 import okhttp3.*;
@@ -12,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
@@ -157,5 +159,38 @@ public interface BuyCraftAPI {
 
     @POST("/coupons")
     public Call<CouponSingleListing> createCoupon(@Body RequestBody body);
+
+    @GET("/gift-cards")
+    public Call<GiftCardListing> getAllGiftCards();
+
+    @GET("/gift-cards/{id}")
+    public Call<GiftCardSingleListing> getGiftCard(@Path("id") int id);
+
+    @DELETE("/gift-cards/{id}")
+    public Call<GiftCardSingleListing> voidGiftCard(@Path("id") int id);
+
+    public default Call<GiftCardSingleListing> topUpGiftCard(int id, BigDecimal amount) {
+        return topUpGiftCard(id, new FormBody.Builder().add("amount", amount.toPlainString()).build());
+    }
+
+    @PUT("/gift-cards/{id}")
+    public Call<GiftCardSingleListing> topUpGiftCard(@Path("id") int id, @Body RequestBody body);
+
+    public default Call<GiftCardSingleListing> createGiftCard(BigDecimal amount, String note) {
+        return createGiftCard(new FormBody.Builder()
+                .add("amount", amount.toPlainString())
+                .add("note", note)
+                .build());
+    }
+
+    public default Call<GiftCardSingleListing> createGiftCard(GiftCard giftCard) {
+        return createGiftCard(new FormBody.Builder()
+                .add("amount", giftCard.getBalance().getStarting().toPlainString())
+                .add("note", giftCard.getNote())
+                .build());
+    }
+
+    @POST("/gift-cards")
+    public Call<GiftCardSingleListing> createGiftCard(@Body RequestBody body);
 
 }

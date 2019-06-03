@@ -14,8 +14,8 @@ public final class Setup {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    public static OkHttpClient okhttp(File base) {
-        return okhttpBuilder().cache(new Cache(new File(base, "cache"), 1024 * 1024 * 10)).build();
+    public static OkHttpClient okhttp(File cacheFolder) {
+        return okhttpBuilder().cache(new Cache(cacheFolder, 1024 * 1024 * 10)).build();
     }
 
     public static OkHttpClient.Builder okhttpBuilder() {
