@@ -148,8 +148,8 @@ public interface BuyCraftAPI {
                 .add("minimum", coupon.getMinimum().toPlainString())
                 .add("redeem_limit", Integer.toString(coupon.getUserLimit()))
                 .add("discount_application_method", Integer.toString(coupon.getDiscountMethod()))
-                .add("redeem_unlimited", coupon.getRedeemUnlimited() == 1 ? "true" : "false")
-                .add("expire_never", coupon.getExpireNever() == 1 ? "true" : "false")
+                .add("redeem_unlimited", coupon.getRedeemUnlimited()+"")
+                .add("expire_never", coupon.getExpireNever()+"")
                 .add("username", coupon.getUsername() == null ? "" : coupon.getUsername())
                 .add("note", coupon.getNote() == null ? "" : coupon.getNote())
                 .build();

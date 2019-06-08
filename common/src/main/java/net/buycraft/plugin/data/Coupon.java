@@ -22,16 +22,16 @@ public final class Coupon {
     @SerializedName("discount_application_method")
     private final int discountMethod;
     @SerializedName("expire_never")
-    private final int expireNever;
+    private final boolean expireNever;
     @SerializedName("redeem_unlimited")
-    private final int redeemUnlimited;
+    private final boolean redeemUnlimited;
     private final BigDecimal minimum;
     @SerializedName("username")
     private final String username;
     @SerializedName("note")
     private final String note;
 
-    Coupon(final int id, final String code, final Effective effective, final Discount discount, final Expire expire, final String basketType, final Date startDate, final int userLimit, final int discountMethod, final int expireNever, final int redeemUnlimited, final BigDecimal minimum, final String username, final String note) {
+    Coupon(final int id, final String code, final Effective effective, final Discount discount, final Expire expire, final String basketType, final Date startDate, final int userLimit, final int discountMethod, final boolean expireNever, final boolean redeemUnlimited, final BigDecimal minimum, final String username, final String note) {
         this.id = id;
         this.code = code;
         this.effective = effective;
@@ -88,11 +88,11 @@ public final class Coupon {
         return this.discountMethod;
     }
 
-    public int getExpireNever() {
+    public boolean getExpireNever() {
         return this.expireNever;
     }
 
-    public int getRedeemUnlimited() {
+    public boolean getRedeemUnlimited() {
         return this.redeemUnlimited;
     }
 
@@ -142,8 +142,8 @@ public final class Coupon {
         result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
         result = 31 * result + userLimit;
         result = 31 * result + discountMethod;
-        result = 31 * result + expireNever;
-        result = 31 * result + redeemUnlimited;
+        result = 31 * result + (expireNever ? 1 : 0);
+        result = 31 * result + (redeemUnlimited ? 1 : 0);
         result = 31 * result + (minimum != null ? minimum.hashCode() : 0);
         result = 31 * result + (username != null ? username.hashCode() : 0);
         result = 31 * result + (note != null ? note.hashCode() : 0);
@@ -312,8 +312,8 @@ public final class Coupon {
         private Date startDate;
         private int userLimit;
         private int discountMethod;
-        private int expireNever;
-        private int redeemUnlimited;
+        private boolean expireNever;
+        private boolean redeemUnlimited;
         private BigDecimal minimum;
         private String username;
         private String note;
@@ -366,13 +366,23 @@ public final class Coupon {
             return this;
         }
 
-        public Builder expireNever(final int expireNever) {
+        public Builder expireNever(final boolean expireNever) {
             this.expireNever = expireNever;
             return this;
         }
 
-        public Builder redeemUnlimited(final int redeemUnlimited) {
+        public Builder expireNever(final int expireNever) {
+            this.expireNever = expireNever == 1;
+            return this;
+        }
+
+        public Builder redeemUnlimited(final boolean redeemUnlimited) {
             this.redeemUnlimited = redeemUnlimited;
+            return this;
+        }
+
+        public Builder redeemUnlimited(final int redeemUnlimited) {
+            this.redeemUnlimited = redeemUnlimited == 1;
             return this;
         }
 
