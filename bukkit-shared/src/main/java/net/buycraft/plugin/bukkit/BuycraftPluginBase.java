@@ -129,17 +129,13 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
         }
 
         if (configuration.isPushCommandsEnabled()) {
-            if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-                injector = new NettyInjector() {
-                    @Override
-                    protected void injectChannel(Channel channel) {
-                        channel.pipeline().addFirst(new Decoder(BuycraftPluginBase.this));
-                    }
-                };
-                ((NettyInjector) injector).inject();
-            } else {
-                getLogger().warning("Push commands cannot be enabled because ProtocolLib is not installed on the server.");
-            }
+            injector = new NettyInjector() {
+                @Override
+                protected void injectChannel(Channel channel) {
+                    channel.pipeline().addFirst(new Decoder(BuycraftPluginBase.this));
+                }
+            };
+            ((NettyInjector) injector).inject();
         }
 
         // Initialize placeholders.
@@ -165,7 +161,7 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
 
         // Update listing.
         listingUpdateTask = new ListingUpdateTask(platform, () -> {
-            if(!this.isEnabled()) return;
+            if (!this.isEnabled()) return;
             Bukkit.getScheduler().runTask(this, new GUIUpdateTask(this));
             Bukkit.getScheduler().runTask(this, new BuyNowSignUpdater(this));
         });
@@ -282,7 +278,7 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
         } catch (IOException e) {
             getLogger().log(Level.WARNING, "Can't save buy now signs, continuing anyway", e);
         }
-        if (configuration.isPushCommandsEnabled()) {
+        if (configuration.isPushCommandsEnabled() && injector != null) {
             ((NettyInjector) injector).close();
         }
         completedCommandsTask.flush();

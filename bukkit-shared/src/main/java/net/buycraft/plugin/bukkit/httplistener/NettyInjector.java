@@ -1,20 +1,35 @@
 package net.buycraft.plugin.bukkit.httplistener;
 
-import com.comphenix.protocol.reflect.FuzzyReflection;
-import com.comphenix.protocol.reflect.VolatileField;
-import com.comphenix.protocol.utility.MinecraftReflection;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.netty.channel.*;
+import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public abstract class NettyInjector {
+
+    private static final String NMS_VERSION;
+    private static final String NMS_PACKAGE;
+
+    static {
+        String packageName = Bukkit.getServer().getClass().getPackage().getName();
+        NMS_VERSION = packageName.substring(packageName.lastIndexOf(".") + 1);
+        NMS_PACKAGE = "net.minecraft.server." + NMS_VERSION + ".";
+    }
+
     // The temporary player factory
-    private List<VolatileField> bootstrapFields = Lists.newArrayList();
+    private List<Field> bootstrapFields = Lists.newArrayList();
+    private Map<Field, List<Object>> oldBootStrapFields = Maps.newHashMap();
 
     // List of network managers
+    private Object serverConnection; // used for restore
     private volatile List<Object> networkManagers;
     private boolean injected;
     private boolean closed;
@@ -23,16 +38,34 @@ public abstract class NettyInjector {
      * Inject into the spigot connection class.
      */
     @SuppressWarnings("unchecked")
-    public synchronized void inject() {
+    public synchronized final void inject() {
         if (injected)
             throw new IllegalStateException("Cannot inject twice.");
         try {
-            FuzzyReflection fuzzyServer = FuzzyReflection.fromClass(MinecraftReflection.getMinecraftServerClass());
-            Method serverConnectionMethod = fuzzyServer.getMethodByParameters("getServerConnection", MinecraftReflection.getServerConnectionClass(), new Class[]{});
+            Class fuzzyServer = Class.forName(NMS_PACKAGE + "MinecraftServer");
+            Method serverConnectionMethod = fuzzyServer.getDeclaredMethod("getServerConnection");
+            serverConnectionMethod.setAccessible(true);
 
             // Get the server connection
-            Object server = fuzzyServer.getSingleton();
-            Object serverConnection = serverConnectionMethod.invoke(server);
+            Object server = null;
+            {
+                Method serverInstanceMethod = Arrays.stream(fuzzyServer.getDeclaredMethods())
+                        .filter(method -> method.getReturnType() == fuzzyServer && method.getParameterCount() == 0 && Modifier.isStatic(method.getModifiers()))
+                        .findFirst()
+                        .orElse(null);
+                if (serverInstanceMethod != null) {
+                    if (!serverInstanceMethod.isAccessible()) serverInstanceMethod.setAccessible(true);
+                    server = serverInstanceMethod.invoke(null);
+                } else {
+                    Field serverInstanceField = fuzzyServer.getDeclaredField("instance");
+                    if (serverInstanceField != null && serverInstanceField.getType() == fuzzyServer && Modifier.isStatic(serverInstanceField.getModifiers())) {
+                        server = serverInstanceField.get(null);
+                    }
+                }
+                if (server == null) throw new IllegalStateException("Failed to get server!");
+            }
+
+            serverConnection = serverConnectionMethod.invoke(server);
 
             // Handle connected channels
             final ChannelInboundHandler endInitProtocol = new ChannelInitializer<Channel>() {
@@ -71,21 +104,25 @@ public abstract class NettyInjector {
             };
 
             // Get the current NetworkMananger list
-            networkManagers = (List<Object>) FuzzyReflection.fromObject(serverConnection, true).
-                    invokeMethod(null, "getNetworkManagers", List.class, serverConnection);
+            Class networkManagerClass = Class.forName(NMS_PACKAGE + "NetworkManager");
+            Field networkManagersField = Arrays.stream(serverConnection.getClass().getDeclaredFields())
+                    .filter(field -> field.getType() == List.class && ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0] == networkManagerClass)
+                    .findFirst()
+                    .orElse(null);
+            networkManagersField.setAccessible(true);
+            networkManagers = (List<Object>) networkManagersField.get(serverConnection);
 
-            // Insert ProtocolLib's connection interceptor
-            bootstrapFields = getBootstrapFields(serverConnection);
-
-            for (VolatileField field : bootstrapFields) {
-                final List<Object> list = (List<Object>) field.getValue();
+            //Inject handler
+            for (Field field : getBootstrapFields()) {
+                final List<Object> list = (List<Object>) field.get(serverConnection);
                 // We don't have to override this list
                 if (list == networkManagers) {
                     continue;
                 }
 
                 // Synchronize with each list before we attempt to replace them.
-                field.setValue(new BootstrapList(list, connectionHandler));
+                oldBootStrapFields.put(field, (List<Object>) field.get(serverConnection));
+                field.set(serverConnection, new BootstrapList(list, connectionHandler));
             }
 
             injected = true;
@@ -104,20 +141,26 @@ public abstract class NettyInjector {
     /**
      * Retrieve a list of every field with a list of channel futures.
      *
-     * @param serverConnection - the connection.
      * @return List of fields.
      */
-    private List<VolatileField> getBootstrapFields(Object serverConnection) {
-        List<VolatileField> result = Lists.newArrayList();
+    private List<Field> getBootstrapFields() {
+        List<Field> result = Lists.newArrayList();
 
         // Find and (possibly) proxy every list
-        for (Field field : FuzzyReflection.fromObject(serverConnection, true).getFieldListByType(List.class)) {
-            VolatileField volatileField = new VolatileField(field, serverConnection, true).toSynchronized();
-            @SuppressWarnings("unchecked")
-            List<Object> list = (List<Object>) volatileField.getValue();
-            if (list.size() == 0 || list.get(0) instanceof ChannelFuture) {
-                result.add(volatileField);
-            }
+        for (Field[] fields : new Field[][]{serverConnection.getClass().getFields(), serverConnection.getClass().getDeclaredFields()}) {
+            Arrays.stream(fields).peek(field -> field.setAccessible(true)).filter(field -> {
+                try {
+                    if (field.getType() == List.class) {
+                        List<Object> list = (List<Object>) field.get(serverConnection);
+                        if (list.size() == 0 || list.get(0) instanceof ChannelFuture) {
+                            return true;
+                        }
+                    }
+                    return false;
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }).forEach(result::add);
         }
         return result;
     }
@@ -129,14 +172,18 @@ public abstract class NettyInjector {
         if (!closed) {
             closed = true;
 
-            for (VolatileField field : bootstrapFields) {
-                Object value = field.getValue();
+            try {
+                for (Field field : bootstrapFields) {
+                    Object value = field.get(serverConnection);
 
-                // Undo the processed channels, if any
-                if (value instanceof BootstrapList) {
-                    ((BootstrapList) value).close();
+                    // Undo the processed channels, if any
+                    if (value instanceof BootstrapList) {
+                        ((BootstrapList) value).close();
+                    }
+                    field.set(serverConnection, oldBootStrapFields.get(field));
                 }
-                field.revertValue();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
             }
         }
     }

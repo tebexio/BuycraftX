@@ -2,7 +2,6 @@ name: BuycraftX
 main: net.buycraft.plugin.bukkit.BuycraftPlugin
 version: ${project.version}
 author: Buycraft
-softdepend: [ProtocolLib]
 commands:
   tebex:
     aliases: [buycraft]
