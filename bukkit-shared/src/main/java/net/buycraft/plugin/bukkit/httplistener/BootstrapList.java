@@ -1,16 +1,15 @@
 package net.buycraft.plugin.bukkit.httplistener;
 
+import com.google.common.collect.ForwardingList;
 import com.google.common.collect.Lists;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-class BootstrapList implements List<Object> {
+class BootstrapList extends ForwardingList<Object> {
     private List<Object> delegate;
     private ChannelHandler handler;
 
@@ -114,85 +113,8 @@ class BootstrapList implements List<Object> {
             unprocessElement(element);
     }
 
-    // Boiler plate
-    public synchronized int size() {
-        return delegate.size();
+    @Override
+    protected List<Object> delegate() {
+        return delegate;
     }
-
-    public synchronized boolean isEmpty() {
-        return delegate.isEmpty();
-    }
-
-    public boolean contains(Object o) {
-        return delegate.contains(o);
-    }
-
-    public synchronized Iterator<Object> iterator() {
-        return delegate.iterator();
-    }
-
-    public synchronized Object[] toArray() {
-        return delegate.toArray();
-    }
-
-    public synchronized <T> T[] toArray(T[] a) {
-        return delegate.toArray(a);
-    }
-
-    public synchronized boolean remove(Object o) {
-        return delegate.remove(o);
-    }
-
-    public synchronized boolean containsAll(Collection<?> c) {
-        return delegate.containsAll(c);
-    }
-
-    public synchronized boolean addAll(int index, Collection<? extends Object> c) {
-        return delegate.addAll(index, c);
-    }
-
-    public synchronized boolean removeAll(Collection<?> c) {
-        return delegate.removeAll(c);
-    }
-
-    public synchronized boolean retainAll(Collection<?> c) {
-        return delegate.retainAll(c);
-    }
-
-    public synchronized void clear() {
-        delegate.clear();
-    }
-
-    public synchronized Object get(int index) {
-        return delegate.get(index);
-    }
-
-    public synchronized void add(int index, Object element) {
-        delegate.add(index, element);
-    }
-
-    public synchronized Object remove(int index) {
-        return delegate.remove(index);
-    }
-
-    public synchronized int indexOf(Object o) {
-        return delegate.indexOf(o);
-    }
-
-    public synchronized int lastIndexOf(Object o) {
-        return delegate.lastIndexOf(o);
-    }
-
-    public synchronized ListIterator<Object> listIterator() {
-        return delegate.listIterator();
-    }
-
-    public synchronized ListIterator<Object> listIterator(int index) {
-        return delegate.listIterator(index);
-    }
-
-    public synchronized List<Object> subList(int fromIndex, int toIndex) {
-        return delegate.subList(fromIndex, toIndex);
-    }
-    // End boiler plate
 }

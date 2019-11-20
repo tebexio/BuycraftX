@@ -108,11 +108,11 @@ public class CouponUtil {
         // Expiry: none, limit of uses or expiry,
         String expiresStr = kv.get("expires");
         String limitStr = kv.get("limit");
-        String neverExpire = "1";
-        String unlimitedRedeem = "1";
+        boolean neverExpire = true;
+        boolean unlimitedRedeem = true;
 
         if (expiresStr != null) {
-            neverExpire = "0";
+            neverExpire = false;
             long ms = parseDuration(expiresStr);
             if (ms == 0) {
                 throw new IllegalArgumentException("Invalid duration!");
@@ -121,7 +121,7 @@ public class CouponUtil {
         }
 
         if (limitStr != null) {
-            unlimitedRedeem = "0";
+            unlimitedRedeem = false;
             try {
                 builder.expire(new Coupon.Expire("limit", Integer.parseInt(limitStr), new Date()));
             } catch (NumberFormatException e) {
@@ -132,8 +132,8 @@ public class CouponUtil {
         if (limitStr == null && expiresStr == null) {
             builder.expire(new Coupon.Expire("timestamp", 0, new Date(System.currentTimeMillis() + 1)));
         }
-        builder.expireNever(Integer.parseInt(neverExpire));
-        builder.redeemUnlimited(Integer.parseInt(unlimitedRedeem));
+        builder.expireNever(neverExpire);
+        builder.redeemUnlimited(unlimitedRedeem);
 
         String minimumBasket = kv.get("min_value");
         if (minimumBasket != null) {
