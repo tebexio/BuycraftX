@@ -3,6 +3,7 @@ package net.buycraft.plugin.velocity;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -12,8 +13,10 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.QueuedPlayer;
+import net.buycraft.plugin.data.ServerEvent;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.execution.ServerEventSenderTask;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
@@ -37,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.concurrent.*;
 
 @Plugin(id = "buycraft", name = "BuycraftX", authors = {"Tebex", "theminecoder"}, version = BuycraftPlugin.MAGIC_VERSION)
@@ -58,6 +62,7 @@ public class BuycraftPlugin {
     private BuycraftI18n i18n;
     private PostCompletedCommandsTask completedCommandsTask;
     private PlayerJoinCheckTask playerJoinCheckTask;
+    private ServerEventSenderTask serverEventSenderTask;
     private ExecutorService service;
 
     @Inject
@@ -168,6 +173,12 @@ public class BuycraftPlugin {
                 .delay(1, TimeUnit.SECONDS)
                 .repeat(1, TimeUnit.SECONDS)
                 .schedule();
+        serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
+        getServer().getScheduler()
+                .buildTask(this, serverEventSenderTask)
+                .delay(1, TimeUnit.MINUTES)
+                .repeat(1, TimeUnit.MINUTES)
+                .schedule();
 
         // Initialize and register commands.
         BuycraftCommand command = new BuycraftCommand(this);
@@ -203,10 +214,31 @@ public class BuycraftPlugin {
             return;
         }
 
+        serverEventSenderTask.queueEvent(new ServerEvent(
+                event.getPlayer().getUniqueId().toString().replace("-", ""),
+                event.getPlayer().getUsername(),
+                ServerEvent.JOIN_EVENT,
+                new Date()
+        ));
+
         QueuedPlayer qp = getDuePlayerFetcher().fetchAndRemoveDuePlayer(event.getPlayer().getUsername());
         if (qp != null) {
             getPlayerJoinCheckTask().queue(qp);
         }
+    }
+
+    @Subscribe
+    public void onQuit(DisconnectEvent event) {
+        if (getApiClient() == null) {
+            return;
+        }
+
+        serverEventSenderTask.queueEvent(new ServerEvent(
+                event.getPlayer().getUniqueId().toString().replace("-", ""),
+                event.getPlayer().getUsername(),
+                ServerEvent.LEAVE_EVENT,
+                new Date()
+        ));
     }
 
     public ProxyServer getServer() {

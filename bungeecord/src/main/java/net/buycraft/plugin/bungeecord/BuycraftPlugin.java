@@ -7,6 +7,7 @@ import net.buycraft.plugin.bungeecord.httplistener.BungeeNettyChannelInjector;
 import net.buycraft.plugin.bungeecord.util.VersionCheck;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.execution.ServerEventSenderTask;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
@@ -45,6 +46,7 @@ public class BuycraftPlugin extends Plugin {
     private BuycraftI18n i18n;
     private PostCompletedCommandsTask completedCommandsTask;
     private PlayerJoinCheckTask playerJoinCheckTask;
+    private ServerEventSenderTask serverEventSenderTask;
 
     @Override
     public void onEnable() {
@@ -132,6 +134,8 @@ public class BuycraftPlugin extends Plugin {
         getProxy().getScheduler().schedule(this, (Runnable) commandExecutor, 50, 50, TimeUnit.MILLISECONDS);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         getProxy().getScheduler().schedule(this, playerJoinCheckTask, 1, 1, TimeUnit.SECONDS);
+        serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
+        getProxy().getScheduler().schedule(this, serverEventSenderTask, 1, 1, TimeUnit.MINUTES);
 
         // Register listener.
         getProxy().getPluginManager().registerListener(this, new BuycraftListener(this));
@@ -223,5 +227,9 @@ public class BuycraftPlugin extends Plugin {
 
     public PlayerJoinCheckTask getPlayerJoinCheckTask() {
         return this.playerJoinCheckTask;
+    }
+
+    public ServerEventSenderTask getServerEventSenderTask() {
+        return serverEventSenderTask;
     }
 }

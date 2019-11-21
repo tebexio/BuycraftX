@@ -7,6 +7,7 @@ import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.execution.ServerEventSenderTask;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.XuidPlaceholder;
@@ -42,6 +43,7 @@ public class BuycraftPlugin extends PluginBase {
     private BuycraftI18n i18n;
     private PostCompletedCommandsTask completedCommandsTask;
     private PlayerJoinCheckTask playerJoinCheckTask;
+    private ServerEventSenderTask serverEventSenderTask;
     private LoggerUtils loggerUtils;
     private BuycraftCommand command;
 
@@ -107,6 +109,8 @@ public class BuycraftPlugin extends PluginBase {
         getServer().getScheduler().scheduleDelayedRepeatingTask(this, (Runnable) commandExecutor, 1, 1);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         getServer().getScheduler().scheduleDelayedRepeatingTask(this, playerJoinCheckTask, 1, 1);
+        serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
+        getServer().getScheduler().scheduleDelayedRepeatingTask(this, serverEventSenderTask, 20 * 60, 20 * 60, true);
 
         // Register listener.
         getServer().getPluginManager().registerEvents(new BuycraftListener(this), this);
@@ -194,6 +198,10 @@ public class BuycraftPlugin extends PluginBase {
 
     public PlayerJoinCheckTask getPlayerJoinCheckTask() {
         return this.playerJoinCheckTask;
+    }
+
+    public ServerEventSenderTask getServerEventSenderTask() {
+        return serverEventSenderTask;
     }
 
     public LoggerUtils getLoggerUtils() {
