@@ -32,7 +32,11 @@ public class ServerEventSenderTask implements Runnable {
             return;
         }
 
-        List<ServerEvent> runEvents = Lists.newArrayList(eventQueue);
+        if(eventQueue.size() == 0) {
+            return;
+        }
+
+        List<ServerEvent> runEvents = Lists.newArrayList(eventQueue.subList(0, Math.min(eventQueue.size(), 750)));
 
         try {
             if (verbose) platform.log(Level.INFO, "Sending " + runEvents.size() + " analytic events");
