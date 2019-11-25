@@ -32,22 +32,20 @@ public class ServerEventSenderTask implements Runnable {
             return;
         }
 
-        if(eventQueue.size() == 0) {
-            return;
-        }
+        while(eventQueue.size() > 0) {
+            List<ServerEvent> runEvents = Lists.newArrayList(eventQueue.subList(0, Math.min(eventQueue.size(), 750)));
 
-        List<ServerEvent> runEvents = Lists.newArrayList(eventQueue.subList(0, Math.min(eventQueue.size(), 750)));
+            try {
+                if (verbose) platform.log(Level.INFO, "Sending " + runEvents.size() + " analytic events");
+                platform.getApiClient().sendEvents(runEvents).execute();
+            } catch (IOException e) {
+                platform.log(Level.SEVERE, "Failed to send analytic events!", e);
+                return;
+            }
 
-        try {
-            if (verbose) platform.log(Level.INFO, "Sending " + runEvents.size() + " analytic events");
-            platform.getApiClient().sendEvents(runEvents).execute();
-        } catch (IOException e) {
-            platform.log(Level.SEVERE, "Failed to send analytic events!", e);
-            return;
-        }
-
-        synchronized (eventQueue) {
-            runEvents.forEach(eventQueue::remove);
+            synchronized (eventQueue) {
+                runEvents.forEach(eventQueue::remove);
+            }
         }
     }
 
