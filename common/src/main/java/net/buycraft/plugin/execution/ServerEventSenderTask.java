@@ -1,6 +1,7 @@
 package net.buycraft.plugin.execution;
 
 import com.google.common.collect.Lists;
+import net.buycraft.plugin.BuyCraftAPIException;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.ServerEvent;
 
@@ -38,7 +39,7 @@ public class ServerEventSenderTask implements Runnable {
             try {
                 if (verbose) platform.log(Level.INFO, "Sending " + runEvents.size() + " analytic events");
                 platform.getApiClient().sendEvents(runEvents).execute();
-            } catch (IOException e) {
+            } catch (IOException | BuyCraftAPIException e) {
                 platform.log(Level.SEVERE, "Failed to send analytic events!", e);
                 return;
             }
