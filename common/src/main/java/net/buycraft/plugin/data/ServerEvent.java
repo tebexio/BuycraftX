@@ -14,15 +14,18 @@ public class ServerEvent {
 
     private String username;
 
+    private String ip;
+
     @SerializedName("event_type")
     private String eventType;
 
     @SerializedName("event_date")
     private Date eventDate;
 
-    public ServerEvent(String uuid, String username, String eventType, Date eventDate) {
+    public ServerEvent(String uuid, String username, String ip, String eventType, Date eventDate) {
         this.uuid = uuid;
         this.username = username;
+        this.ip = ip;
         this.eventType = eventType;
         this.eventDate = eventDate;
     }
@@ -33,6 +36,10 @@ public class ServerEvent {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getIp() {
+        return ip;
     }
 
     public String getEventType() {

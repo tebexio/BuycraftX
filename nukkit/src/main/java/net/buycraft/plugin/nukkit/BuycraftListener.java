@@ -25,6 +25,7 @@ public class BuycraftListener implements Listener {
         plugin.getServerEventSenderTask().queueEvent(new ServerEvent(
                 event.getPlayer().getUniqueId().toString().replace("-", ""),
                 event.getPlayer().getName(),
+                event.getPlayer().getAddress(),
                 ServerEvent.JOIN_EVENT,
                 new Date()
         ));
@@ -44,6 +45,7 @@ public class BuycraftListener implements Listener {
         plugin.getServerEventSenderTask().queueEvent(new ServerEvent(
                 event.getPlayer().getUniqueId().toString().replace("-", ""),
                 event.getPlayer().getName(),
+                event.getPlayer().getAddress(),
                 ServerEvent.LEAVE_EVENT,
                 new Date()
         ));
