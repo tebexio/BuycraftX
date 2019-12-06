@@ -18,6 +18,7 @@ import net.buycraft.plugin.bukkit.util.VersionCheck;
 import net.buycraft.plugin.bukkit.util.placeholder.BukkitNamePlaceholder;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.execution.ServerEventSenderTask;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
@@ -70,6 +71,7 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
     private PostCompletedCommandsTask completedCommandsTask;
     private PlayerJoinCheckTask playerJoinCheckTask;
+    private ServerEventSenderTask serverEventSenderTask;
     private Object injector;
 
     @Override
@@ -154,6 +156,8 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
         getServer().getScheduler().runTaskTimerAsynchronously(this, completedCommandsTask, 20, 20);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         getServer().getScheduler().runTaskTimer(this, playerJoinCheckTask, 20, 20);
+        serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
+        getServer().getScheduler().runTaskTimerAsynchronously(this, serverEventSenderTask, 20 * 60, 20 * 60);
 
         // Initialize the GUIs.
         viewCategoriesGUI = new ViewCategoriesGUI(this);
@@ -380,5 +384,9 @@ public abstract class BuycraftPluginBase extends JavaPlugin {
 
     public PlayerJoinCheckTask getPlayerJoinCheckTask() {
         return this.playerJoinCheckTask;
+    }
+
+    public ServerEventSenderTask getServerEventSenderTask() {
+        return serverEventSenderTask;
     }
 }

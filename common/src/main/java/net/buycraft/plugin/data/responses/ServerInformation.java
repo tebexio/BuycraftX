@@ -51,13 +51,16 @@ public final class ServerInformation {
         private final AccountCurrency currency;
         @SerializedName("online_mode")
         private final boolean onlineMode;
+        @SerializedName("log_events")
+        private final boolean logEvents;
 
-        public Account(final int id, final String domain, final String name, final AccountCurrency currency, final boolean onlineMode) {
+        public Account(int id, String domain, String name, AccountCurrency currency, boolean onlineMode, boolean logEvents) {
             this.id = id;
             this.domain = domain;
             this.name = name;
             this.currency = currency;
             this.onlineMode = onlineMode;
+            this.logEvents = logEvents;
         }
 
         public int getId() {
@@ -80,6 +83,10 @@ public final class ServerInformation {
             return this.onlineMode;
         }
 
+        public boolean isLogEvents() {
+            return logEvents;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -89,6 +96,7 @@ public final class ServerInformation {
 
             if (id != account.id) return false;
             if (onlineMode != account.onlineMode) return false;
+            if (logEvents != account.logEvents) return false;
             if (!Objects.equals(domain, account.domain)) return false;
             if (!Objects.equals(name, account.name)) return false;
             return Objects.equals(currency, account.currency);
@@ -101,12 +109,13 @@ public final class ServerInformation {
             result = 31 * result + (name != null ? name.hashCode() : 0);
             result = 31 * result + (currency != null ? currency.hashCode() : 0);
             result = 31 * result + (onlineMode ? 1 : 0);
+            result = 31 * result + (logEvents ? 1 : 0);
             return result;
         }
 
         @Override
         public String toString() {
-            return "ServerInformation.Account(id=" + this.getId() + ", domain=" + this.getDomain() + ", name=" + this.getName() + ", currency=" + this.getCurrency() + ", onlineMode=" + this.isOnlineMode() + ")";
+            return "Account(" + "id=" + id + ", domain='" + domain + '\'' + ", name='" + name + '\'' + ", currency=" + currency + ", onlineMode=" + onlineMode + ", logEvents=" + logEvents + ')';
         }
     }
 

@@ -7,6 +7,7 @@ import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.execution.ServerEventSenderTask;
 import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
@@ -78,6 +79,7 @@ public class BuycraftPlugin {
     private BuycraftI18n i18n;
     private PostCompletedCommandsTask completedCommandsTask;
     private PlayerJoinCheckTask playerJoinCheckTask;
+    private ServerEventSenderTask serverEventSenderTask;
 
     @Listener
     public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
@@ -138,6 +140,8 @@ public class BuycraftPlugin {
         Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).async().execute(completedCommandsTask).submit(this);
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).execute(playerJoinCheckTask).submit(this);
+        serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
+        Sponge.getScheduler().createTaskBuilder().interval(1, TimeUnit.MINUTES).delay(1, TimeUnit.MINUTES).execute(serverEventSenderTask).submit(this);
         listingUpdateTask = new ListingUpdateTask(platform, null);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
@@ -395,5 +399,9 @@ public class BuycraftPlugin {
 
     public PlayerJoinCheckTask getPlayerJoinCheckTask() {
         return this.playerJoinCheckTask;
+    }
+
+    public ServerEventSenderTask getServerEventSenderTask() {
+        return serverEventSenderTask;
     }
 }
