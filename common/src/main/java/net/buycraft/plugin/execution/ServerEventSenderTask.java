@@ -16,8 +16,6 @@ public class ServerEventSenderTask implements Runnable {
 
     private final List<ServerEvent> eventQueue = Lists.newArrayList();
 
-    private boolean stopped = false;
-
     public ServerEventSenderTask(IBuycraftPlatform platform, boolean verbose) {
         this.platform = platform;
         this.verbose = verbose;
@@ -33,7 +31,7 @@ public class ServerEventSenderTask implements Runnable {
             return;
         }
 
-        while(eventQueue.size() > 0) {
+        while (eventQueue.size() > 0) {
             List<ServerEvent> runEvents = Lists.newArrayList(eventQueue.subList(0, Math.min(eventQueue.size(), 750)));
 
             try {
@@ -51,14 +49,11 @@ public class ServerEventSenderTask implements Runnable {
     }
 
     public void queueEvent(ServerEvent event) {
-        if(stopped) return;;
-        if(platform.getServerInformation() == null || !platform.getServerInformation().getAccount().isLogEvents()) return;
+        if (platform.getServerInformation() == null || !platform.getServerInformation().getAccount().isLogEvents())
+            return;
         synchronized (eventQueue) {
             eventQueue.add(event);
         }
     }
 
-    public void stop() {
-        stopped = true;
-    }
 }
