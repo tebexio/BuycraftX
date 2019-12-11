@@ -217,7 +217,7 @@ public class BuycraftPlugin {
         serverEventSenderTask.queueEvent(new ServerEvent(
                 event.getPlayer().getUniqueId().toString().replace("-", ""),
                 event.getPlayer().getUsername(),
-                event.getPlayer().getRemoteAddress().getHostName(),
+                event.getPlayer().getRemoteAddress().getAddress().getHostAddress(),
                 ServerEvent.JOIN_EVENT,
                 new Date()
         ));
@@ -237,7 +237,7 @@ public class BuycraftPlugin {
         serverEventSenderTask.queueEvent(new ServerEvent(
                 event.getPlayer().getUniqueId().toString().replace("-", ""),
                 event.getPlayer().getUsername(),
-                event.getPlayer().getRemoteAddress().getHostName(),
+                event.getPlayer().getRemoteAddress().getAddress().getHostAddress(),
                 ServerEvent.LEAVE_EVENT,
                 new Date()
         ));

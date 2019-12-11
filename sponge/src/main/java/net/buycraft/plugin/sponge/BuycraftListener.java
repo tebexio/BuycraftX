@@ -23,7 +23,7 @@ public class BuycraftListener {
         plugin.getServerEventSenderTask().queueEvent(new ServerEvent(
                 event.getTargetEntity().getUniqueId().toString().replace("-", ""),
                 event.getTargetEntity().getName(),
-                event.getTargetEntity().getConnection().getAddress().getHostName(),
+                event.getTargetEntity().getConnection().getAddress().getAddress().getHostAddress(),
                 ServerEvent.JOIN_EVENT,
                 new Date()
         ));
@@ -43,7 +43,7 @@ public class BuycraftListener {
         plugin.getServerEventSenderTask().queueEvent(new ServerEvent(
                 event.getTargetEntity().getUniqueId().toString().replace("-", ""),
                 event.getTargetEntity().getName(),
-                event.getTargetEntity().getConnection().getAddress().getHostName(),
+                event.getTargetEntity().getConnection().getAddress().getAddress().getHostAddress(),
                 ServerEvent.LEAVE_EVENT,
                 new Date()
         ));
