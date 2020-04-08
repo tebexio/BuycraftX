@@ -84,11 +84,11 @@ public class QueuedCommandExecutor implements CommandExecutor, Runnable {
             // Make the time much nicer.
             BigDecimal timeMs = new BigDecimal(fullTime).divide(new BigDecimal("1000000"), 2, BigDecimal.ROUND_CEILING);
             if (blocking) {
-                platform.log(Level.SEVERE, "Command execution took " + timeMs.toPlainString() + "ms to complete. " +
-                        "This likely indicates an issue with one of your server's plugins, which can cause lag.");
+                platform.log(Level.INFO, "Command execution took " + timeMs.toPlainString() + "ms to complete. " +
+                        "This may indicate an issue with one of your server's plugins, which can cause lag.");
             } else {
-                platform.log(Level.SEVERE, "Command execution took " + timeMs.toPlainString() + "ms to complete. " +
-                        "This likely indicates an issue with one of your server's plugins, which will slow command execution.");
+                platform.log(Level.INFO, "Command execution took " + timeMs.toPlainString() + "ms to complete. " +
+                        "This may indicate an issue with one of your server's plugins, which will slow command execution.");
             }
         }
     }
