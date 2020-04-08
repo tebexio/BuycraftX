@@ -72,7 +72,7 @@ public class BuycraftConfiguration {
     }
 
     public boolean isVerbose() {
-        return getBoolean("verbose", true);
+        return getBoolean("verbose", false);
     }
 
     public void setVerbose(boolean verbose) {
