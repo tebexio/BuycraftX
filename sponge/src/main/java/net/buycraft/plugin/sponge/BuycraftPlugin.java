@@ -141,7 +141,7 @@ public class BuycraftPlugin {
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
         Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).execute(playerJoinCheckTask).submit(this);
         serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
-        Sponge.getScheduler().createTaskBuilder().interval(1, TimeUnit.MINUTES).delay(1, TimeUnit.MINUTES).execute(serverEventSenderTask).submit(this);
+        Sponge.getScheduler().createTaskBuilder().interval(1, TimeUnit.MINUTES).delay(1, TimeUnit.MINUTES).async().execute(serverEventSenderTask).submit(this);
         listingUpdateTask = new ListingUpdateTask(platform, null);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
