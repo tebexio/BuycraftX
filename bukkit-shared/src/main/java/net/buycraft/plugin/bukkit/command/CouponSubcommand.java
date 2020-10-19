@@ -1,5 +1,6 @@
 package net.buycraft.plugin.bukkit.command;
 
+import net.buycraft.plugin.BuyCraftAPIException;
 import net.buycraft.plugin.bukkit.BuycraftPluginBase;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
@@ -72,7 +73,7 @@ public class CouponSubcommand implements Subcommand {
             try {
                 plugin.getApiClient().deleteCoupon(code).execute();
                 sender.sendMessage(ChatColor.GREEN + plugin.getI18n().get("coupon_deleted"));
-            } catch (IOException e) {
+            } catch (IOException | BuyCraftAPIException e) {
                 sender.sendMessage(ChatColor.RED + e.getMessage());
             }
         });
