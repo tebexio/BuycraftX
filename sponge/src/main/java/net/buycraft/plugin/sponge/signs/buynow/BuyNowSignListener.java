@@ -20,10 +20,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class BuyNowSignListener {
     private static final long COOLDOWN_MS = 250; // 5 ticks
@@ -39,7 +36,7 @@ public class BuyNowSignListener {
         boolean ourSign;
 
         try {
-            ourSign = event.getOriginalText().lines().get(0).toPlain().equalsIgnoreCase("[buycraft_buy]");
+            ourSign = Arrays.asList("[buycraft_buy]", "[tebex_buy]").contains(event.getOriginalText().lines().get(0).toPlain().toLowerCase());
         } catch (IndexOutOfBoundsException e) {
             return;
         }

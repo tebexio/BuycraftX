@@ -17,6 +17,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class RecentPurchaseSignListener {
@@ -31,7 +32,7 @@ public class RecentPurchaseSignListener {
         boolean ourSign;
 
         try {
-            ourSign = event.getOriginalText().lines().get(0).toPlain().equalsIgnoreCase("[buycraft_rp]");
+            ourSign = Arrays.asList("[buycraft_rp]", "[tebex_rp]").contains(event.getOriginalText().lines().get(0).toPlain().toLowerCase());
         } catch (IndexOutOfBoundsException e) {
             return;
         }

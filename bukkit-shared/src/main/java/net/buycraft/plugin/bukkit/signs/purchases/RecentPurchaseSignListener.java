@@ -15,6 +15,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
+import java.awt.*;
+import java.util.Arrays;
+
 public class RecentPurchaseSignListener implements Listener {
     private final BuycraftPluginBase plugin;
 
@@ -26,7 +29,7 @@ public class RecentPurchaseSignListener implements Listener {
     public void onSignChange(SignChangeEvent event) {
         boolean ourSign;
         try {
-            ourSign = event.getLine(0).equalsIgnoreCase("[buycraft_rp]");
+            ourSign = Arrays.asList("[buycraft_rp]", "[tebex_rp]").contains(event.getLine(0).toLowerCase());
         } catch (IndexOutOfBoundsException e) {
             return;
         }

@@ -22,6 +22,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,7 +41,7 @@ public class BuyNowSignListener implements Listener {
     public void onSignChange(SignChangeEvent event) {
         boolean relevant;
         try {
-            relevant = event.getLine(0).equalsIgnoreCase("[buycraft_buy]");
+            relevant = Arrays.asList("[buycraft_buy]", "[tebex_buy]").contains(event.getLine(0).toLowerCase());
         } catch (IndexOutOfBoundsException e) {
             return;
         }
