@@ -5,8 +5,8 @@ import com.velocitypowered.api.event.connection.PostLoginEvent;
 import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.shared.util.VersionUtil;
 import net.buycraft.plugin.velocity.BuycraftPlugin;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +50,7 @@ public class VersionCheck {
     public void onPlayerJoin(final PostLoginEvent event) {
         if (event.getPlayer().hasPermission("buycraft.admin") && !upToDate) {
             plugin.getPlatform().executeAsyncLater(() ->
-                    event.getPlayer().sendMessage(TextComponent.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())).color(TextColor.YELLOW)), 3, TimeUnit.SECONDS);
+                    event.getPlayer().sendMessage(Component.text(plugin.getI18n().get("update_available", lastKnownVersion.getVersion()), NamedTextColor.YELLOW)), 3, TimeUnit.SECONDS);
         }
     }
 

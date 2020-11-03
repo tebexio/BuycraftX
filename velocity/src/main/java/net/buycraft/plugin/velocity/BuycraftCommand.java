@@ -1,17 +1,17 @@
 package net.buycraft.plugin.velocity;
 
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
 import net.buycraft.plugin.velocity.command.Subcommand;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
-import net.kyori.text.format.TextDecoration;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class BuycraftCommand implements Command {
+public class BuycraftCommand implements SimpleCommand {
     private final Map<String, Subcommand> subcommandMap = new LinkedHashMap<>();
     private final BuycraftPlugin plugin;
 
@@ -20,9 +20,11 @@ public class BuycraftCommand implements Command {
     }
 
     @Override
-    public void execute(CommandSource sender, String[] args) {
+    public void execute(Invocation invocation) {
+        CommandSource sender = invocation.source();
+        String[] args = invocation.arguments();
         if (!sender.hasPermission("buycraft.admin")) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("no_permission")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("no_permission"), NamedTextColor.RED));
             return;
         }
 
@@ -43,9 +45,9 @@ public class BuycraftCommand implements Command {
     }
 
     private void showHelp(CommandSource sender) {
-        sender.sendMessage(TextComponent.of(plugin.getI18n().get("usage")).color(TextColor.DARK_AQUA).decoration(TextDecoration.BOLD, true));
+        sender.sendMessage(Component.text(plugin.getI18n().get("usage"), NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
         for (Map.Entry<String, Subcommand> entry : subcommandMap.entrySet()) {
-            sender.sendMessage(TextComponent.of("/tebex " + entry.getKey()).color(TextColor.GREEN).append(TextComponent.of(": " + entry.getValue().getDescription())));
+            sender.sendMessage(Component.text("/tebex " + entry.getKey(), NamedTextColor.GREEN).append(Component.text(": " + entry.getValue().getDescription(), NamedTextColor.GRAY)));
         }
     }
 

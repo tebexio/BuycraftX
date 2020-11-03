@@ -4,8 +4,8 @@ import com.velocitypowered.api.command.CommandSource;
 import net.buycraft.plugin.data.Coupon;
 import net.buycraft.plugin.shared.util.CouponUtil;
 import net.buycraft.plugin.velocity.BuycraftPlugin;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public class CouponSubcommand implements Subcommand {
     @Override
     public void execute(CommandSource sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("usage_coupon_subcommands")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("usage_coupon_subcommands"), NamedTextColor.RED));
             return;
         }
 
@@ -34,7 +34,7 @@ public class CouponSubcommand implements Subcommand {
                 deleteCoupon(sender, args);
                 break;
             default:
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("usage_coupon_subcommands")).color(TextColor.RED));
+                sender.sendMessage(Component.text(plugin.getI18n().get("usage_coupon_subcommands"), NamedTextColor.RED));
                 break;
         }
     }
@@ -45,23 +45,23 @@ public class CouponSubcommand implements Subcommand {
         try {
             coupon = CouponUtil.parseArguments(stripped);
         } catch (Exception e) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("coupon_creation_arg_parse_failure", e.getMessage())).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("coupon_creation_arg_parse_failure", e.getMessage()), NamedTextColor.RED));
             return;
         }
 
         plugin.getPlatform().executeAsync(() -> {
             try {
                 plugin.getApiClient().createCoupon(coupon).execute().body();
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("coupon_creation_success", coupon.getCode())).color(TextColor.GREEN));
+                sender.sendMessage(Component.text(plugin.getI18n().get("coupon_creation_success", coupon.getCode()), NamedTextColor.GREEN));
             } catch (IOException e) {
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("generic_api_operation_error")).color(TextColor.RED));
+                sender.sendMessage(Component.text(plugin.getI18n().get("generic_api_operation_error"), NamedTextColor.RED));
             }
         });
     }
 
     private void deleteCoupon(final CommandSource sender, String[] args) {
         if (args.length != 2) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("no_coupon_specified")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("no_coupon_specified"), NamedTextColor.RED));
             return;
         }
 
@@ -69,9 +69,9 @@ public class CouponSubcommand implements Subcommand {
         plugin.getPlatform().executeAsync(() -> {
             try {
                 plugin.getApiClient().deleteCoupon(code).execute().body();
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("coupon_deleted")).color(TextColor.GREEN));
+                sender.sendMessage(Component.text(plugin.getI18n().get("coupon_deleted"), NamedTextColor.GREEN));
             } catch (IOException e) {
-                sender.sendMessage(TextComponent.of(e.getMessage()).color(TextColor.RED));
+                sender.sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
             }
         });
     }

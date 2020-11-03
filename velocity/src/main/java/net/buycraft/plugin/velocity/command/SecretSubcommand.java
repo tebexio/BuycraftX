@@ -4,11 +4,10 @@ import com.velocitypowered.api.command.CommandSource;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.velocity.BuycraftPlugin;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 public class SecretSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
@@ -20,12 +19,12 @@ public class SecretSubcommand implements Subcommand {
     @Override
     public void execute(final CommandSource sender, final String[] args) {
         if (!sender.equals(plugin.getServer().getConsoleCommandSource())) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("secret_console_only")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("secret_console_only"), NamedTextColor.RED));
             return;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("secret_need_key")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("secret_need_key"), NamedTextColor.RED));
             return;
         }
 
@@ -35,7 +34,7 @@ public class SecretSubcommand implements Subcommand {
                 plugin.updateInformation(client);
             } catch (IOException e) {
                 plugin.getLogger().error("Unable to verify secret", e);
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("secret_does_not_work")).color(TextColor.RED));
+                sender.sendMessage(Component.text(plugin.getI18n().get("secret_does_not_work"), NamedTextColor.RED));
                 return;
             }
 
@@ -45,11 +44,11 @@ public class SecretSubcommand implements Subcommand {
             try {
                 plugin.saveConfiguration();
             } catch (IOException e) {
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("secret_cant_be_saved")).color(TextColor.RED));
+                sender.sendMessage(Component.text(plugin.getI18n().get("secret_cant_be_saved"), NamedTextColor.RED));
             }
 
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("secret_success",
-                    information.getServer().getName(), information.getAccount().getName())).color(TextColor.GREEN));
+            sender.sendMessage(Component.text(plugin.getI18n().get("secret_success",
+                    information.getServer().getName(), information.getAccount().getName()), NamedTextColor.GREEN));
             plugin.getPlatform().executeAsync(plugin.getDuePlayerFetcher());
         });
     }

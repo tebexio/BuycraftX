@@ -2,8 +2,8 @@ package net.buycraft.plugin.velocity.command;
 
 import com.velocitypowered.api.command.CommandSource;
 import net.buycraft.plugin.velocity.BuycraftPlugin;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public class InformationSubcommand implements Subcommand {
     private final BuycraftPlugin plugin;
@@ -15,28 +15,28 @@ public class InformationSubcommand implements Subcommand {
     @Override
     public void execute(CommandSource sender, String[] args) {
         if (args.length != 0) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("no_params")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("no_params"), NamedTextColor.RED));
             return;
         }
 
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("need_secret_key")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("need_secret_key"), NamedTextColor.RED));
             return;
         }
 
         if (plugin.getServerInformation() == null) {
-            sender.sendMessage(TextComponent.of(plugin.getI18n().get("information_no_server")).color(TextColor.RED));
+            sender.sendMessage(Component.text(plugin.getI18n().get("information_no_server"), NamedTextColor.RED));
             return;
         }
 
-        sender.sendMessage(TextComponent.of(plugin.getI18n().get("information_title")).color(TextColor.GRAY));
-        sender.sendMessage(TextComponent.of(plugin.getI18n().get("information_server",
+        sender.sendMessage(Component.text(plugin.getI18n().get("information_title"), NamedTextColor.GRAY));
+        sender.sendMessage(Component.text(plugin.getI18n().get("information_server",
                 plugin.getServerInformation().getServer().getName(),
-                plugin.getServerInformation().getAccount().getName())).color(TextColor.GRAY));
-        sender.sendMessage(TextComponent.of(plugin.getI18n().get("information_currency",
-                plugin.getServerInformation().getAccount().getCurrency().getIso4217())).color(TextColor.GRAY));
-        sender.sendMessage(TextComponent.of(plugin.getI18n().get("information_domain",
-                plugin.getServerInformation().getAccount().getDomain())).color(TextColor.GRAY));
+                plugin.getServerInformation().getAccount().getName()), NamedTextColor.GRAY));
+        sender.sendMessage(Component.text(plugin.getI18n().get("information_currency",
+                plugin.getServerInformation().getAccount().getCurrency().getIso4217()), NamedTextColor.GRAY));
+        sender.sendMessage(Component.text(plugin.getI18n().get("information_domain",
+                plugin.getServerInformation().getAccount().getDomain()), NamedTextColor.GRAY));
     }
 
     @Override
