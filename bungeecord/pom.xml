@@ -83,13 +83,13 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.16-R0.4-SNAPSHOT</version>
+            <version>1.16-R0.5-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.56.Final</version>
+            <version>4.1.59.Final</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
