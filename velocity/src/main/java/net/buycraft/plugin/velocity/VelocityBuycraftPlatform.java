@@ -21,7 +21,7 @@ import java.util.logging.Level;
 
 public class VelocityBuycraftPlatform implements IBuycraftPlatform {
 
-    private Map<Level, Function<Logger, BiConsumer<String, Throwable>>> LOG_LEVEL_MAP = new HashMap<Level, Function<Logger, BiConsumer<String, Throwable>>>() {{
+    private final Map<Level, Function<Logger, BiConsumer<String, Throwable>>> LOG_LEVEL_MAP = new HashMap<Level, Function<Logger, BiConsumer<String, Throwable>>>() {{
         put(Level.INFO, l -> l::info);
         put(Level.WARNING, l -> l::warn);
         put(Level.SEVERE, l -> l::error);
