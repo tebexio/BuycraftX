@@ -21,7 +21,25 @@ public abstract class NettyInjector {
     static {
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
         NMS_VERSION = packageName.substring(packageName.lastIndexOf(".") + 1);
-        NMS_PACKAGE = "net.minecraft.server." + NMS_VERSION + ".";
+
+        if (getNmsVersion() != null && getNmsVersion() >= 17) {
+            NMS_PACKAGE = "net.minecraft.server.";
+        } else {
+            NMS_PACKAGE = "net.minecraft.server." + NMS_VERSION + ".";
+        }
+    }
+
+    private static Integer getNmsVersion() {
+        String packageName = Bukkit.getServer().getClass().getPackage().getName();
+        String nmsVersion = packageName.substring(packageName.lastIndexOf(".") + 1);
+
+        String[] nmsVersionParts = nmsVersion.split("_");
+
+        if (nmsVersionParts.length == 3) {
+            return Integer.parseInt(nmsVersionParts[1]);
+        }
+
+        return null;
     }
 
     // The temporary player factory
@@ -104,7 +122,15 @@ public abstract class NettyInjector {
             };
 
             // Get the current NetworkMananger list
-            Class networkManagerClass = Class.forName(NMS_PACKAGE + "NetworkManager");
+
+            Class networkManagerClass;
+
+            if (getNmsVersion() != null && getNmsVersion() >= 17) {
+                networkManagerClass = Class.forName("net.minecraft.network.NetworkManager");
+            } else {
+                networkManagerClass = Class.forName(NMS_PACKAGE + "NetworkManager");
+            }
+
             Field networkManagersField = Arrays.stream(serverConnection.getClass().getDeclaredFields())
                     .filter(field -> field.getType() == List.class && ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0] == networkManagerClass)
                     .findFirst()
