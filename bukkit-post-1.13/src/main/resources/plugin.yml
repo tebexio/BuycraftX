@@ -6,4 +6,5 @@ api-version: "1.13"
 commands:
   tebex:
     aliases: [buycraft]
+    permission: buycraft.admin
     description: Main command for the Tebex plugin.
