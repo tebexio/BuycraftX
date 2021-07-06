@@ -3,8 +3,8 @@ package net.buycraft.plugin.velocity.command;
 import com.velocitypowered.api.command.CommandSource;
 import net.buycraft.plugin.shared.util.ReportBuilder;
 import net.buycraft.plugin.velocity.BuycraftPlugin;
-import net.kyori.text.TextComponent;
-import net.kyori.text.format.TextColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class ReportCommand implements Subcommand {
 
     @Override
     public void execute(final CommandSource sender, String[] args) {
-        sender.sendMessage(TextComponent.of(plugin.getI18n().get("report_wait")).color(TextColor.YELLOW));
+        sender.sendMessage(Component.text(plugin.getI18n().get("report_wait"), NamedTextColor.YELLOW));
 
         plugin.getPlatform().executeAsync(() -> {
             InetSocketAddress listener = plugin.getServer().getBoundAddress();
@@ -45,9 +45,9 @@ public class ReportCommand implements Subcommand {
             String generated = builder.generate();
             try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
                 w.write(generated);
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("report_saved", p.toAbsolutePath().toString())).color(TextColor.YELLOW));
+                sender.sendMessage(Component.text(plugin.getI18n().get("report_saved", p.toAbsolutePath().toString()), NamedTextColor.YELLOW));
             } catch (IOException e) {
-                sender.sendMessage(TextComponent.of(plugin.getI18n().get("report_cant_save")).color(TextColor.RED));
+                sender.sendMessage(Component.text(plugin.getI18n().get("report_cant_save"), NamedTextColor.RED));
                 plugin.getLogger().info(generated);
             }
         });

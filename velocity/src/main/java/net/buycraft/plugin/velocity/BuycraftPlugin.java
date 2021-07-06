@@ -187,7 +187,7 @@ public class BuycraftPlugin {
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
         command.getSubcommandMap().put("report", new ReportCommand(this));
         command.getSubcommandMap().put("coupon", new CouponSubcommand(this));
-        getServer().getCommandManager().register(command, "tebex", "buycraft");
+        server.getCommandManager().register(server.getCommandManager().metaBuilder("buycraft").aliases("tebex").build(), command);
 
         // Send data to Keen IO
         if (serverInformation != null) {
