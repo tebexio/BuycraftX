@@ -6,6 +6,7 @@ import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.DueQueueInformation;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -64,6 +65,11 @@ public class DuePlayerFetcher implements Runnable {
                         return;
                     }
                     nextCheck = information.getMeta().getNextCheck();
+                } catch (SocketTimeoutException e) {
+                    if (verbose) {
+                        platform.log(Level.SEVERE, "Could not fetch due players queue", e);
+                    }
+                    return;
                 } catch (IOException e) {
                     platform.log(Level.SEVERE, "Could not fetch due players queue", e);
                     return;
