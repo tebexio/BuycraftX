@@ -4,10 +4,12 @@ import com.google.common.collect.ImmutableSet;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.UuidUtil;
+import net.buycraft.plugin.bukkit.events.BuycraftPurchaseEvent;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 import net.buycraft.plugin.platform.PlatformInformation;
 import net.buycraft.plugin.platform.PlatformType;
 import org.bukkit.Bukkit;
@@ -38,7 +40,14 @@ public abstract class BukkitBuycraftPlatformBase implements IBuycraftPlatform {
     }
 
     @Override
-    public void dispatchCommand(String command) {
+    public void dispatchCommand(String command, ToRunQueuedCommand queuedCommand) {
+
+        BuycraftPurchaseEvent event = new BuycraftPurchaseEvent(command, queuedCommand);
+
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) return;
+
         plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
     }
 

@@ -4,6 +4,7 @@ import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 import net.buycraft.plugin.platform.PlatformInformation;
 
 import java.util.concurrent.TimeUnit;
@@ -29,7 +30,7 @@ public interface IBuycraftPlatform {
      *
      * @param command the command to execute
      */
-    void dispatchCommand(String command);
+    void dispatchCommand(String command, ToRunQueuedCommand queuedCommand);
 
     /**
      * Executes a task to be scheduled as soon as possible asynchronously.

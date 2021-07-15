@@ -1,9 +1,0 @@
-name: BuycraftX
-main: net.buycraft.plugin.nukkit.BuycraftPlugin
-version: "${project.version}"
-author: Buycraft
-api: [1.0.0, 2.0.0]
-commands:
-  tebex:
-    aliases: [buycraft]
-    description: Main command for the Tebex plugin.

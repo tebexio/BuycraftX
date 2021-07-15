@@ -5,6 +5,7 @@ import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
+import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 import net.buycraft.plugin.platform.NoBlocking;
 import net.buycraft.plugin.platform.standalone.StandaloneBuycraftPlatform;
 import okhttp3.OkHttpClient;
@@ -64,7 +65,7 @@ public class StandaloneBuycraftRunner {
         }
 
         @Override
-        public void dispatchCommand(String command) {
+        public void dispatchCommand(String command, ToRunQueuedCommand queuedCommand) {
             dispatcher.dispatchCommand(command);
         }
 

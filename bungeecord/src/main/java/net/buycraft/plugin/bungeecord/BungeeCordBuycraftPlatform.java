@@ -3,10 +3,12 @@ package net.buycraft.plugin.bungeecord;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.UuidUtil;
+import net.buycraft.plugin.bungeecord.events.BuycraftPurchaseEvent;
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
+import net.buycraft.plugin.execution.strategy.ToRunQueuedCommand;
 import net.buycraft.plugin.platform.NoBlocking;
 import net.buycraft.plugin.platform.PlatformInformation;
 import net.buycraft.plugin.platform.PlatformType;
@@ -34,7 +36,12 @@ public class BungeeCordBuycraftPlatform implements IBuycraftPlatform {
     }
 
     @Override
-    public void dispatchCommand(String command) {
+    public void dispatchCommand(String command, ToRunQueuedCommand queuedCommand) {
+
+        BuycraftPurchaseEvent event = plugin.getProxy().getPluginManager().callEvent(new BuycraftPurchaseEvent(command, queuedCommand));
+
+        if (event.isCancelled()) return;
+
         plugin.getProxy().getPluginManager().dispatchCommand(plugin.getProxy().getConsole(), command);
     }
 
