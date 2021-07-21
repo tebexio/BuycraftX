@@ -20,12 +20,17 @@ public class BuycraftCommand implements SimpleCommand {
     }
 
     @Override
-    public void execute(CommandSource sender, String[] args) {
+    public void execute(Invocation invocation) {
+        
+        CommandSource sender = invocation.source();
+        
         if (!sender.hasPermission("buycraft.admin")) {
             sender.sendMessage(Component.text(plugin.getI18n().get("no_permission")).color(NamedTextColor.RED));
             return;
         }
-
+        
+        String[] args = invocation.arguments();
+        
         if (args.length == 0) {
             showHelp(sender);
             return;
