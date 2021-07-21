@@ -1,6 +1,6 @@
 package net.buycraft.plugin.velocity;
 
-import com.velocitypowered.api.command.Command;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.command.CommandSource;
 import net.buycraft.plugin.velocity.command.Subcommand;
 import net.kyori.adventure.text.Component;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class BuycraftCommand implements Command {
+public class BuycraftCommand implements SimpleCommand {
     private final Map<String, Subcommand> subcommandMap = new LinkedHashMap<>();
     private final BuycraftPlugin plugin;
 
