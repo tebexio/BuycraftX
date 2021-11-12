@@ -2,6 +2,7 @@ package net.buycraft.plugin.velocity;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
@@ -187,7 +188,7 @@ public class BuycraftPlugin {
         command.getSubcommandMap().put("info", new InformationSubcommand(this));
         command.getSubcommandMap().put("report", new ReportCommand(this));
         command.getSubcommandMap().put("coupon", new CouponSubcommand(this));
-        getServer().getCommandManager().register(command, "tebex", "buycraft");
+        getServer().getCommandManager().register(getServer().getCommandManager().metaBuilder("tebex").aliases("buycraft").build(), command);
 
         // Send data to Keen IO
         if (serverInformation != null) {
