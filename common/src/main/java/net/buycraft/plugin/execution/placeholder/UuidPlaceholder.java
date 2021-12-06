@@ -12,7 +12,7 @@ public class UuidPlaceholder implements Placeholder {
     @Override
     public String replace(String command, QueuedPlayer player, QueuedCommand queuedCommand) {
         if (player.getUuid() == null) {
-            return command; // can't replace UUID for offline mode
+            return REPLACE_UUID.matcher(command).replaceAll(player.getName());
         }
         return REPLACE_UUID.matcher(command).replaceAll(UuidUtil.mojangUuidToJavaUuid(player.getUuid()).toString());
     }
