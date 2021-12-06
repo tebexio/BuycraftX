@@ -6,7 +6,7 @@
     <groupId>net.buycraft</groupId>
     <artifactId>BuycraftX</artifactId>
     <packaging>pom</packaging>
-    <version>12.0.7</version>
+    <version>12.0.8</version>
     <modules>
         <module>common</module>
         <module>bukkit-shared</module>
