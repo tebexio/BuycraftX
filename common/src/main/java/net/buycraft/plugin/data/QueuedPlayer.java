@@ -1,6 +1,8 @@
 package net.buycraft.plugin.data;
 
+import java.math.BigInteger;
 import java.util.Objects;
+import java.util.UUID;
 
 public final class QueuedPlayer {
     private final int id;
@@ -22,7 +24,7 @@ public final class QueuedPlayer {
     }
 
     public String getUuid() {
-        return this.uuid;
+        return new UUID(0, new BigInteger(this.uuid).longValue()).toString().replace("-", "");
     }
 
     @Override
