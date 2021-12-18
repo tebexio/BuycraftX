@@ -20,7 +20,7 @@ public final class QueuedPlayer {
     }
 
     public String getName() {
-        return this.name;
+        return this.name.replaceAll(" ", "_");
     }
 
     public String getUuid() {
