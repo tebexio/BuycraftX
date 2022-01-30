@@ -41,13 +41,18 @@ public class Transform extends ClassTransformer {
     private String version;
 
     @Override
-    protected boolean shouldTransform(final CtClass clazz) throws NotFoundException {
-        CtClass buycraftPlugin = ClassPool.getDefault().get(BuycraftPlugin.class.getName());
-        return !clazz.equals(buycraftPlugin) && clazz.subtypeOf(buycraftPlugin);
+    public boolean shouldTransform(final CtClass clazz) {
+        try {
+            CtClass buycraftPlugin = ClassPool.getDefault().get(BuycraftPlugin.class.getName());
+            return !clazz.equals(buycraftPlugin) && clazz.subtypeOf(buycraftPlugin);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    protected void applyTransformations(CtClass clazz) throws Exception {
+    public void applyTransformations(CtClass clazz) {
         AnnotationsAttribute attribute = (AnnotationsAttribute) clazz.getClassFile().getAttribute(AnnotationsAttribute.visibleTag);
         Annotation annotation = attribute.getAnnotation("com.velocitypowered.api.plugin.Plugin");
         StringMemberValue version = (StringMemberValue) annotation.getMemberValue("version");
