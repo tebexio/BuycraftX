@@ -5,15 +5,20 @@ import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
+import org.spongepowered.api.event.block.entity.ChangeSignEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.Color;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -32,7 +37,7 @@ public class RecentPurchaseSignListener {
         boolean ourSign;
 
         try {
-            ourSign = Arrays.asList("[buycraft_rp]", "[tebex_rp]").contains(event.getOriginalText().lines().get(0).toPlain().toLowerCase());
+            ourSign = Arrays.asList("[buycraft_rp]", "[tebex_rp]").contains(PlainTextComponentSerializer.plainText().serialize(event.originalText().get(0)).toLowerCase());
         } catch (IndexOutOfBoundsException e) {
             return;
         }
@@ -41,39 +46,39 @@ public class RecentPurchaseSignListener {
             return;
         }
 
-        Optional<Player> pl = event.getCause().first(Player.class);
+        Optional<ServerPlayer> pl = event.cause().first(ServerPlayer.class);
         if (!pl.isPresent()) {
             // This change was not caused by a player.
             return;
         }
-        Player player = pl.get();
+        ServerPlayer player = pl.get();
 
         if (!player.hasPermission("buycraft.admin")) {
-            event.getCause().first(Player.class).get().sendMessage(Text.builder("You can't create Buycraft signs.").color(TextColors.RED).build());
+            event.cause().first(Player.class).get().sendMessage(Component.text("You can't create Buycraft signs.").color(TextColor.color(Color.RED)));
             return;
         }
 
         int pos;
         try {
-            pos = Integer.parseInt(event.getOriginalText().lines().get(1).toPlain());
+            pos = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.originalText().get(1)).toLowerCase());
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            event.getCause().first(Player.class).get().sendMessage(Text.builder("The second line must be a number.").color(TextColors.RED).build());
+            player.sendMessage(Component.text("The second line must be a number.").color(TextColor.color(Color.RED)));
             return;
         }
         if (pos <= 0) {
-            player.sendMessage(Text.builder("You can't show negative or zero purchases!").color(TextColors.RED).build());
+            player.sendMessage(Component.text("You can't show negative or zero purchases!").color(TextColor.color(Color.RED)));
             return;
         }
         if (pos > 100) {
-            player.sendMessage(Text.builder("You can't show more than 100 recent purchases!").color(TextColors.RED).build());
+            player.sendMessage(Component.text("You can't show more than 100 recent purchases!").color(TextColor.color(Color.RED)));
             return;
         }
 
-        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(SpongeSerializedBlockLocation.create(event.getTargetTile().getLocation()), pos));
-        player.sendMessage(Text.builder("Added new recent purchase sign!").color(TextColors.GREEN).build());
+        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(SpongeSerializedBlockLocation.create(event.sign().location()), pos));
+        player.sendMessage(Component.text("Added new recent purchase sign!").color(TextColor.color(Color.GREEN)));
 
         // The below is due to the design of the Sponge Data API
-        SignData signData = event.getText();
+        SignData signData = event.text();
         ListValue<Text> lines = signData.lines();
         for (int i = 0; i < 4; i++) {
             lines.set(i, Text.EMPTY);

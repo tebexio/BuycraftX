@@ -1,18 +1,20 @@
 package net.buycraft.plugin.sponge.command;
 
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import org.spongepowered.api.command.CommandException;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextColor;
+import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.text.LiteralText;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.command.exception.CommandException;
+import org.spongepowered.api.command.parameter.CommandContext;
+import org.spongepowered.api.util.Color;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 public class InfoCmd implements CommandExecutor {
     private final BuycraftPlugin plugin;
@@ -22,36 +24,34 @@ public class InfoCmd implements CommandExecutor {
     }
 
     @Override
-    public CommandResult execute(CommandSource sender, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandContext args) throws CommandException {
+        Audience sender = (Audience) args.cause().root();
+
         if (plugin.getApiClient() == null) {
-            sender.sendMessage(Text.builder(plugin.getI18n().get("generic_api_operation_error")).color(TextColors.RED).build());
+            sender.sendMessage(Component.text(plugin.getI18n().get("generic_api_operation_error")).color(TextColor.color(Color.RED)));
             return CommandResult.success();
         }
 
         if (plugin.getServerInformation() == null) {
-            sender.sendMessage(Text.builder(plugin.getI18n().get("information_no_server")).color(TextColors.RED).build());
+            sender.sendMessage(Component.text(plugin.getI18n().get("information_no_server")).color(TextColor.color(Color.RED)));
             return CommandResult.success();
         }
 
         String webstoreURL = plugin.getServerInformation().getAccount().getDomain();
         try {
-            LiteralText webstore = Text.builder(webstoreURL)
-                    .color(TextColors.GREEN)
-                    .onClick(TextActions.openUrl(new URL(webstoreURL)))
-                    .onHover(TextActions.showText(Text.of(webstoreURL)))
-                    .build();
+            Component webstore = Component.text(webstoreURL)
+                    .color(TextColor.color(Color.GREEN))
+                    .clickEvent(ClickEvent.openUrl(new URL(webstoreURL)))
+                    .hoverEvent(HoverEvent.showText(Component.text(webstoreURL)));
 
-            LiteralText server = Text.builder(plugin.getServerInformation().getServer().getName())
-                    .color(TextColors.GREEN)
-                    .build();
+            Component server = Component.text(plugin.getServerInformation().getServer().getName()).color(TextColor.color(Color.GREEN));
 
-            sender.sendMessages(
-                    Text.builder(plugin.getI18n().get("information_title") + " ").color(TextColors.GRAY).build(),
-                    Text.builder(plugin.getI18n().get("information_sponge_server") + " ").color(TextColors.GRAY).append(server).build(),
-                    Text.builder(plugin.getI18n().get("information_currency", plugin.getServerInformation().getAccount().getCurrency().getIso4217()))
-                            .color(TextColors.GRAY).build(),
-                    Text.builder(plugin.getI18n().get("information_domain", "")).color(TextColors.GRAY).append(webstore).build()
-            );
+            Arrays.asList(
+                    Component.text(plugin.getI18n().get("information_title") + " ").color(TextColor.color(Color.GRAY)),
+                    Component.text(plugin.getI18n().get("information_sponge_server") + " ").color(TextColor.color(Color.GRAY)).append(server),
+                    Component.text(plugin.getI18n().get("information_currency", plugin.getServerInformation().getAccount().getCurrency().getIso4217())).color(TextColor.color(Color.GRAY)),
+                    Component.text(plugin.getI18n().get("information_domain", "")).color(TextColor.color(Color.GRAY)).append(webstore)
+            ).forEach(sender::sendMessage);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

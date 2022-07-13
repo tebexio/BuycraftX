@@ -10,8 +10,9 @@ import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.platform.PlatformInformation;
 import net.buycraft.plugin.platform.PlatformType;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.command.exception.CommandException;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.scheduler.Task;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -36,34 +37,39 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void dispatchCommand(String command) {
-        Sponge.getGame().getCommandManager().process(Sponge.getServer().getConsole().getCommandSource().get(), command);
+        try {
+            Sponge.game().server().commandManager().process(Sponge.game().systemSubject(), command);
+        } catch (CommandException e) {
+            // TODO: Handle this.
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void executeAsync(Runnable runnable) {
-        Sponge.getScheduler().createTaskBuilder().execute(runnable).async().submit(plugin);
+        Sponge.asyncScheduler().submit(Task.builder().execute(runnable).plugin(plugin.getPlugin()).build());
     }
 
     @Override
     public void executeAsyncLater(Runnable runnable, long time, TimeUnit unit) {
-        Sponge.getScheduler().createTaskBuilder().execute(runnable).async().delay(time, unit).submit(plugin);
+        Sponge.asyncScheduler().submit(Task.builder().execute(runnable).delay(time, unit).plugin(plugin.getPlugin()).build());
     }
 
     @Override
     public void executeBlocking(Runnable runnable) {
-        Sponge.getScheduler().createTaskBuilder().execute(runnable).submit(plugin);
+        Sponge.game().server().scheduler().submit(Task.builder().execute(runnable).plugin(plugin.getPlugin()).build());
     }
 
     @Override
     public void executeBlockingLater(Runnable runnable, long time, TimeUnit unit) {
-        Sponge.getScheduler().createTaskBuilder().execute(runnable).delay(time, unit).submit(plugin);
+        Sponge.game().server().scheduler().submit(Task.builder().execute(runnable).delay(time, unit).plugin(plugin.getPlugin()).build());
     }
 
-    private Optional<Player> getPlayer(QueuedPlayer player) {
-        if (player.getUuid() != null && (plugin.getConfiguration().isBungeeCord() || Sponge.getServer().getOnlineMode())) {
-            return Sponge.getServer().getPlayer(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
+    private Optional<ServerPlayer> getPlayer(QueuedPlayer player) {
+        if (player.getUuid() != null && (plugin.getConfiguration().isBungeeCord() || Sponge.server().isOnlineModeEnabled())) {
+            return Sponge.server().player(UuidUtil.mojangUuidToJavaUuid(player.getUuid()));
         }
-        return Sponge.getServer().getPlayer(player.getName());
+        return Sponge.server().player(player.getName());
     }
 
     @Override
@@ -73,7 +79,7 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public int getFreeSlots(QueuedPlayer player) {
-        return getPlayer(player).map(value -> Math.max(0, 36 - value.getInventory().size())).orElse(-1);
+        return getPlayer(player).map(value -> Math.max(0, 36 - value.inventory().slots().size())).orElse(-1);
     }
 
     @Override
@@ -93,13 +99,12 @@ public class SpongeBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public PlatformInformation getPlatformInformation() {
-        return new PlatformInformation(PlatformType.SPONGE, Sponge.getPlatform().getImplementation().getName() + " " +
-                Sponge.getPlatform().getImplementation().getVersion().orElse("UNKNOWN"));
+        return new PlatformInformation(PlatformType.SPONGE, Sponge.platform().type().name() + " " + Sponge.platform().minecraftVersion().name());
     }
 
     @Override
     public String getPluginVersion() {
-        return plugin.getClass().getAnnotation(Plugin.class).version();
+        return plugin.getPlugin().metadata().version().toString();
     }
 
     @Override

@@ -14,8 +14,7 @@ public final class SpongeSerializedBlockLocation {
     }
 
     public static SerializedBlockLocation create(Location<World> location) {
-        return new SerializedBlockLocation(location.getExtent().getUniqueId().toString(), location.getBlockX(), location.getBlockY(),
-                location.getBlockZ());
+        return new SerializedBlockLocation(location.getExtent().getUniqueId().toString(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
     public static Location<World> toSponge(SerializedBlockLocation location) {

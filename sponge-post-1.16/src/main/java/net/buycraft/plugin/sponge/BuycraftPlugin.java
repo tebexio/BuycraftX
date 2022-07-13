@@ -3,6 +3,7 @@ package net.buycraft.plugin.sponge;
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import com.sun.net.httpserver.HttpServer;
+import jdk.javadoc.internal.doclets.formats.html.markup.Text;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.responses.ServerInformation;
@@ -32,17 +33,22 @@ import net.buycraft.plugin.sponge.signs.purchases.RecentPurchaseSignListener;
 import net.buycraft.plugin.sponge.tasks.BuyNowSignUpdater;
 import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.VersionCheck;
+import net.kyori.adventure.text.Component;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
+import org.spongepowered.api.Engine;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.Command;
+import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.event.lifecycle.LoadedGameEvent;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
+import org.spongepowered.api.event.lifecycle.StoppedGameEvent;
+import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.Ticks;
+import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.plugin.builtin.jvm.Plugin;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -51,11 +57,12 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.sql.Time;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "buycraft")
+@Plugin("buycraft")
 public class BuycraftPlugin {
-    static final String MAGIC_VERSION = "SET_BY_MAGIC";
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
 
@@ -81,9 +88,17 @@ public class BuycraftPlugin {
     private PlayerJoinCheckTask playerJoinCheckTask;
     private ServerEventSenderTask serverEventSenderTask;
 
+    private PluginContainer plugin;
+
+    public PluginContainer getPlugin() {
+        return plugin;
+    }
+
     @Listener
-    public void onGamePreInitializationEvent(GamePreInitializationEvent event) {
+    public void onGamePreInitializationEvent(LoadedGameEvent event) {
         platform = new SpongeBuycraftPlatform(this);
+        plugin = event.game().pluginManager().plugin("buycraft").get();
+
         try {
             try {
                 Files.createDirectory(baseDirectory);
@@ -104,7 +119,7 @@ public class BuycraftPlugin {
         i18n = configuration.createI18n();
         httpClient = Setup.okhttp(baseDirectory.resolve("cache").toFile());
         // Check for latest version.
-        String curVersion = getClass().getAnnotation(Plugin.class).version();
+        String curVersion = plugin.metadata().version().toString();
         if (configuration.isCheckForUpdates()) {
             VersionCheck check = new VersionCheck(this, curVersion, configuration.getServerKey());
             try {
@@ -112,7 +127,7 @@ public class BuycraftPlugin {
             } catch (IOException e) {
                 getLogger().error("Can't check for updates", e);
             }
-            Sponge.getEventManager().registerListeners(this, check);
+            Sponge.eventManager().registerListeners(plugin, check);
         }
         String serverKey = configuration.getServerKey();
         if (serverKey == null || serverKey.equals("INVALID")) {
@@ -136,21 +151,23 @@ public class BuycraftPlugin {
         platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
         completedCommandsTask = new PostCompletedCommandsTask(platform);
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
-        Sponge.getScheduler().createTaskBuilder().intervalTicks(1).delayTicks(1).execute((Runnable) commandExecutor).submit(this);
-        Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).async().execute(completedCommandsTask).submit(this);
+
+        Sponge.asyncScheduler().submit(Task.builder().execute((Runnable) commandExecutor).interval(Ticks.of(1)).delay(Ticks.of(1)).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(completedCommandsTask).interval(Ticks.of(20)).delay(Ticks.of(20)).build());
+
+
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
-        Sponge.getScheduler().createTaskBuilder().intervalTicks(20).delayTicks(20).execute(playerJoinCheckTask).submit(this);
+        Sponge.asyncScheduler().submit(Task.builder().execute(playerJoinCheckTask).interval(Ticks.of(20)).delay(Ticks.of(20)).build());
+
         serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
-        Sponge.getScheduler().createTaskBuilder().interval(1, TimeUnit.MINUTES).async().delay(1, TimeUnit.MINUTES).execute(serverEventSenderTask).submit(this);
+        Sponge.asyncScheduler().submit(Task.builder().execute(serverEventSenderTask).delay(Ticks.of(20 * 60)).build());
+
         listingUpdateTask = new ListingUpdateTask(platform, null);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run();
         }
-        Sponge.getScheduler().createTaskBuilder()
-                .delayTicks(20 * 60 * 20)
-                .intervalTicks(20 * 60 * 20)
-                .execute(listingUpdateTask).async().submit(this);
+        Sponge.asyncScheduler().submit(Task.builder().execute(listingUpdateTask).interval(20, TimeUnit.MINUTES).interval(20, TimeUnit.SECONDS).build());
 
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
@@ -191,46 +208,42 @@ public class BuycraftPlugin {
             getLogger().error("Unable to load sign layouts", e);
         }
 
-        Sponge.getScheduler().createTaskBuilder()
-                .delay(1, TimeUnit.SECONDS)
-                .interval(15, TimeUnit.MINUTES)
-                .execute(new SignUpdater(this))
-                .submit(this);
 
-        Sponge.getScheduler().createTaskBuilder()
-                .delay(1, TimeUnit.SECONDS)
-                .interval(15, TimeUnit.MINUTES)
-                .execute(new BuyNowSignUpdater(this))
-                .submit(this);
+        Sponge.asyncScheduler().submit(Task.builder().execute(new SignUpdater(this)).interval(15, TimeUnit.MINUTES).delay(1, TimeUnit.SECONDS).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(new BuyNowSignUpdater(this)).interval(15, TimeUnit.MINUTES).delay(1, TimeUnit.SECONDS).build());
 
         if (serverInformation != null) {
-            Sponge.getScheduler().createTaskBuilder()
-                    .delay(0, TimeUnit.SECONDS)
-                    .interval(1, TimeUnit.DAYS)
-                    .execute(() -> {
-                        try {
-                            AnalyticsSend.postServerInformation(httpClient, configuration.getServerKey(), platform,
-                                    Sponge.getServer().getOnlineMode());
-                        } catch (IOException e) {
-                            getLogger().warn("Can't send analytics", e);
-                        }
-                    })
-                    .submit(this);
+            Sponge.asyncScheduler().submit(Task.builder().execute(() -> {
+                try {
+                    AnalyticsSend.postServerInformation(httpClient, configuration.getServerKey(), platform, Sponge.server().isOnlineModeEnabled());
+                } catch (IOException e) {
+                    getLogger().warn("Can't send analytics", e);
+                }
+            }).interval(1, TimeUnit.DAYS).delay(0, TimeUnit.SECONDS).build());
         }
 
-        Sponge.getEventManager().registerListeners(this, new BuycraftListener(this));
-        Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
-        Sponge.getEventManager().registerListeners(this, new BuyNowSignListener(this));
+        Sponge.eventManager().registerListeners(plugin, new BuycraftListener(this));
+        Sponge.eventManager().registerListeners(plugin, new RecentPurchaseSignListener(this));
+        Sponge.eventManager().registerListeners(plugin, new BuyNowSignListener(this));
 
-        Sponge.getCommandManager().register(this, buildCommands(), "tebex", "buycraft");
-        Sponge.getCommandManager().register(this, CommandSpec.builder()
-                .description(Text.of(i18n.get("usage_sponge_listing")))
-                .executor(new ListPackagesCmd(this))
-                .build(), configuration.getBuyCommandName());
+//        Sponge.getCommandManager().register(this, buildCommands(), "tebex", "buycraft");
+//        Sponge.getCommandManager().register(this, CommandSpec.builder()
+//                .description(Text.of(i18n.get("usage_sponge_listing")))
+//                .executor(new ListPackagesCmd(this))
+//                .build(), configuration.getBuyCommandName());
     }
 
     @Listener
-    public void onGameStoppingServerEvent(GameStoppingServerEvent event) {
+    public void onCommandRegister(RegisterCommandEvent<Command.Parameterized> event) {
+        event.register(plugin, buildCommands(), "tebex", "buycraft");
+        event.register(plugin, Command.builder()
+        .shortDescription(Component.text(i18n.get("usage_sponge_listing")))
+        .executor(new ListPackagesCmd(this))
+        .build(), configuration.getBuyCommandName());
+    }
+
+    @Listener
+    public void onGameStoppingServerEvent(StoppedGameEvent event) {
         try {
             recentPurchaseSignStorage.save(baseDirectory.resolve("purchase_signs.json"));
         } catch (IOException e) {
@@ -254,41 +267,41 @@ public class BuycraftPlugin {
         }
     }
 
-    private CommandSpec buildCommands() {
-        CommandSpec refresh = CommandSpec.builder()
-                .description(Text.of(i18n.get("usage_refresh")))
+    private Command buildCommands() {
+        Command refresh = Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_refresh")))
                 .permission("buycraft.admin")
                 .executor(new RefreshCmd(this))
                 .build();
-        CommandSpec secret = CommandSpec.builder()
-                .description(Text.of(i18n.get("usage_secret")))
+        Command secret = Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_secret")))
                 .permission("buycraft.admin")
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("secret"))))
+                .addParameter(Parameter.string().key("secret").build())
                 .executor(new SecretCmd(this))
                 .build();
-        CommandSpec report = CommandSpec.builder()
-                .description(Text.of(i18n.get("usage_report")))
+        Command report = Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_report")))
                 .executor(new ReportCmd(this))
                 .permission("buycraft.admin")
                 .build();
-        CommandSpec info = CommandSpec.builder()
-                .description(Text.of(i18n.get("usage_information")))
+        Command info = Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_information")))
                 .executor(new InfoCmd(this))
                 .build();
-        CommandSpec forcecheck = CommandSpec.builder()
-                .description(Text.of(i18n.get("usage_forcecheck")))
+        Command forcecheck = Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_forcecheck")))
                 .executor(new ForceCheckCmd(this))
                 .permission("buycraft.admin")
                 .build();
-        CommandSpec coupon = buildCouponCommands();
-        return CommandSpec.builder()
-                .description(Text.of("Main command for the Tebex plugin."))
-                .child(report, "report")
-                .child(secret, "secret")
-                .child(refresh, "refresh")
-                .child(info, "info")
-                .child(forcecheck, "forcecheck")
-                .child(coupon, "coupon")
+        Command coupon = buildCouponCommands();
+        return Command.builder()
+                .shortDescription(Component.text("Main command for the Tebex plugin."))
+                .addChild(report, "report")
+                .addChild(secret, "secret")
+                .addChild(refresh, "refresh")
+                .addChild(info, "info")
+                .addChild(forcecheck, "forcecheck")
+                .addChild(coupon, "coupon")
                 .build();
     }
 

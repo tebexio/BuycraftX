@@ -3,16 +3,19 @@ package net.buycraft.plugin.sponge.command;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import org.spongepowered.api.command.CommandException;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.spongepowered.api.SystemSubject;
+import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.command.exception.CommandException;
+import org.spongepowered.api.command.parameter.CommandContext;
+import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.util.Color;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class SecretCmd implements CommandExecutor {
     private final BuycraftPlugin plugin;
@@ -22,41 +25,39 @@ public class SecretCmd implements CommandExecutor {
     }
 
     @Override
-    public CommandResult execute(final CommandSource src, final CommandContext args) throws CommandException {
-        if (!(src instanceof ConsoleSource)) {
-            src.sendMessage(Text.builder(plugin.getI18n().get("secret_console_only")).color(TextColors.RED).build());
+    public CommandResult execute(final CommandContext args) throws CommandException {
+        final Audience src = (Audience) args.cause().root();
+        
+        if (!(src instanceof SystemSubject)) {
+            src.sendMessage(Component.text(plugin.getI18n().get("secret_console_only")).color(TextColor.color(Color.RED)));
         } else {
-            if (!args.getOne("secret").isPresent()) {
-                src.sendMessage(Text.builder(plugin.getI18n().get("secret_need_key")).color(TextColors.RED).build());
+            Optional<String> secretArg = args.one(Parameter.string().key("secret").build());
+            if (!secretArg.isPresent()) {
+                src.sendMessage(Component.text(plugin.getI18n().get("secret_need_key")).color(TextColor.color(Color.RED)));
             } else {
                 plugin.getPlatform().executeAsync(() -> {
                     String currentKey = plugin.getConfiguration().getServerKey();
-                    BuyCraftAPI client = BuyCraftAPI.create((String) args.getOne("secret").get(), plugin.getHttpClient());
+                    BuyCraftAPI client = BuyCraftAPI.create(secretArg.get(), plugin.getHttpClient());
                     try {
                         plugin.updateInformation(client);
                     } catch (IOException e) {
                         plugin.getLogger().error("Unable to verify secret", e);
-                        src.sendMessage(Text.builder(plugin.getI18n().get("secret_does_not_work")).color(TextColors.RED).build());
+                        src.sendMessage(Component.text(plugin.getI18n().get("secret_does_not_work")).color(TextColor.color(Color.RED)));
                         return;
                     }
 
                     ServerInformation information = plugin.getServerInformation();
                     plugin.setApiClient(client);
                     plugin.getListingUpdateTask().run();
-                    plugin.getConfiguration().setServerKey((String) args.getOne("secret").get());
+                    plugin.getConfiguration().setServerKey(secretArg.get());
                     try {
                         plugin.saveConfiguration();
                     } catch (IOException e) {
-                        src.sendMessage(Text.builder(plugin.getI18n().get("secret_cant_be_saved")).color(TextColors.RED).build());
+                        src.sendMessage(Component.text(plugin.getI18n().get("secret_cant_be_saved")).color(TextColor.color(Color.RED)));
                     }
-                    src.sendMessage(Text.builder(plugin.getI18n().get("secret_success",
-                            information.getServer().getName(), information.getAccount().getName())).color(TextColors.GREEN).build());
+                    src.sendMessage(Component.text(plugin.getI18n().get("secret_success", information.getServer().getName(), information.getAccount().getName())).color(TextColor.color(Color.GREEN)));
 
-                    boolean repeatChecks = false;
-                    if (currentKey.equals("INVALID")) {
-                        repeatChecks = true;
-                    }
-
+                    boolean repeatChecks = currentKey.equals("INVALID");
                     plugin.getDuePlayerFetcher().run(repeatChecks);
                 });
             }
