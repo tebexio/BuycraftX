@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>buycraftx-sponge-pre-1.16</artifactId>
+    <artifactId>buycraftx-sponge-post-1.16</artifactId>
 
     <build>
         <plugins>
@@ -82,7 +82,7 @@
                 <dependencies>
                     <dependency>
                         <groupId>net.buycraft</groupId>
-                        <artifactId>buycraftx-sponge-pre-1.16</artifactId>
+                        <artifactId>buycraftx-sponge-post-1.16</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
@@ -111,7 +111,8 @@
     <repositories>
         <repository>
             <id>sponge-repo</id>
-            <url>https://repo.spongepowered.org/maven</url>
+            <name>Sponge Maven Repository</name>
+            <url>https://repo.spongepowered.org/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -119,7 +120,8 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>7.0.0</version>
+            <version>8.0.0</version>
+            <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
