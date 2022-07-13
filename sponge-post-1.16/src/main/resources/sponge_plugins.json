@@ -1,0 +1,27 @@
+{
+  "loader": {
+    "name": "buycraftx",
+    "version": "SET_BY_MAGIC"
+  },
+  "license": "MIT",
+  "global": {
+    "version": "8.0.0",
+    "links": {
+      "homepage": "https://tebex.io",
+      "source": "https://github.com/tebex/BuycraftX",
+      "issues": "https://github.com/tebex/BuycraftX/issues"
+    },
+    "contributors": [
+      {
+        "name": "Tebex",
+        "description": "To be updated"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "spongeapi",
+        "version": "8.0.0"
+      }
+    ]
+  }
+}

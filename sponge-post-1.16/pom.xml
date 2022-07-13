@@ -98,7 +98,7 @@
                             <goal>replace</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/target/classes/mcmod.info</file>
+                            <file>${project.basedir}/target/resources/sponge_plugins.json</file>
                             <token>SET_BY_MAGIC</token>
                             <value>${project.version}</value>
                         </configuration>

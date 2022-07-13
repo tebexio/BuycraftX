@@ -53,7 +53,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
+@Plugin(id = "buycraft")
 public class BuycraftPlugin {
     static final String MAGIC_VERSION = "SET_BY_MAGIC";
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
