@@ -2,14 +2,15 @@ package net.buycraft.plugin.sponge.command;
 
 import net.buycraft.plugin.shared.util.ReportBuilder;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.command.exception.CommandException;
+import org.spongepowered.api.command.parameter.CommandContext;
+import org.spongepowered.api.util.Color;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -28,12 +29,14 @@ public class ReportCmd implements CommandExecutor {
     }
 
     @Override
-    public CommandResult execute(final CommandSource src, CommandContext args) throws CommandException {
-        src.sendMessage(Text.builder(plugin.getI18n().get("report_wait")).color(TextColors.RED).build());
+    public CommandResult execute(CommandContext args) throws CommandException {
+        Audience src = (Audience) args.cause().root();
+
+        src.sendMessage(Component.text(plugin.getI18n().get("report_wait")).color(TextColor.color(Color.RED)));
 
         plugin.getPlatform().executeAsync(() -> {
-            String serverIP = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getHostName() : "?";
-            int serverPort = (Sponge.getServer().getBoundAddress().isPresent()) ? Sponge.getServer().getBoundAddress().get().getPort() : -1;
+            String serverIP = (Sponge.server().boundAddress().isPresent()) ? Sponge.server().boundAddress().get().getHostName() : "?";
+            int serverPort = (Sponge.server().boundAddress().isPresent()) ? Sponge.server().boundAddress().get().getPort() : -1;
 
             ReportBuilder builder = ReportBuilder.builder()
                     .client(plugin.getHttpClient())
@@ -43,7 +46,7 @@ public class ReportCmd implements CommandExecutor {
                     .ip(serverIP)
                     .port(serverPort)
                     .listingUpdateTask(plugin.getListingUpdateTask())
-                    .serverOnlineMode(Sponge.getServer().getOnlineMode())
+                    .serverOnlineMode(Sponge.server().isOnlineModeEnabled())
                     .build();
 
             SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
@@ -53,9 +56,9 @@ public class ReportCmd implements CommandExecutor {
 
             try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
                 w.write(generated);
-                src.sendMessage(Text.builder(plugin.getI18n().get("report_saved", p.toAbsolutePath().toString())).color(TextColors.YELLOW).build());
+                src.sendMessage(Component.text(plugin.getI18n().get("report_saved", p.toAbsolutePath().toString())).color(TextColor.color(Color.YELLOW)));
             } catch (IOException e) {
-                src.sendMessage(Text.builder(plugin.getI18n().get("report_cant_save")).color(TextColors.RED).build());
+                src.sendMessage(Component.text(plugin.getI18n().get("report_cant_save")).color(TextColor.color(Color.RED)));
                 plugin.getLogger().info(generated);
             }
         });

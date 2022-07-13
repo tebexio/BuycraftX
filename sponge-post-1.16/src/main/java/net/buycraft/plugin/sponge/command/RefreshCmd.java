@@ -1,13 +1,14 @@
 package net.buycraft.plugin.sponge.command;
 
 import net.buycraft.plugin.sponge.BuycraftPlugin;
-import org.spongepowered.api.command.CommandException;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.command.exception.CommandException;
+import org.spongepowered.api.command.parameter.CommandContext;
+import org.spongepowered.api.util.Color;
 
 public class RefreshCmd implements CommandExecutor {
     private final BuycraftPlugin plugin;
@@ -17,12 +18,14 @@ public class RefreshCmd implements CommandExecutor {
     }
 
     @Override
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandContext args) throws CommandException {
+        Audience src = (Audience) args.cause().root();
+
         if (plugin.getApiClient() == null) {
-            src.sendMessage(Text.builder(plugin.getI18n().get("need_secret_key")).color(TextColors.RED).build());
+            src.sendMessage(Component.text(plugin.getI18n().get("need_secret_key")).color(TextColor.color(Color.RED)));
         } else {
             plugin.getPlatform().executeAsync(plugin.getListingUpdateTask());
-            src.sendMessage(Text.builder(plugin.getI18n().get("refresh_queued")).color(TextColors.GREEN).build());
+            src.sendMessage(Component.text(plugin.getI18n().get("refresh_queued")).color(TextColor.color(Color.GREEN)));
         }
         return CommandResult.success();
     }
