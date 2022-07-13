@@ -12,7 +12,8 @@
         <module>bukkit-shared</module>
         <module>bukkit-pre-1.13</module>
         <module>bukkit-post-1.13</module>
-        <module>sponge</module>
+        <module>sponge-pre-1.16</module>
+        <module>sponge-post-1.16</module>
         <module>bungeecord</module>
         <module>plugin-shared</module>
         <module>nukkit</module>
