@@ -86,12 +86,14 @@ public class BuycraftPlugin {
     private PostCompletedCommandsTask completedCommandsTask;
     private PlayerJoinCheckTask playerJoinCheckTask;
     private ServerEventSenderTask serverEventSenderTask;
+    private ListPackagesCmd listPackagesCmd;
 
     private PluginContainer plugin;
 
     public PluginContainer getPlugin() {
         return plugin;
     }
+
 
     @Listener
     public void onServerStart(final StartedEngineEvent<Server> event) {
@@ -199,7 +201,7 @@ public class BuycraftPlugin {
                 } catch (IOException e) {
                     getLogger().warn("Can't send analytics", e);
                 }
-            }).interval(1, TimeUnit.DAYS).delay(0, TimeUnit.SECONDS).build());
+            }).interval(1, TimeUnit.DAYS).delay(0, TimeUnit.SECONDS).plugin(plugin).build());
         }
 
         Sponge.eventManager().registerListeners(plugin, new BuycraftListener(this));
@@ -235,7 +237,8 @@ public class BuycraftPlugin {
         String buyCommand = buyCommandName.get(0);
         List<String> buyCommandAliases = buyCommandName.subList(1, buyCommandName.size());
 
-        event.register(plugin, Command.builder().shortDescription(Component.text(i18n.get("usage_sponge_listing"))).executor(new ListPackagesCmd(this)).build(), buyCommand, buyCommandAliases.toArray(new String[0]));
+        listPackagesCmd = new ListPackagesCmd(this);
+        event.register(plugin, Command.builder().shortDescription(Component.text(i18n.get("usage_sponge_listing"))).executor(listPackagesCmd).build(), buyCommand, buyCommandAliases.toArray(new String[0]));
     }
 
     @Listener
@@ -275,6 +278,16 @@ public class BuycraftPlugin {
                 .addParameter(Parameter.string().key("secret").build())
                 .executor(new SecretCmd(this))
                 .build();
+        Command.Parameterized packages = Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_package")))
+                .addParameter(Parameter.integerNumber().key("package").build())
+                .executor(new PackagesCmd(this))
+                .build();
+        Command.Parameterized checkout = Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_checkout")))
+                .addParameter(Parameter.string().key("package").build())
+                .executor(new CheckoutCmd(this))
+                .build();
         Command.Parameterized report = Command.builder()
                 .shortDescription(Component.text(i18n.get("usage_report")))
                 .executor(new ReportCmd(this))
@@ -293,6 +306,8 @@ public class BuycraftPlugin {
         return Command.builder()
                 .shortDescription(Component.text("Main command for the Tebex plugin."))
                 .addChild(report, "report")
+                .addChild(packages, "packages")
+                .addChild(checkout, "checkout")
                 .addChild(secret, "secret")
                 .addChild(refresh, "refresh")
                 .addChild(info, "info")
@@ -412,5 +427,9 @@ public class BuycraftPlugin {
 
     public ServerEventSenderTask getServerEventSenderTask() {
         return serverEventSenderTask;
+    }
+
+    public ListPackagesCmd getListPackagesCmd() {
+        return listPackagesCmd;
     }
 }
