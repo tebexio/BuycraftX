@@ -83,10 +83,6 @@ public class RecentPurchaseSignListener {
         plugin.getPlatform().executeAsync(new SignUpdater(plugin));
     }
 
-    private boolean isSign(Location<World> sign) {
-        return sign.getBlockType().equals(BlockTypes.WALL_SIGN) || sign.getBlockType().equals(BlockTypes.STANDING_SIGN);
-    }
-
     private boolean removeSign(Player player, SerializedBlockLocation location) {
         if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
             if (!player.hasPermission("buycraft.admin")) {

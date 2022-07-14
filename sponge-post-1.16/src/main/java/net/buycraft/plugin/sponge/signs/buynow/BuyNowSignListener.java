@@ -1,6 +1,5 @@
 package net.buycraft.plugin.sponge.signs.buynow;
 
-import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.shared.config.signs.storage.SavedBuyNowSign;
 import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
@@ -11,21 +10,17 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
-import org.spongepowered.api.data.value.mutable.ListValue;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.block.transaction.Operations;
+import org.spongepowered.api.data.value.ListValue;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.block.entity.ChangeSignEvent;
-import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Color;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.server.ServerLocation;
 
 import java.util.*;
 
@@ -60,7 +55,7 @@ public class BuyNowSignListener {
         ServerPlayer player = pl.get();
 
         if (!player.hasPermission("buycraft.admin")) {
-            event.cause().first(Player.class).get().sendMessage(Component.text("You can't create Buycraft signs.").color(TextColor.color(Color.RED)));
+            player.sendMessage(Component.text("You can't create Buycraft signs.").color(TextColor.color(Color.RED)));
             return;
         }
 
@@ -68,30 +63,23 @@ public class BuyNowSignListener {
         try {
             pos = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.originalText().get(1)).toLowerCase());
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            event.cause().first(Player.class).get().sendMessage(Component.text("The second line must be a number.").color(TextColor.color(Color.RED)));
+            player.sendMessage(Component.text("The second line must be a number.").color(TextColor.color(Color.RED)));
             return;
         }
 
-        plugin.getBuyNowSignStorage().addSign(new SavedBuyNowSign(SpongeSerializedBlockLocation.create(event.sign().location()), pos));
+        plugin.getBuyNowSignStorage().addSign(new SavedBuyNowSign(SpongeSerializedBlockLocation.create((ServerLocation) event.sign().location()), pos));
         player.sendMessage(Component.text("Added new buy now sign!").color(TextColor.color(Color.GREEN)));
 
-        // The below is due to the design of the Sponge Data API
-        SignData signData = event.getText();
-        ListValue<Text> lines = signData.lines();
+        ListValue.Mutable<Component> signText = event.text();
         for (int i = 0; i < 4; i++) {
             if (i == 0) {
-                lines.set(i, Component.text("Buy!").build());
+                signText.set(i, Component.text("Buy!"));
             } else {
-                lines.set(i, Text.EMPTY);
+                signText.set(i, Component.empty());
             }
         }
-        signData.set(lines);
 
         plugin.getPlatform().executeAsync(new BuyNowSignUpdater(plugin));
-    }
-
-    private boolean isSign(Location<World> sign) {
-        return sign.getBlockType().equals(BlockTypes.WALL_SIGN) || sign.getBlockType().equals(BlockTypes.STANDING_SIGN);
     }
 
     private boolean removeSign(ServerPlayer player, SerializedBlockLocation location) {
@@ -112,34 +100,42 @@ public class BuyNowSignListener {
     }
 
     @Listener
-    public void onBlockBreak(ChangeBlockEvent.Break event) {
-        event.getTransactions().forEach(trans -> {
-            if ((trans.getOriginal().getState().getType().equals(BlockTypes.WALL_SIGN) || trans.getOriginal().getState().getType().equals(BlockTypes.STANDING_SIGN))) {
-                Optional<Location<World>> locationOptional = trans.getOriginal().getLocation();
-                Optional<Player> playerOptional = event.getCause().first(Player.class);
-                if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(locationOptional.get()))) {
+    public void onBlockBreak(ChangeBlockEvent.All event) {
+        event.transactions().forEach(trans -> {
+            if (trans.operation() != Operations.BREAK.get()) return;
+            if (isSign(trans.original().state().type())) {
+                Optional<ServerLocation> locationOptional = trans.original().location();
+                Optional<ServerPlayer> playerOptional = event.cause().first(ServerPlayer.class);
+                if (! removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(locationOptional.get()))) {
                     event.setCancelled(true);
                 }
             }
         });
     }
 
+    private boolean isSign(BlockType blockType) {
+        return Arrays.asList(
+                BlockTypes.ACACIA_WALL_SIGN, BlockTypes.BIRCH_WALL_SIGN, BlockTypes.DARK_OAK_WALL_SIGN, BlockTypes.JUNGLE_WALL_SIGN, BlockTypes.OAK_WALL_SIGN, BlockTypes.SPRUCE_WALL_SIGN,
+                BlockTypes.ACACIA_SIGN, BlockTypes.BIRCH_SIGN, BlockTypes.DARK_OAK_SIGN, BlockTypes.JUNGLE_SIGN, BlockTypes.OAK_SIGN, BlockTypes.SPRUCE_SIGN
+        ).contains(blockType);
+    }
+
     @Listener
     public void onRightClickBlock(InteractBlockEvent.Secondary event) {
-        BlockSnapshot b = event.getTargetBlock();
-        if (!(b.getState().getType().equals(BlockTypes.WALL_SIGN) || b.getState().getType().equals(BlockTypes.STANDING_SIGN))) {
+        BlockSnapshot b = event.block();
+        if (!isSign(b.state().type())) {
             return;
         }
-        Player p = event.getCause().first(Player.class).get();
-        SerializedBlockLocation sbl = SpongeSerializedBlockLocation.create(b.getLocation().get());
+        ServerPlayer p = event.cause().first(ServerPlayer.class).get();
+        SerializedBlockLocation sbl = SpongeSerializedBlockLocation.create(b.location().get());
 
         for (SavedBuyNowSign s : plugin.getBuyNowSignStorage().getSigns()) {
             if (s.getLocation().equals(sbl)) {
                 // Signs are rate limited (per player) in order to limit API calls issued.
-                Long ts = signCooldowns.get(p.getUniqueId());
+                Long ts = signCooldowns.get(p.uniqueId());
                 long now = System.currentTimeMillis();
                 if (ts == null || ts + COOLDOWN_MS <= now) {
-                    signCooldowns.put(p.getUniqueId(), now);
+                    signCooldowns.put(p.uniqueId(), now);
                     plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, s.getPackageId(), p));
                 }
                 return;

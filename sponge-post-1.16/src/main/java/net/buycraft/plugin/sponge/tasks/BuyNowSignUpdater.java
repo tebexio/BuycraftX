@@ -4,14 +4,18 @@ import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.shared.config.signs.storage.SavedBuyNowSign;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
+import net.kyori.adventure.text.Component;
 import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
-import org.spongepowered.api.data.value.mutable.ListValue;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.block.entity.BlockEntity;
+import org.spongepowered.api.block.entity.Sign;
+import org.spongepowered.api.data.value.ListValue;
 import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.server.ServerLocation;
+import org.spongepowered.api.world.server.ServerWorld;
 
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +27,13 @@ public class BuyNowSignUpdater implements Runnable {
         this.plugin = plugin;
     }
 
+    private boolean isSign(BlockType blockType) {
+        return Arrays.asList(
+                BlockTypes.ACACIA_WALL_SIGN, BlockTypes.BIRCH_WALL_SIGN, BlockTypes.DARK_OAK_WALL_SIGN, BlockTypes.JUNGLE_WALL_SIGN, BlockTypes.OAK_WALL_SIGN, BlockTypes.SPRUCE_WALL_SIGN,
+                BlockTypes.ACACIA_SIGN, BlockTypes.BIRCH_SIGN, BlockTypes.DARK_OAK_SIGN, BlockTypes.JUNGLE_SIGN, BlockTypes.OAK_SIGN, BlockTypes.SPRUCE_SIGN
+        ).contains(blockType);
+    }
+
     @Override
     public void run() {
         for (SavedBuyNowSign sign : plugin.getBuyNowSignStorage().getSigns()) {
@@ -32,29 +43,28 @@ public class BuyNowSignUpdater implements Runnable {
                         sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));
                 continue;
             }
-            Location location = SpongeSerializedBlockLocation.toSponge(sign.getLocation());
-            BlockState b = location.getBlock();
+            Location<ServerWorld, ServerLocation> location = SpongeSerializedBlockLocation.toSponge(sign.getLocation());
+            BlockState b = location.block();
 
-            if (!(b.getType().equals(BlockTypes.WALL_SIGN) || b.getType().equals(BlockTypes.STANDING_SIGN))) {
-                plugin.getLogger().error(String.format("Sign at %d, %d, %d in world %s is not a sign in the world!",
-                        sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));
+            if (!isSign(b.type())) {
+                plugin.getLogger().error(String.format("Sign at %d, %d, %d in world %s is not a sign in the world!", sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ(), sign.getLocation().getWorld()));
                 continue;
             }
 
-            Optional<TileEntity> entity = location.getTileEntity();
+            Optional<? extends BlockEntity> entity = location.blockEntity();
             Currency currency = Currency.getInstance(plugin.getServerInformation().getAccount().getCurrency().getIso4217());
             List<String> signLines = plugin.getBuyNowSignLayout().format(currency, p);
-            if (entity.isPresent() && entity.get().supports(SignData.class)) {
-                SignData signData = entity.get().getOrCreate(SignData.class).get();
-                ListValue<Text> lines = signData.lines();
+            if (entity.isPresent()) {
+                ListValue.Mutable<Component> signText = ((Sign) entity.get()).lines();
                 for (int i = 0; i < 4; i++) {
-                    if (i >= signLines.size()) {
-                        lines.set(i, Text.EMPTY);
+                    if (i == 0) {
+                        signText.set(i, Component.empty());
                     } else {
-                        lines.set(i, Text.builder(signLines.get(i).replace("&", "§")).build());
+                        signText.set(i, Component.text(signLines.get(i).replace("&", "§")));
                     }
                 }
-                entity.get().offer(lines);
+
+                entity.get().offer(signText);
             }
         }
     }

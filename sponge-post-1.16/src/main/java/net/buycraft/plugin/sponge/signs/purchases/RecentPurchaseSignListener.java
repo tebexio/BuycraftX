@@ -8,19 +8,16 @@ import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
-import org.spongepowered.api.data.value.mutable.ListValue;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.block.transaction.Operations;
+import org.spongepowered.api.data.value.ListValue;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.entity.ChangeSignEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.Color;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.server.ServerLocation;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -54,7 +51,7 @@ public class RecentPurchaseSignListener {
         ServerPlayer player = pl.get();
 
         if (!player.hasPermission("buycraft.admin")) {
-            event.cause().first(Player.class).get().sendMessage(Component.text("You can't create Buycraft signs.").color(TextColor.color(Color.RED)));
+            player.sendMessage(Component.text("You can't create Buycraft signs.").color(TextColor.color(Color.RED)));
             return;
         }
 
@@ -74,32 +71,36 @@ public class RecentPurchaseSignListener {
             return;
         }
 
-        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(SpongeSerializedBlockLocation.create(event.sign().location()), pos));
+        plugin.getRecentPurchaseSignStorage().addSign(new RecentPurchaseSignPosition(SpongeSerializedBlockLocation.create((ServerLocation) event.sign().location()), pos));
         player.sendMessage(Component.text("Added new recent purchase sign!").color(TextColor.color(Color.GREEN)));
 
-        // The below is due to the design of the Sponge Data API
-        SignData signData = event.text();
-        ListValue<Text> lines = signData.lines();
+        ListValue.Mutable<Component> signText = event.text();
         for (int i = 0; i < 4; i++) {
-            lines.set(i, Text.EMPTY);
+            if (i == 0) {
+                signText.set(i, Component.text("Buy!"));
+            } else {
+                signText.set(i, Component.empty());
+            }
         }
-        signData.set(lines);
 
         plugin.getPlatform().executeAsync(new SignUpdater(plugin));
     }
 
-    private boolean isSign(Location<World> sign) {
-        return sign.getBlockType().equals(BlockTypes.WALL_SIGN) || sign.getBlockType().equals(BlockTypes.STANDING_SIGN);
+    private boolean isSign(BlockType blockType) {
+        return Arrays.asList(
+                BlockTypes.ACACIA_WALL_SIGN, BlockTypes.BIRCH_WALL_SIGN, BlockTypes.DARK_OAK_WALL_SIGN, BlockTypes.JUNGLE_WALL_SIGN, BlockTypes.OAK_WALL_SIGN, BlockTypes.SPRUCE_WALL_SIGN,
+                BlockTypes.ACACIA_SIGN, BlockTypes.BIRCH_SIGN, BlockTypes.DARK_OAK_SIGN, BlockTypes.JUNGLE_SIGN, BlockTypes.OAK_SIGN, BlockTypes.SPRUCE_SIGN
+        ).contains(blockType);
     }
 
-    private boolean removeSign(Player player, SerializedBlockLocation location) {
+    private boolean removeSign(ServerPlayer player, SerializedBlockLocation location) {
         if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
             if (!player.hasPermission("buycraft.admin")) {
-                player.sendMessage(Text.builder("You don't have permission to break this sign.").color(TextColors.RED).build());
+                player.sendMessage(Component.text("You don't have permission to break this sign.").color(TextColor.color(Color.RED)));
                 return false;
             }
             if (plugin.getRecentPurchaseSignStorage().removeSign(location)) {
-                player.sendMessage(Text.builder("Removed recent purchase sign!").color(TextColors.RED).build());
+                player.sendMessage(Component.text("Removed recent purchase sign!").color(TextColor.color(Color.RED)));
                 return true;
             }
         }
@@ -107,12 +108,13 @@ public class RecentPurchaseSignListener {
     }
 
     @Listener
-    public void onBlockBreak(ChangeBlockEvent.Break event) {
-        event.getTransactions().forEach(trans -> {
-            if ((trans.getOriginal().getState().getType().equals(BlockTypes.WALL_SIGN) || trans.getOriginal().getState().getType().equals(BlockTypes.STANDING_SIGN))) {
-                Optional<Location<World>> locationOptional = trans.getOriginal().getLocation();
-                Optional<Player> playerOptional = event.getCause().first(Player.class);
-                if (!removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(locationOptional.get()))) {
+    public void onBlockBreak(ChangeBlockEvent.All event) {
+        event.transactions().forEach(trans -> {
+            if (trans.operation() != Operations.BREAK.get()) return;
+            if (isSign(trans.original().state().type())) {
+                Optional<ServerLocation> locationOptional = trans.original().location();
+                Optional<ServerPlayer> playerOptional = event.cause().first(ServerPlayer.class);
+                if (! removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(locationOptional.get()))) {
                     event.setCancelled(true);
                 }
             }

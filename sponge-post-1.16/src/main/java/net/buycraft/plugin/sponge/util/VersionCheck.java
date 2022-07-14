@@ -3,11 +3,13 @@ package net.buycraft.plugin.sponge.util;
 import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.shared.util.VersionUtil;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextColor;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.event.network.ServerSideConnectionEvent;
+import org.spongepowered.api.util.Color;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -50,16 +52,17 @@ public class VersionCheck {
     }
 
     @Listener
-    public void onPlayerJoinEvent(ClientConnectionEvent.Join event) {
-        if (event.getTargetEntity().hasPermission("buycraft.admin") && !upToDate) {
+    public void onPlayerJoinEvent(ServerSideConnectionEvent.Join event) {
+        ServerPlayer player = event.player();
+        if (player.hasPermission("buycraft.admin") && !upToDate) {
             plugin.getPlatform().executeAsyncLater(() -> {
                 try {
-                    event.getTargetEntity().sendMessage(
-                            Text.builder()
-                                    .append(Text.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
-                                    .onClick(TextActions.openUrl(new URL("https://server.tebex.io")))
-                                    .color(TextColors.YELLOW)
-                                    .build());
+                    player.sendMessage(
+                            Component.text()
+                                    .append(Component.text(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
+                                    .clickEvent(ClickEvent.openUrl(new URL("https://server.tebex.io")))
+                                    .color(TextColor.color(Color.YELLOW))
+                    );
                 } catch (MalformedURLException e) {
                     throw new AssertionError(e); // seriously?
                 }

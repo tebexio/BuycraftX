@@ -2,8 +2,9 @@ package net.buycraft.plugin.sponge;
 
 import net.buycraft.plugin.data.QueuedPlayer;
 import net.buycraft.plugin.data.ServerEvent;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 
 import java.util.Date;
 
@@ -15,35 +16,37 @@ public class BuycraftListener {
     }
 
     @Listener
-    public void onPlayerJoinEvent(ClientConnectionEvent.Join event) {
+    public void onPlayerJoinEvent(ServerSideConnectionEvent.Join event) {
         if (plugin.getApiClient() == null) {
             return;
         }
 
+        ServerPlayer player = event.player();
         plugin.getServerEventSenderTask().queueEvent(new ServerEvent(
-                event.getTargetEntity().getUniqueId().toString().replace("-", ""),
-                event.getTargetEntity().getName(),
-                event.getTargetEntity().getConnection().getAddress().getAddress().getHostAddress(),
+                player.uniqueId().toString().replace("-", ""),
+                player.name(),
+                player.connection().address().getAddress().getHostAddress(),
                 ServerEvent.JOIN_EVENT,
                 new Date()
         ));
 
-        QueuedPlayer qp = plugin.getDuePlayerFetcher().fetchAndRemoveDuePlayer(event.getTargetEntity().getName());
+        QueuedPlayer qp = plugin.getDuePlayerFetcher().fetchAndRemoveDuePlayer(player.name());
         if (qp != null) {
             plugin.getPlayerJoinCheckTask().queue(qp);
         }
     }
 
     @Listener
-    public void onPlayerQuitEvent(ClientConnectionEvent.Disconnect event) {
+    public void onPlayerQuitEvent(ServerSideConnectionEvent.Disconnect event) {
         if (plugin.getApiClient() == null) {
             return;
         }
 
+        ServerPlayer player = event.player();
         plugin.getServerEventSenderTask().queueEvent(new ServerEvent(
-                event.getTargetEntity().getUniqueId().toString().replace("-", ""),
-                event.getTargetEntity().getName(),
-                event.getTargetEntity().getConnection().getAddress().getAddress().getHostAddress(),
+                player.uniqueId().toString().replace("-", ""),
+                player.name(),
+                player.connection().address().getAddress().getHostAddress(),
                 ServerEvent.LEAVE_EVENT,
                 new Date()
         ));
