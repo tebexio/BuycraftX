@@ -42,32 +42,32 @@ public class ListPackagesCmd implements CommandExecutor {
             return CommandResult.success();
         }
 
-        sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), ImmutableList.of(),
-                plugin.getI18n().get("categories"), null), sender);
+        sendPaginatedMessage(new Node(plugin.getListingUpdateTask().getListing().getCategories(), ImmutableList.of(), plugin.getI18n().get("categories"), null), sender);
 
         return CommandResult.success();
     }
 
     private void sendPaginatedMessage(Node node, Audience source) {
-        PaginationService paginationService = Sponge.server().serviceProvider().provide(PaginationService.class).get();
-        PaginationList.Builder builder = paginationService.builder();
-        List<Component> contents = node.getSubcategories().stream()
-                .map(category -> Component.text("> " + category.getName()).color(TextColor.color(Color.GRAY))
-                        .onClick(TextActions.executeCallback(commandSource -> {
-                    if (commandSource instanceof ServerPlayer) {
-                        sendPaginatedMessage(node.getChild(category), source);
-                    }
-                })).build()).collect(Collectors.toList());
-        for (Package p : node.getPackages()) {
-            contents.add(Component.text(p.getName()).color(TextColor.color(Color.WHITE)).append(Component.text(" - ").color(TextColor.color(Color.GRAY)))
-                    .append(Component.text("$x".replace("$", plugin.getServerInformation().getAccount().getCurrency().getSymbol())
-                            .replace("x", "" + p.getEffectivePrice())).color(TextColor.color(Color.GREEN)))
-                    .onClick(TextActions.executeCallback(commandSource -> {
-                        if (commandSource instanceof ServerPlayer) {
-                            plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, p.getId(), (ServerPlayer) commandSource));
-                        }
-                    })).build());
-        }
-        builder.title(Component.text(plugin.getI18n().get("sponge_listing")).color(TextColor.color(Color.BLUE))).contents(contents).padding(Component.text("-")).sendTo(source);
+//        PaginationService paginationService = Sponge.server().serviceProvider().provide(PaginationService.class).get();
+//        PaginationList.Builder builder = paginationService.builder();
+//        List<Component> contents = node.getSubcategories().stream()
+//                .map(category -> Component.text("> " + category.getName()).color(TextColor.color(Color.GRAY))
+//                        .onClick(TextActions.executeCallback(commandSource -> {
+//                    if (commandSource instanceof ServerPlayer) {
+//                        sendPaginatedMessage(node.getChild(category), source);
+//                    }
+//                })).build()).collect(Collectors.toList());
+//
+//        for (Package p : node.getPackages()) {
+//            contents.add(Component.text(p.getName()).color(TextColor.color(Color.WHITE)).append(Component.text(" - ").color(TextColor.color(Color.GRAY)))
+//                    .append(Component.text("$x".replace("$", plugin.getServerInformation().getAccount().getCurrency().getSymbol())
+//                            .replace("x", "" + p.getEffectivePrice())).color(TextColor.color(Color.GREEN)))
+//                    .onClick(TextActions.executeCallback(commandSource -> {
+//                        if (commandSource instanceof ServerPlayer) {
+//                            plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, p.getId(), (ServerPlayer) commandSource));
+//                        }
+//                    })).build());
+//        }
+//        builder.title(Component.text(plugin.getI18n().get("sponge_listing")).color(TextColor.color(Color.BLUE))).contents(contents).padding(Component.text("-")).sendTo(source);
     }
 }

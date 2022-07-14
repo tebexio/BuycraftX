@@ -5,18 +5,18 @@ import net.buycraft.plugin.data.RecentPayment;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPosition;
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
-import org.spongepowered.api.block.tileentity.Skull;
-import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.block.tileentity.TileEntityTypes;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
-import org.spongepowered.api.data.type.SkullTypes;
-import org.spongepowered.api.data.value.mutable.ListValue;
+import net.kyori.adventure.text.Component;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.block.entity.BlockEntity;
+import org.spongepowered.api.block.entity.BlockEntityTypes;
+import org.spongepowered.api.block.entity.Sign;
+import org.spongepowered.api.block.entity.Skull;
+import org.spongepowered.api.data.Keys;
+import org.spongepowered.api.data.value.ListValue;
 import org.spongepowered.api.profile.GameProfile;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Direction;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.server.ServerLocation;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -33,11 +33,18 @@ public class SignUpdateApplication implements Runnable {
         this.resolvedProfiles = resolvedProfiles;
     }
 
-    private Optional<Skull> findSkull(Location<World> start) {
+    private boolean isSign(BlockType blockType) {
+        return Arrays.asList(
+                BlockTypes.ACACIA_WALL_SIGN, BlockTypes.BIRCH_WALL_SIGN, BlockTypes.DARK_OAK_WALL_SIGN, BlockTypes.JUNGLE_WALL_SIGN, BlockTypes.OAK_WALL_SIGN, BlockTypes.SPRUCE_WALL_SIGN,
+                BlockTypes.ACACIA_SIGN, BlockTypes.BIRCH_SIGN, BlockTypes.DARK_OAK_SIGN, BlockTypes.JUNGLE_SIGN, BlockTypes.OAK_SIGN, BlockTypes.SPRUCE_SIGN
+        ).contains(blockType);
+    }
+
+    private Optional<Skull> findSkull(ServerLocation start) {
         for (Direction direction : SKULL_CHECK) {
-            Optional<TileEntity> entity = start.getRelative(direction).getTileEntity();
+            Optional<? extends BlockEntity> entity = start.relativeTo(direction).blockEntity();
             if (entity.isPresent()) {
-                if (entity.get().getType().equals(TileEntityTypes.SKULL)) {
+                if (entity.get().type().equals(BlockEntityTypes.SKULL.get())) {
                     return Optional.of((Skull) entity.get());
                 }
             }
@@ -48,39 +55,44 @@ public class SignUpdateApplication implements Runnable {
     @Override
     public void run() {
         for (Map.Entry<RecentPurchaseSignPosition, RecentPayment> entry : paymentMap.entrySet()) {
-            Location<World> location = SpongeSerializedBlockLocation.toSponge(entry.getKey().getLocation());
-            Optional<TileEntity> entity = location.getTileEntity();
-            if (entity.isPresent() && entity.get().supports(SignData.class)) {
-                SignData signData = entity.get().getOrCreate(SignData.class).get();
-                ListValue<Text> lines = signData.lines();
+            ServerLocation location = SpongeSerializedBlockLocation.toSponge(entry.getKey().getLocation());
+            Optional<? extends BlockEntity> entity = location.blockEntity();
+            if (entity.isPresent()) {
+                BlockEntity blockEntity = entity.get();
+                if(blockEntity.type() != BlockEntityTypes.SIGN.get()) return;
 
+                Sign sign = (Sign) blockEntity;
+
+                ListValue.Mutable<Component> signText = sign.lines();
                 if (entry.getValue() != null) {
-                    lines.set(0, Text.EMPTY);
-                    lines.set(1, Text.of(entry.getValue().getPlayer().getName()));
+                    signText.set(0, Component.empty());
+                    signText.set(1, Component.text(entry.getValue().getPlayer().getName()));
                     NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
                     format.setCurrency(Currency.getInstance(entry.getValue().getCurrency().getIso4217()));
-                    lines.set(2, Text.of(format.format(entry.getValue().getAmount())));
-                    lines.set(3, Text.EMPTY);
+                    signText.set(2, Component.text(format.format(entry.getValue().getAmount())));
+                    signText.set(3, Component.empty());
                 } else {
                     for (int i = 0; i < 4; i++) {
-                        lines.set(i, Text.EMPTY);
+                        signText.set(i, Component.empty());
                     }
                 }
 
-                entity.get().offer(lines);
-                Location<World> supportedBy = location.getRelative(Direction.UP);
+                sign.offer(signText);
+
+                ServerLocation supportedBy = location.relativeTo(Direction.UP);
 
                 Optional<Skull> skullOptional = findSkull(supportedBy);
                 if (skullOptional.isPresent()) {
                     Skull skull = skullOptional.get();
-                    if (!skull.supports(Keys.REPRESENTED_PLAYER)) {
-                        skull.offer(Keys.SKULL_TYPE, SkullTypes.PLAYER);
+
+                    if (!skull.supports(Keys.GAME_PROFILE)) {
+                        skull.location().setBlockType(BlockTypes.PLAYER_HEAD.get());
                     }
                     GameProfile profile = entry.getValue() != null ?
                             resolvedProfiles.getOrDefault(entry.getValue().getPlayer().getName(), resolvedProfiles.get("MHF_Question")) :
                             resolvedProfiles.get("MHF_Question");
                     if (profile != null) {
-                        skull.offer(Keys.REPRESENTED_PLAYER, profile);
+                        skull.offer(Keys.GAME_PROFILE, profile);
                     }
                 }
             } else {

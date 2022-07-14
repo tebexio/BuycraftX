@@ -23,7 +23,8 @@ public class CouponCmd {
         this.plugin = plugin;
     }
 
-    public CommandResult createCoupon(Audience source, CommandContext ctx) {
+    public CommandResult createCoupon(CommandContext ctx) {
+        Audience source = (Audience) ctx.cause().root();
         Collection<? extends String> argsList = ctx.all(Parameter.string().key("args").build());
 
         String[] argsArray = argsList.toArray(new String[0]);
@@ -47,7 +48,9 @@ public class CouponCmd {
         return CommandResult.success();
     }
 
-    public CommandResult deleteCoupon(Audience source, CommandContext ctx) {
+    public CommandResult deleteCoupon(CommandContext ctx) {
+        Audience source = (Audience) ctx.cause().root();
+
         Optional<String> codeOptional = ctx.one(Parameter.string().key("code").build());
 
         if (!codeOptional.isPresent()) {

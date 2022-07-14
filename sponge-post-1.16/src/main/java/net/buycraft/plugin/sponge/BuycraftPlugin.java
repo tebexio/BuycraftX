@@ -3,7 +3,6 @@ package net.buycraft.plugin.sponge;
 import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import com.sun.net.httpserver.HttpServer;
-import jdk.javadoc.internal.doclets.formats.html.markup.Text;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.responses.ServerInformation;
@@ -35,15 +34,15 @@ import net.buycraft.plugin.sponge.tasks.SignUpdater;
 import net.buycraft.plugin.sponge.util.VersionCheck;
 import net.kyori.adventure.text.Component;
 import okhttp3.OkHttpClient;
-import org.slf4j.Logger;
-import org.spongepowered.api.Engine;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.lifecycle.LoadedGameEvent;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
+import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppedGameEvent;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.Ticks;
@@ -57,8 +56,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.sql.Time;
-import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Plugin("buycraft")
@@ -75,11 +73,12 @@ public class BuycraftPlugin {
     private OkHttpClient httpClient;
     private IBuycraftPlatform platform;
     private CommandExecutor commandExecutor;
+
     @Inject
     private Logger logger;
     private LoggerUtils loggerUtils;
-    @Inject
-    @ConfigDir(sharedRoot = false)
+
+    @Inject @ConfigDir(sharedRoot = false)
     private Path baseDirectory;
     private RecentPurchaseSignLayout recentPurchaseSignLayout = RecentPurchaseSignLayout.DEFAULT;
     private BuyNowSignLayout buyNowSignLayout = BuyNowSignLayout.DEFAULT;
@@ -95,28 +94,9 @@ public class BuycraftPlugin {
     }
 
     @Listener
-    public void onGamePreInitializationEvent(LoadedGameEvent event) {
+    public void onServerStart(final StartedEngineEvent<Server> event) {
         platform = new SpongeBuycraftPlatform(this);
-        plugin = event.game().pluginManager().plugin("buycraft").get();
 
-        try {
-            try {
-                Files.createDirectory(baseDirectory);
-            } catch (FileAlreadyExistsException ignored) {
-            }
-            Path configPath = baseDirectory.resolve("config.properties");
-            try {
-                configuration.load(configPath);
-            } catch (NoSuchFileException e) {
-                // Save defaults
-                configuration.fillDefaults();
-                configuration.save(configPath);
-            }
-        } catch (IOException e) {
-            getLogger().error("Unable to load configuration! The plugin will disable itself now.", e);
-            return;
-        }
-        i18n = configuration.createI18n();
         httpClient = Setup.okhttp(baseDirectory.resolve("cache").toFile());
         // Check for latest version.
         String curVersion = plugin.metadata().version().toString();
@@ -152,22 +132,22 @@ public class BuycraftPlugin {
         completedCommandsTask = new PostCompletedCommandsTask(platform);
         commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
 
-        Sponge.asyncScheduler().submit(Task.builder().execute((Runnable) commandExecutor).interval(Ticks.of(1)).delay(Ticks.of(1)).build());
-        Sponge.asyncScheduler().submit(Task.builder().execute(completedCommandsTask).interval(Ticks.of(20)).delay(Ticks.of(20)).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute((Runnable) commandExecutor).interval(Ticks.of(1)).delay(Ticks.of(1)).plugin(plugin).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(completedCommandsTask).interval(Ticks.of(20)).delay(Ticks.of(20)).plugin(plugin).build());
 
 
         playerJoinCheckTask = new PlayerJoinCheckTask(platform);
-        Sponge.asyncScheduler().submit(Task.builder().execute(playerJoinCheckTask).interval(Ticks.of(20)).delay(Ticks.of(20)).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(playerJoinCheckTask).interval(Ticks.of(20)).delay(Ticks.of(20)).plugin(plugin).build());
 
         serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
-        Sponge.asyncScheduler().submit(Task.builder().execute(serverEventSenderTask).delay(Ticks.of(20 * 60)).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(serverEventSenderTask).delay(Ticks.of(20 * 60)).plugin(plugin).build());
 
         listingUpdateTask = new ListingUpdateTask(platform, null);
         if (apiClient != null) {
             getLogger().info("Fetching all server packages...");
             listingUpdateTask.run();
         }
-        Sponge.asyncScheduler().submit(Task.builder().execute(listingUpdateTask).interval(20, TimeUnit.MINUTES).interval(20, TimeUnit.SECONDS).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(listingUpdateTask).interval(20, TimeUnit.MINUTES).interval(20, TimeUnit.SECONDS).plugin(plugin).build());
 
         recentPurchaseSignStorage = new RecentPurchaseSignStorage();
         try {
@@ -209,8 +189,8 @@ public class BuycraftPlugin {
         }
 
 
-        Sponge.asyncScheduler().submit(Task.builder().execute(new SignUpdater(this)).interval(15, TimeUnit.MINUTES).delay(1, TimeUnit.SECONDS).build());
-        Sponge.asyncScheduler().submit(Task.builder().execute(new BuyNowSignUpdater(this)).interval(15, TimeUnit.MINUTES).delay(1, TimeUnit.SECONDS).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(new SignUpdater(this)).interval(15, TimeUnit.MINUTES).delay(1, TimeUnit.SECONDS).plugin(plugin).build());
+        Sponge.asyncScheduler().submit(Task.builder().execute(new BuyNowSignUpdater(this)).interval(15, TimeUnit.MINUTES).delay(1, TimeUnit.SECONDS).plugin(plugin).build());
 
         if (serverInformation != null) {
             Sponge.asyncScheduler().submit(Task.builder().execute(() -> {
@@ -225,21 +205,37 @@ public class BuycraftPlugin {
         Sponge.eventManager().registerListeners(plugin, new BuycraftListener(this));
         Sponge.eventManager().registerListeners(plugin, new RecentPurchaseSignListener(this));
         Sponge.eventManager().registerListeners(plugin, new BuyNowSignListener(this));
-
-//        Sponge.getCommandManager().register(this, buildCommands(), "tebex", "buycraft");
-//        Sponge.getCommandManager().register(this, CommandSpec.builder()
-//                .description(Text.of(i18n.get("usage_sponge_listing")))
-//                .executor(new ListPackagesCmd(this))
-//                .build(), configuration.getBuyCommandName());
     }
 
     @Listener
     public void onCommandRegister(RegisterCommandEvent<Command.Parameterized> event) {
-        event.register(plugin, buildCommands(), "tebex", "buycraft");
-        event.register(plugin, Command.builder()
-        .shortDescription(Component.text(i18n.get("usage_sponge_listing")))
-        .executor(new ListPackagesCmd(this))
-        .build(), configuration.getBuyCommandName());
+        plugin = event.game().pluginManager().plugin("buycraft").get();
+
+        try {
+            try {
+                Files.createDirectory(baseDirectory);
+            } catch (FileAlreadyExistsException ignored) {
+            }
+            Path configPath = baseDirectory.resolve("config.properties");
+            try {
+                configuration.load(configPath);
+            } catch (NoSuchFileException e) {
+                // Save defaults
+                configuration.fillDefaults();
+                configuration.save(configPath);
+            }
+        } catch (IOException e) {
+            getLogger().error("Unable to load configuration! The plugin will disable itself now.", e);
+            return;
+        }
+        i18n = configuration.createI18n();
+
+        event.register(plugin, (Command.Parameterized) buildCommands(), "tebex", "buycraft");
+        List<String> buyCommandName = configuration.getBuyCommandName();
+        String buyCommand = buyCommandName.get(0);
+        List<String> buyCommandAliases = buyCommandName.subList(1, buyCommandName.size());
+
+        event.register(plugin, Command.builder().shortDescription(Component.text(i18n.get("usage_sponge_listing"))).executor(new ListPackagesCmd(this)).build(), buyCommand, buyCommandAliases.toArray(new String[0]));
     }
 
     @Listener
@@ -268,32 +264,32 @@ public class BuycraftPlugin {
     }
 
     private Command buildCommands() {
-        Command refresh = Command.builder()
+        Command.Parameterized refresh = Command.builder()
                 .shortDescription(Component.text(i18n.get("usage_refresh")))
                 .permission("buycraft.admin")
                 .executor(new RefreshCmd(this))
                 .build();
-        Command secret = Command.builder()
+        Command.Parameterized secret = Command.builder()
                 .shortDescription(Component.text(i18n.get("usage_secret")))
                 .permission("buycraft.admin")
                 .addParameter(Parameter.string().key("secret").build())
                 .executor(new SecretCmd(this))
                 .build();
-        Command report = Command.builder()
+        Command.Parameterized report = Command.builder()
                 .shortDescription(Component.text(i18n.get("usage_report")))
                 .executor(new ReportCmd(this))
                 .permission("buycraft.admin")
                 .build();
-        Command info = Command.builder()
+        Command.Parameterized info = Command.builder()
                 .shortDescription(Component.text(i18n.get("usage_information")))
                 .executor(new InfoCmd(this))
                 .build();
-        Command forcecheck = Command.builder()
+        Command.Parameterized forcecheck = Command.builder()
                 .shortDescription(Component.text(i18n.get("usage_forcecheck")))
                 .executor(new ForceCheckCmd(this))
                 .permission("buycraft.admin")
                 .build();
-        Command coupon = buildCouponCommands();
+        Command.Parameterized coupon = (Command.Parameterized) buildCouponCommands();
         return Command.builder()
                 .shortDescription(Component.text("Main command for the Tebex plugin."))
                 .addChild(report, "report")
@@ -305,21 +301,21 @@ public class BuycraftPlugin {
                 .build();
     }
 
-    private CommandSpec buildCouponCommands() {
+    private Command buildCouponCommands() {
         CouponCmd cmd = new CouponCmd(this);
-        CommandSpec create = CommandSpec.builder()
+        Command.Parameterized create = Command.builder()
                 .executor(cmd::createCoupon)
-                .arguments(GenericArguments.allOf(GenericArguments.string(Text.of("args"))))
+                .addParameter(Parameter.string().key("args").build())
                 .build();
-        CommandSpec delete = CommandSpec.builder()
+        Command.Parameterized delete = Command.builder()
                 .executor(cmd::deleteCoupon)
-                .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("code"))))
+                .addParameter(Parameter.string().key("code").build())
                 .build();
-        return CommandSpec.builder()
-                .description(Text.of(i18n.get("usage_coupon")))
+        return Command.builder()
+                .shortDescription(Component.text(i18n.get("usage_coupon")))
                 .permission("buycraft.admin")
-                .child(create, "create")
-                .child(delete, "delete")
+                .addChild(create, "create")
+                .addChild(delete, "delete")
                 .build();
     }
 
@@ -329,7 +325,7 @@ public class BuycraftPlugin {
 
     public void updateInformation(BuyCraftAPI client) throws IOException {
         serverInformation = client.getServerInformation().execute().body();
-        if (!configuration.isBungeeCord() && Sponge.getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
+        if (!configuration.isBungeeCord() && Sponge.server().isOnlineModeEnabled() != serverInformation.getAccount().isOnlineMode()) {
             getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
                     " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
                     " you may experience issues with packages not applying.");

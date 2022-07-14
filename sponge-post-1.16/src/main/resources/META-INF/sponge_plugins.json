@@ -1,0 +1,35 @@
+{
+  "loader": {
+    "name": "java_plain",
+    "version": "SET_BY_MAGIC"
+  },
+  "license": "MIT",
+  "global": {
+    "version": "8.0.0",
+    "links": {
+      "homepage": "https://www.spongepowered.org",
+      "source": "https://www.spongepowered.org/source",
+      "issues": "https://www.spongepowered.org/issues"
+    },
+    "contributors": [
+      {
+        "name": "SpongePowered",
+        "description": "Lead Developer"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "spongeapi",
+        "version": "8.0.0"
+      }
+    ]
+  },
+  "plugins": [
+    {
+      "id": "buycraft",
+      "name": "BuycraftX",
+      "entrypoint": "net.buycraft.plugin.sponge.BuycraftPlugin",
+      "description": "Manages the test plugins"
+    }
+  ]
+}
