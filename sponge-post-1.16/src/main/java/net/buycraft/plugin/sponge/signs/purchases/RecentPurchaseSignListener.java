@@ -82,6 +82,7 @@ public class RecentPurchaseSignListener {
                 signText.set(i, Component.empty());
             }
         }
+        event.sign().offer(signText);
 
         plugin.getPlatform().executeAsync(new SignUpdater(plugin));
     }

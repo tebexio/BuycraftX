@@ -78,6 +78,7 @@ public class BuyNowSignListener {
                 signText.set(i, Component.empty());
             }
         }
+        event.sign().offer(signText);
 
         plugin.getPlatform().executeAsync(new BuyNowSignUpdater(plugin));
     }
