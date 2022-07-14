@@ -55,16 +55,21 @@ public class SignUpdater implements Runnable {
         Set<String> usernames = payments.stream().map(payment -> payment.getPlayer().getName()).collect(Collectors.toSet());
         // Add MHF_Question too.
         usernames.add("MHF_Question");
-        Sponge.server().gameProfileManager();
-        CompletableFuture<Collection<GameProfile>> future = Sponge.server().getGameProfileManager().getAllByName(usernames, true);
-        future.whenComplete((result, throwable) -> {
-            if (throwable != null) {
-                plugin.getLogger().error("Unable to fetch player profiles", throwable);
-                return;
-            }
 
-            Map<String, GameProfile> profileMap = result.stream().filter(GameProfile::hasName).collect(Collectors.toMap(p -> p.name().get(), Function.identity()));
-            plugin.getPlatform().executeBlocking(new SignUpdateApplication(plugin, signToPurchases, profileMap));
+        Collection<GameProfile> profileList = new ArrayList<>();
+        usernames.forEach(username -> {
+            CompletableFuture<GameProfile> future = Sponge.server().gameProfileManager().profile(username);
+            future.whenComplete((gameProfile, throwable) -> {
+                if (throwable != null) {
+                    plugin.getLogger().error("Unable to fetch player profile for " + username, throwable);
+                    return;
+                }
+
+                profileList.add(gameProfile);
+            });
         });
+
+        Map<String, GameProfile> profileMap = profileList.stream().filter(GameProfile::hasName).collect(Collectors.toMap(p -> p.name().get(), Function.identity()));
+        plugin.getPlatform().executeBlocking(new SignUpdateApplication(plugin, signToPurchases, profileMap));
     }
 }
