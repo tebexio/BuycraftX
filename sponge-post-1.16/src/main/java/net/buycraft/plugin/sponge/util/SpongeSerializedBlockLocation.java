@@ -4,6 +4,7 @@ import net.buycraft.plugin.shared.config.signs.storage.SerializedBlockLocation;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.server.ServerLocation;
+import org.spongepowered.api.world.server.ServerWorld;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -18,7 +19,8 @@ public final class SpongeSerializedBlockLocation {
     }
 
     public static ServerLocation toSponge(SerializedBlockLocation location) {
-        Optional<ResourceKey> world = Sponge.server().worldManager().worldKey(UUID.fromString(location.getWorld()));
+        Optional<ServerWorld> world = Sponge.server().worldManager().world(ResourceKey.minecraft(location.getWorld()));
+
         if (!world.isPresent()) {
             throw new IllegalStateException();
         }

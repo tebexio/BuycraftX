@@ -34,7 +34,7 @@ public class RecentPurchaseSignListener {
         boolean ourSign;
 
         try {
-            ourSign = Arrays.asList("[buycraft_rp]", "[tebex_rp]").contains(PlainTextComponentSerializer.plainText().serialize(event.originalText().get(0)).toLowerCase());
+            ourSign = Arrays.asList("[buycraft_rp]", "[tebex_rp]").contains(PlainTextComponentSerializer.plainText().serialize(event.text().get(0)).toLowerCase());
         } catch (IndexOutOfBoundsException e) {
             return;
         }
@@ -57,7 +57,7 @@ public class RecentPurchaseSignListener {
 
         int pos;
         try {
-            pos = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.originalText().get(1)).toLowerCase());
+            pos = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(event.text().get(1)).toLowerCase());
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             player.sendMessage(Component.text("The second line must be a number.").color(TextColor.color(Color.RED)));
             return;

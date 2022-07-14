@@ -6,6 +6,7 @@ import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignPositio
 import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
 import net.kyori.adventure.text.Component;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.entity.BlockEntity;
@@ -20,6 +21,7 @@ import org.spongepowered.api.world.server.ServerLocation;
 
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class SignUpdateApplication implements Runnable {
     public static final List<Direction> SKULL_CHECK = ImmutableList.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NONE);
@@ -44,7 +46,7 @@ public class SignUpdateApplication implements Runnable {
         for (Direction direction : SKULL_CHECK) {
             Optional<? extends BlockEntity> entity = start.relativeTo(direction).blockEntity();
             if (entity.isPresent()) {
-                if (entity.get().type().equals(BlockEntityTypes.SKULL.get())) {
+                if (entity.get().type() == BlockEntityTypes.SKULL.get()) {
                     return Optional.of((Skull) entity.get());
                 }
             }
@@ -85,14 +87,11 @@ public class SignUpdateApplication implements Runnable {
                 if (skullOptional.isPresent()) {
                     Skull skull = skullOptional.get();
 
-                    if (!skull.supports(Keys.GAME_PROFILE)) {
-                        skull.location().setBlockType(BlockTypes.PLAYER_HEAD.get());
-                    }
-                    GameProfile profile = entry.getValue() != null ?
-                            resolvedProfiles.getOrDefault(entry.getValue().getPlayer().getName(), resolvedProfiles.get("MHF_Question")) :
-                            resolvedProfiles.get("MHF_Question");
+                    GameProfile profile = entry.getValue() != null ? resolvedProfiles.getOrDefault(entry.getValue().getPlayer().getName(), resolvedProfiles.get("MHF_Question")) : resolvedProfiles.get("MHF_Question");
                     if (profile != null) {
-                        skull.offer(Keys.GAME_PROFILE, profile);
+                        if (skull.supports(Keys.GAME_PROFILE)) {
+
+                        }
                     }
                 }
             } else {
