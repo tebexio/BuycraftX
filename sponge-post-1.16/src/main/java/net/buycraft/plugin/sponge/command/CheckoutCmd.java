@@ -26,13 +26,14 @@ public class CheckoutCmd implements CommandExecutor {
     @Override
     public CommandResult execute(final CommandContext args) throws CommandException {
         final Audience src = (Audience) args.cause().root();
-        Optional<String> packageId = args.one(Parameter.string().key("package").build());
+        Optional<Integer> packageIdArg = args.one(Parameter.integerNumber().key("package").build());
+        Integer packageId = packageIdArg.get();
 
         try {
-            Package packageById = plugin.getListingUpdateTask().getPackageById(Integer.parseInt(packageId.get()));
+            Package packageById = plugin.getListingUpdateTask().getPackageById(packageId);
             plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, packageById.getId(), (ServerPlayer) src));
         } catch (Exception e) {
-            src.sendMessage(Component.text("Could not find package with id " + packageId.get()).color(TextColor.color(Color.RED)));
+            src.sendMessage(Component.text("Could not find package with id " + packageId).color(TextColor.color(Color.RED)));
         }
 
         return CommandResult.success();

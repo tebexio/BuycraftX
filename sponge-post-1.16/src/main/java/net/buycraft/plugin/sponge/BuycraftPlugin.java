@@ -285,7 +285,7 @@ public class BuycraftPlugin {
                 .build();
         Command.Parameterized checkout = Command.builder()
                 .shortDescription(Component.text(i18n.get("usage_checkout")))
-                .addParameter(Parameter.string().key("package").build())
+                .addParameter(Parameter.integerNumber().key("package").build())
                 .executor(new CheckoutCmd(this))
                 .build();
         Command.Parameterized report = Command.builder()
