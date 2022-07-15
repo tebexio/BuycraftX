@@ -10,17 +10,23 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.block.transaction.BlockTransaction;
 import org.spongepowered.api.block.transaction.Operations;
 import org.spongepowered.api.data.value.ListValue;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.entity.ChangeSignEvent;
+import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.message.PlayerChatEvent;
 import org.spongepowered.api.util.Color;
 import org.spongepowered.api.world.server.ServerLocation;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static net.buycraft.plugin.sponge.util.BlockUtil.isSign;
 
 public class RecentPurchaseSignListener {
     private final BuycraftPlugin plugin;
@@ -30,7 +36,7 @@ public class RecentPurchaseSignListener {
     }
 
     @Listener
-    public void onSignChange(ChangeSignEvent event) {
+    public void onSignChange(ChangeSignEvent event, @First ServerPlayer player) {
         boolean ourSign;
 
         try {
@@ -42,13 +48,6 @@ public class RecentPurchaseSignListener {
         if (!ourSign) {
             return;
         }
-
-        Optional<ServerPlayer> pl = event.cause().first(ServerPlayer.class);
-        if (!pl.isPresent()) {
-            // This change was not caused by a player.
-            return;
-        }
-        ServerPlayer player = pl.get();
 
         if (!player.hasPermission("buycraft.admin")) {
             player.sendMessage(Component.text("You can't create Buycraft signs.").color(TextColor.color(Color.RED)));
@@ -87,13 +86,6 @@ public class RecentPurchaseSignListener {
         plugin.getPlatform().executeAsync(new SignUpdater(plugin));
     }
 
-    private boolean isSign(BlockType blockType) {
-        return Arrays.asList(
-                BlockTypes.ACACIA_WALL_SIGN, BlockTypes.BIRCH_WALL_SIGN, BlockTypes.DARK_OAK_WALL_SIGN, BlockTypes.JUNGLE_WALL_SIGN, BlockTypes.OAK_WALL_SIGN, BlockTypes.SPRUCE_WALL_SIGN,
-                BlockTypes.ACACIA_SIGN, BlockTypes.BIRCH_SIGN, BlockTypes.DARK_OAK_SIGN, BlockTypes.JUNGLE_SIGN, BlockTypes.OAK_SIGN, BlockTypes.SPRUCE_SIGN
-        ).contains(blockType);
-    }
-
     private boolean removeSign(ServerPlayer player, SerializedBlockLocation location) {
         if (plugin.getRecentPurchaseSignStorage().containsLocation(location)) {
             if (!player.hasPermission("buycraft.admin")) {
@@ -109,15 +101,11 @@ public class RecentPurchaseSignListener {
     }
 
     @Listener
-    public void onBlockBreak(ChangeBlockEvent.All event) {
-        event.transactions().forEach(trans -> {
-            if (trans.operation() != Operations.BREAK.get()) return;
-            if (isSign(trans.original().state().type())) {
-                Optional<ServerLocation> locationOptional = trans.original().location();
-                Optional<ServerPlayer> playerOptional = event.cause().first(ServerPlayer.class);
-                if (! removeSign(playerOptional.get(), SpongeSerializedBlockLocation.create(locationOptional.get()))) {
-                    event.setCancelled(true);
-                }
+    public void onBlockBreak(ChangeBlockEvent.All event, @First ServerPlayer player) {
+        event.transactions(Operations.BREAK.get()).filter(trans -> isSign(trans.original().state().type())).forEach(trans -> {
+            Optional<ServerLocation> locationOptional = trans.original().location();
+            if (locationOptional.isPresent() && !removeSign(player, SpongeSerializedBlockLocation.create(locationOptional.get()))) {
+                trans.setValid(false);
             }
         });
     }

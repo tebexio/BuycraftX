@@ -20,18 +20,13 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 
+import static net.buycraft.plugin.sponge.util.BlockUtil.isSign;
+
 public class BuyNowSignUpdater implements Runnable {
     private final BuycraftPlugin plugin;
 
     public BuyNowSignUpdater(final BuycraftPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    private boolean isSign(BlockType blockType) {
-        return Arrays.asList(
-                BlockTypes.ACACIA_WALL_SIGN, BlockTypes.BIRCH_WALL_SIGN, BlockTypes.DARK_OAK_WALL_SIGN, BlockTypes.JUNGLE_WALL_SIGN, BlockTypes.OAK_WALL_SIGN, BlockTypes.SPRUCE_WALL_SIGN,
-                BlockTypes.ACACIA_SIGN, BlockTypes.BIRCH_SIGN, BlockTypes.DARK_OAK_SIGN, BlockTypes.JUNGLE_SIGN, BlockTypes.OAK_SIGN, BlockTypes.SPRUCE_SIGN
-        ).contains(blockType);
     }
 
     @Override

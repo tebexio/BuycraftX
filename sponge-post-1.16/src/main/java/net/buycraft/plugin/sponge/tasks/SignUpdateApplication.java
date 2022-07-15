@@ -7,21 +7,24 @@ import net.buycraft.plugin.sponge.BuycraftPlugin;
 import net.buycraft.plugin.sponge.util.SpongeSerializedBlockLocation;
 import net.kyori.adventure.text.Component;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.block.entity.BlockEntity;
-import org.spongepowered.api.block.entity.BlockEntityTypes;
-import org.spongepowered.api.block.entity.Sign;
-import org.spongepowered.api.block.entity.Skull;
+import org.spongepowered.api.block.entity.*;
+import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.Keys;
+import org.spongepowered.api.data.persistence.DataView;
 import org.spongepowered.api.data.value.ListValue;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.profile.property.ProfileProperty;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.server.ServerLocation;
 
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class SignUpdateApplication implements Runnable {
     public static final List<Direction> SKULL_CHECK = ImmutableList.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST, Direction.NONE);
@@ -87,11 +90,16 @@ public class SignUpdateApplication implements Runnable {
                 if (skullOptional.isPresent()) {
                     Skull skull = skullOptional.get();
 
+                    if(skull.type() == BlockEntityTypes.SKULL.get()) {
+                        System.out.println("This is a SKULL entity");
+                    }
+                    if(skull.serverLocation().blockType() == BlockTypes.PLAYER_HEAD.get()) {
+                        System.out.println("This is a PLAYER HEAD");
+                    }
+
                     GameProfile profile = entry.getValue() != null ? resolvedProfiles.getOrDefault(entry.getValue().getPlayer().getName(), resolvedProfiles.get("MHF_Question")) : resolvedProfiles.get("MHF_Question");
                     if (profile != null) {
-                        if (skull.supports(Keys.GAME_PROFILE)) {
-
-                        }
+                        skull.offer(Keys.GAME_PROFILE, profile);
                     }
                 }
             } else {
