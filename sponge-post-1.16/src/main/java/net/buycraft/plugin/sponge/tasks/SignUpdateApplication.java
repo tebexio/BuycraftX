@@ -38,13 +38,6 @@ public class SignUpdateApplication implements Runnable {
         this.resolvedProfiles = resolvedProfiles;
     }
 
-    private boolean isSign(BlockType blockType) {
-        return Arrays.asList(
-                BlockTypes.ACACIA_WALL_SIGN, BlockTypes.BIRCH_WALL_SIGN, BlockTypes.DARK_OAK_WALL_SIGN, BlockTypes.JUNGLE_WALL_SIGN, BlockTypes.OAK_WALL_SIGN, BlockTypes.SPRUCE_WALL_SIGN,
-                BlockTypes.ACACIA_SIGN, BlockTypes.BIRCH_SIGN, BlockTypes.DARK_OAK_SIGN, BlockTypes.JUNGLE_SIGN, BlockTypes.OAK_SIGN, BlockTypes.SPRUCE_SIGN
-        ).contains(blockType);
-    }
-
     private Optional<Skull> findSkull(ServerLocation start) {
         for (Direction direction : SKULL_CHECK) {
             Optional<? extends BlockEntity> entity = start.relativeTo(direction).blockEntity();
@@ -89,13 +82,6 @@ public class SignUpdateApplication implements Runnable {
                 Optional<Skull> skullOptional = findSkull(supportedBy);
                 if (skullOptional.isPresent()) {
                     Skull skull = skullOptional.get();
-
-                    if(skull.type() == BlockEntityTypes.SKULL.get()) {
-                        System.out.println("This is a SKULL entity");
-                    }
-                    if(skull.serverLocation().blockType() == BlockTypes.PLAYER_HEAD.get()) {
-                        System.out.println("This is a PLAYER HEAD");
-                    }
 
                     GameProfile profile = entry.getValue() != null ? resolvedProfiles.getOrDefault(entry.getValue().getPlayer().getName(), resolvedProfiles.get("MHF_Question")) : resolvedProfiles.get("MHF_Question");
                     if (profile != null) {
