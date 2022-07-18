@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>buycraftx-sponge</artifactId>
+    <artifactId>buycraftx-sponge-pre-1.16</artifactId>
 
     <build>
         <plugins>
@@ -82,7 +82,7 @@
                 <dependencies>
                     <dependency>
                         <groupId>net.buycraft</groupId>
-                        <artifactId>buycraftx-sponge</artifactId>
+                        <artifactId>buycraftx-sponge-pre-1.16</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
