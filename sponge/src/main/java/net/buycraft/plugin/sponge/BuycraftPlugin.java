@@ -53,9 +53,8 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "buycraft", name = "Buycraft", version = BuycraftPlugin.MAGIC_VERSION)
+@Plugin(id = "buycraft", name = "Buycraft", version = "SET_BY_MAGIC")
 public class BuycraftPlugin {
-    static final String MAGIC_VERSION = "SET_BY_MAGIC";
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
 
@@ -105,6 +104,9 @@ public class BuycraftPlugin {
         httpClient = Setup.okhttp(baseDirectory.resolve("cache").toFile());
         // Check for latest version.
         String curVersion = getClass().getAnnotation(Plugin.class).version();
+
+        System.out.println("curVersion: " + curVersion);
+
         if (configuration.isCheckForUpdates()) {
             VersionCheck check = new VersionCheck(this, curVersion, configuration.getServerKey());
             try {
