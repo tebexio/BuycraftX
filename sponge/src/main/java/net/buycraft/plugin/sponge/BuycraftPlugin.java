@@ -129,6 +129,7 @@ public class BuycraftPlugin {
             }
             apiClient = client;
         }
+
         Integer pushCommandsPort = configuration.getPushCommandsPort();
         if (pushCommandsPort != null) {
             this.initializeHttpListener(pushCommandsPort);

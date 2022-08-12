@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "buycraft",
+  "version": "${pluginVersion}",
+  "name": "BuycraftX",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "net.buycraft.plugin.fabric.BuycraftPlugin"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "1.16.5"
+  }
+}
