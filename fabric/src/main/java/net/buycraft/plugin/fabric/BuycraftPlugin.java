@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -83,37 +82,36 @@ public class BuycraftPlugin implements ModInitializer {
             return;
         }
 
-        i18n = configuration.createI18n();
-        httpClient = Setup.okhttp(MOD_PATH.resolve("cache").toFile());
-
-        if (configuration.isCheckForUpdates()) {
-            VersionCheck check = new VersionCheck(this, MOD_VERSION, configuration.getServerKey());
-            try {
-                check.verify();
-            } catch (IOException e) {
-                LOGGER.error("Can't check for updates", e);
-            }
-
-//            Sponge.getEventManager().registerListeners(this, check);
-        }
-        String serverKey = configuration.getServerKey();
-        if (serverKey == null || serverKey.equals("INVALID")) {
-            LOGGER.info("Looks like this is a fresh setup. Get started by using 'tebex secret <key>' in the console.");
-        } else {
-            LOGGER.info("Validating your server key...");
-            BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
-            try {
-                updateInformation(client);
-            } catch (IOException e) {
-                LOGGER.error(String.format("We can't check if your server can connect to Tebex: %s", e.getMessage()));
-            }
-            apiClient = client;
-        }
-
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             this.server = server;
 
-            LOGGER.info("Online mode is " + server.isOnlineMode());
+            i18n = configuration.createI18n();
+            httpClient = Setup.okhttp(MOD_PATH.resolve("cache").toFile());
+
+            if (configuration.isCheckForUpdates()) {
+                VersionCheck check = new VersionCheck(this, MOD_VERSION, configuration.getServerKey());
+                try {
+                    check.verify();
+                } catch (IOException e) {
+                    LOGGER.error("Can't check for updates", e);
+                }
+
+//            Sponge.getEventManager().registerListeners(this, check);
+            }
+
+            String serverKey = configuration.getServerKey();
+            if (serverKey == null || serverKey.equals("INVALID")) {
+                LOGGER.info("Looks like this is a fresh setup. Get started by using 'tebex secret <key>' in the console.");
+            } else {
+                LOGGER.info("Validating your server key...");
+                BuyCraftAPI client = BuyCraftAPI.create(configuration.getServerKey(), httpClient);
+                try {
+                    updateInformation(client);
+                } catch (IOException e) {
+                    LOGGER.error(String.format("We can't check if your server can connect to Tebex: %s", e.getMessage()));
+                }
+                apiClient = client;
+            }
         });
     }
 
@@ -179,13 +177,13 @@ public class BuycraftPlugin implements ModInitializer {
 
     public void updateInformation(BuyCraftAPI client) throws IOException {
         serverInformation = client.getServerInformation().execute().body();
-//        if (!configuration.isBungeeCord() && Sponge.getServer().getOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
-//            getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
-//                    " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
-//                    " you may experience issues with packages not applying.");
-//            getLogger().warn("If you have verified that your set up is correct, you can suppress this message by setting " +
-//                    "is-bungeecord=true in your BuycraftX config.properties.");
-//        }
+        if (!configuration.isBungeeCord() && server.isOnlineMode() != serverInformation.getAccount().isOnlineMode()) {
+            getLogger().warn("Your server and webstore online mode settings are mismatched. Unless you are using" +
+                    " a proxy and server combination (such as BungeeCord/Spigot or LilyPad/Connect) that corrects UUIDs, then" +
+                    " you may experience issues with packages not applying.");
+            getLogger().warn("If you have verified that your set up is correct, you can suppress this message by setting " +
+                    "is-bungeecord=true in your BuycraftX config.properties.");
+        }
     }
 
     public PlaceholderManager getPlaceholderManager() {

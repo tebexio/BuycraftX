@@ -70,15 +70,12 @@ shadowJar {
     from sourceSets.main.output
     configurations = [project.configurations.shadow]
     archiveName = 'buycraftx-fabric-all.jar'
+    destinationDir = file('build/devlibs')
 }
 
 shadowJar.finalizedBy remapJar
 
 remapJar {
-    input = shadowJar.archivePath
+    input = tasks.shadowJar.archiveFile
     archiveName = 'buycraftx-fabric.jar'
-
-    doLast {
-        delete ("${buildDir}/libs/buycraftx-fabric-all.jar")
-    }
 }
