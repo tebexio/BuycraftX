@@ -3,6 +3,7 @@ package net.buycraft.plugin.fabric.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.fabric.BuycraftPlugin;
@@ -23,13 +24,31 @@ public class TebexCommand {
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         dispatcher.register(CommandManager.literal("tebex").executes(context -> {
-            onBaseCommand(context);
-            return 1;
-        }).then(CommandManager.literal("secret").then(CommandManager.argument("token", StringArgumentType.string()).executes(context -> {
-            onSecretCommand(context);
-            return 1;
-        })))
+                    if (checkPermission(context.getSource())) {
+                        onBaseCommand(context);
+                    }
+                    return 1;
+                }).then(CommandManager.literal("secret").then(CommandManager.argument("token", StringArgumentType.string()).executes(context -> {
+                    if (checkPermission(context.getSource())) {
+                        onSecretCommand(context);
+                    }
+                    return 1;
+                }))).then(CommandManager.literal("forcecheck").executes(context -> {
+                    if (checkPermission(context.getSource())) {
+                        onForceCheckCommand(context);
+                    }
+                    return 1;
+                }))
         );
+    }
+
+    private boolean checkPermission(ServerCommandSource source) {
+        if (!Permissions.check(source, "buycraft.admin", 4)) {
+            source.sendError(new LiteralText("You do not have permission to use this command."));
+            return false;
+        }
+
+        return true;
     }
 
     private void onBaseCommand(CommandContext<ServerCommandSource> context) {
@@ -38,7 +57,7 @@ public class TebexCommand {
 
     private void onSecretCommand(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
-        if(source.getEntity() instanceof ServerPlayerEntity) {
+        if (source.getEntity() instanceof ServerPlayerEntity) {
             source.sendFeedback(new LiteralText(plugin.getI18n().get("secret_console_only")), false);
             return;
         }
@@ -73,5 +92,22 @@ public class TebexCommand {
 
             plugin.getDuePlayerFetcher().run(repeatChecks);
         });
+    }
+
+    private void onForceCheckCommand(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+
+        if (plugin.getApiClient() == null) {
+            source.sendFeedback(new LiteralText(plugin.getI18n().get("need_secret_key")).formatted(Formatting.RED), false);
+            return;
+        }
+
+        if (plugin.getDuePlayerFetcher().inProgress()) {
+            source.sendFeedback(new LiteralText(plugin.getI18n().get("already_checking_for_purchases")).formatted(Formatting.RED), false);
+            return;
+        }
+
+        plugin.getPlatform().executeAsync(() -> plugin.getDuePlayerFetcher().run(false));
+        source.sendFeedback(new LiteralText(plugin.getI18n().get("forcecheck_queued")).formatted(Formatting.GREEN), false);
     }
 }
