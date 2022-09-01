@@ -5,6 +5,7 @@ plugins {
 
 apply plugin: 'java'
 
+
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
@@ -23,10 +24,8 @@ dependencies {
 
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation 'me.lucko:fabric-permissions-api:0.1-SNAPSHOT'
+    modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
 
-    shadow('org.slf4j:slf4j-simple:1.7.36')
     shadow project(":plugin-shared")
 }
 
@@ -71,7 +70,17 @@ shadowJar {
     configurations = [project.configurations.shadow]
     archiveName = 'buycraftx-fabric-all.jar'
     destinationDir = file('build/devlibs')
+
+    relocate 'net.buycraft.plugin', 'net.buycraft.plugin'
 }
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+task relocateShadowJar(type: ConfigureShadowRelocation) {
+    target = tasks.shadowJar
+    prefix = "net.buycraft.plugin.fabric.libs"
+}
+
+tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
 shadowJar.finalizedBy remapJar
 

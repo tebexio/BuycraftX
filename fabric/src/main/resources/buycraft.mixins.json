@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.buycraft.plugin.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ServerTimer"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -9,6 +9,7 @@ public enum PlatformType {
     NUKKIT,
     FORGE,
     VELOCITY,
+    FABRIC,
     NONE;
 
     public String platformName() {

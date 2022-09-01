@@ -1,24 +1,14 @@
 package net.buycraft.plugin.fabric.util;
 
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.buycraft.plugin.data.responses.Version;
 import net.buycraft.plugin.fabric.BuycraftPlugin;
 import net.buycraft.plugin.shared.util.VersionUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import static net.buycraft.plugin.shared.util.VersionUtil.isVersionGreater;
 
-public class VersionCheck implements ServerPlayConnectionEvents.Join {
+public class VersionCheck {
     private final BuycraftPlugin plugin;
     private final String pluginVersion;
     private final String secret;
@@ -51,18 +41,23 @@ public class VersionCheck implements ServerPlayConnectionEvents.Join {
         }
     }
 
-
-    @Override
-    public void onPlayReady(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
-        ServerPlayerEntity player = handler.player;
-        if (Permissions.check(player, "buycraft.admin", 4) && !upToDate) {
-            plugin.getPlatform().executeAsyncLater(() -> {
-                player.sendSystemMessage(new TranslatableText(plugin.getI18n().get("update_available", lastKnownVersion.getVersion()))
-                        .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://server.tebex.io/plugins")))
-                        .formatted(Formatting.YELLOW), player.getUuid());
-            }, 3, TimeUnit.SECONDS);
-        }
-    }
+//    @Listener
+//    public void onPlayerJoinEvent(ClientConnectionEvent.Join event) {
+//        if (event.getTargetEntity().hasPermission("buycraft.admin") && !upToDate) {
+//            plugin.getPlatform().executeAsyncLater(() -> {
+//                try {
+//                    event.getTargetEntity().sendMessage(
+//                            Text.builder()
+//                                    .append(Text.of(plugin.getI18n().get("update_available", lastKnownVersion.getVersion())))
+//                                    .onClick(TextActions.openUrl(new URL("https://server.tebex.io")))
+//                                    .color(TextColors.YELLOW)
+//                                    .build());
+//                } catch (MalformedURLException e) {
+//                    throw new AssertionError(e); // seriously?
+//                }
+//            }, 3, TimeUnit.SECONDS);
+//        }
+//    }
 
     public Version getLastKnownVersion() {
         return this.lastKnownVersion;

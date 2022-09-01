@@ -1,20 +1,14 @@
 package net.buycraft.plugin.fabric;
 
-import com.sun.net.httpserver.HttpServer;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.execution.DuePlayerFetcher;
 import net.buycraft.plugin.execution.ServerEventSenderTask;
-import net.buycraft.plugin.execution.placeholder.NamePlaceholder;
 import net.buycraft.plugin.execution.placeholder.PlaceholderManager;
-import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
-import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
 import net.buycraft.plugin.fabric.command.TebexCommand;
-import net.buycraft.plugin.fabric.httplistener.Handler;
-import net.buycraft.plugin.fabric.util.Multithreading;
 import net.buycraft.plugin.fabric.util.VersionCheck;
 import net.buycraft.plugin.shared.Setup;
 import net.buycraft.plugin.shared.config.BuycraftConfiguration;
@@ -25,28 +19,22 @@ import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
-import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
 import okhttp3.OkHttpClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
-public class BuycraftPlugin implements DedicatedServerModInitializer {
-    private static final String MOD_ID = "buycraft";
-    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-
+public class BuycraftPlugin implements ModInitializer {
     private final PlaceholderManager placeholderManager = new PlaceholderManager();
     private final BuycraftConfiguration configuration = new BuycraftConfiguration();
 
@@ -67,15 +55,16 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
     private PlayerJoinCheckTask playerJoinCheckTask;
     private ServerEventSenderTask serverEventSenderTask;
 
+    private final String MOD_ID = "buycraft";
     private final String MOD_VERSION = "1.0.0";
-    private final int TICKS_PER_SECOND = 50;
 
     private final Path MOD_PATH = new File("./mods/" + MOD_ID).toPath();
+    public final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     private MinecraftServer server;
 
     @Override
-    public void onInitializeServer() {
+    public void onInitialize() {
         platform = new FabricBuycraftPlatform(this);
         try {
             try {
@@ -111,7 +100,7 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
                     LOGGER.error("Can't check for updates", e);
                 }
 
-                ServerPlayConnectionEvents.JOIN.register(check);
+//            Sponge.getEventManager().registerListeners(this, check);
             }
 
             String serverKey = configuration.getServerKey();
@@ -127,42 +116,8 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
                 }
                 apiClient = client;
             }
-
-            Integer pushCommandsPort = configuration.getPushCommandsPort();
-            if (pushCommandsPort != null) {
-                this.initializeHttpListener(pushCommandsPort);
-            }
-            placeholderManager.addPlaceholder(new NamePlaceholder());
-            placeholderManager.addPlaceholder(new UuidPlaceholder());
-            platform.executeAsyncLater(duePlayerFetcher = new DuePlayerFetcher(platform, configuration.isVerbose()), 1, TimeUnit.SECONDS);
-            completedCommandsTask = new PostCompletedCommandsTask(platform);
-            commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
-
-
-            Multithreading.schedule((Runnable) commandExecutor, TICKS_PER_SECOND, TICKS_PER_SECOND, TimeUnit.MILLISECONDS);
-            Multithreading.schedule(completedCommandsTask, TICKS_PER_SECOND*20, TICKS_PER_SECOND*20, TimeUnit.MILLISECONDS);
-            playerJoinCheckTask = new PlayerJoinCheckTask(platform);
-            Multithreading.schedule(playerJoinCheckTask, TICKS_PER_SECOND*20, TICKS_PER_SECOND*20, TimeUnit.MILLISECONDS);
-            serverEventSenderTask = new ServerEventSenderTask(platform, configuration.isVerbose());
-            Multithreading.schedule(serverEventSenderTask, (TICKS_PER_SECOND*20)*60, (TICKS_PER_SECOND*20)*60, TimeUnit.MILLISECONDS);
-            listingUpdateTask = new ListingUpdateTask(platform, null);
-            if (apiClient != null) {
-                getLogger().info("Fetching all server packages...");
-                listingUpdateTask.run();
-            }
         });
 
-
-    }
-
-    private void initializeHttpListener(Integer port) {
-        try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(port), 50);
-            server.createContext("/", new Handler(this));
-            server.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void registerCommands() {
@@ -288,7 +243,7 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
         return this.commandExecutor;
     }
 
-    public org.apache.logging.log4j.Logger getLogger() {
+    public Logger getLogger() {
         return LOGGER;
     }
 
@@ -314,13 +269,5 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
 
     public ServerEventSenderTask getServerEventSenderTask() {
         return serverEventSenderTask;
-    }
-
-    public MinecraftServer getServer() {
-        return server;
-    }
-
-    public String getModVersion() {
-        return MOD_VERSION;
     }
 }
