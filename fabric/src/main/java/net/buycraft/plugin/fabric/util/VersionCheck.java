@@ -10,6 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
@@ -57,7 +58,7 @@ public class VersionCheck implements ServerPlayConnectionEvents.Join {
         ServerPlayerEntity player = handler.player;
         if (Permissions.check(player, "buycraft.admin", 4) && !upToDate) {
             plugin.getPlatform().executeAsyncLater(() -> {
-                player.sendSystemMessage(new TranslatableText(plugin.getI18n().get("update_available", lastKnownVersion.getVersion()))
+                player.sendSystemMessage(new LiteralText(plugin.getI18n().get("update_available", lastKnownVersion.getVersion()))
                         .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://server.tebex.io/plugins")))
                         .formatted(Formatting.YELLOW), player.getUuid());
             }, 3, TimeUnit.SECONDS);

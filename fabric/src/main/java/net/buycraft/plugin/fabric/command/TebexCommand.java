@@ -10,10 +10,16 @@ import net.buycraft.plugin.fabric.BuycraftPlugin;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
 
 public class TebexCommand {
     private final BuycraftPlugin plugin;
@@ -36,6 +42,11 @@ public class TebexCommand {
                 }))).then(CommandManager.literal("forcecheck").executes(context -> {
                     if (checkPermission(context.getSource())) {
                         onForceCheckCommand(context);
+                    }
+                    return 1;
+                })).then(CommandManager.literal("info").executes(context -> {
+                    if (checkPermission(context.getSource())) {
+                        onInfoCommand(context);
                     }
                     return 1;
                 }))
@@ -109,5 +120,33 @@ public class TebexCommand {
 
         plugin.getPlatform().executeAsync(() -> plugin.getDuePlayerFetcher().run(false));
         source.sendFeedback(new LiteralText(plugin.getI18n().get("forcecheck_queued")).formatted(Formatting.GREEN), false);
+    }
+
+    private void onInfoCommand(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+
+        if (plugin.getApiClient() == null) {
+            source.sendFeedback(new LiteralText(plugin.getI18n().get("generic_api_operation_error")).formatted(Formatting.RED), false);
+            return;
+        }
+
+        if (plugin.getServerInformation() == null) {
+            source.sendFeedback(new LiteralText(plugin.getI18n().get("information_no_server")).formatted(Formatting.RED), false);
+            return;
+        }
+
+        String webstoreURL = plugin.getServerInformation().getAccount().getDomain();
+        LiteralText webstore = (LiteralText) new LiteralText(webstoreURL)
+                .formatted(Formatting.GREEN)
+                .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, webstoreURL)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(webstoreURL))));
+
+        LiteralText server = (LiteralText) new LiteralText(plugin.getServerInformation().getServer().getName())
+                .formatted(Formatting.GREEN);
+
+        Arrays.asList(new LiteralText(plugin.getI18n().get("information_title") + " ").formatted(Formatting.GRAY),
+                new LiteralText(plugin.getI18n().get("information_sponge_server") + " ").formatted(Formatting.GRAY).append(server),
+                new LiteralText(plugin.getI18n().get("information_currency", plugin.getServerInformation().getAccount().getCurrency().getIso4217()))
+                        .formatted(Formatting.GRAY),
+                new LiteralText(plugin.getI18n().get("information_domain", "")).formatted(Formatting.GRAY).append(webstore)).forEach(item -> source.sendFeedback(item, false));
     }
 }
