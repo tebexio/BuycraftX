@@ -152,6 +152,19 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
             }
         });
 
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            try {
+                recentPurchaseSignStorage.save(MOD_PATH.resolve("purchase_signs.json"));
+            } catch (IOException e) {
+                LOGGER.error("Can't save purchase signs, continuing anyway");
+            }
+            try {
+                buyNowSignStorage.save(MOD_PATH.resolve("buy_now_signs.json"));
+            } catch (IOException e) {
+                LOGGER.error("Can't save purchase signs, continuing anyway");
+            }
+            completedCommandsTask.flush();
+        });
 
     }
 
