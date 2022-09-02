@@ -7,6 +7,7 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.fabric.BuycraftPlugin;
+import net.buycraft.plugin.shared.util.ReportBuilder;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,10 +17,20 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class TebexCommand {
     private final BuycraftPlugin plugin;
@@ -29,25 +40,40 @@ public class TebexCommand {
     }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
-        dispatcher.register(CommandManager.literal("tebex").executes(context -> {
-                    if (checkPermission(context.getSource())) {
-                        onBaseCommand(context);
-                    }
+        registerCommands(dispatcher, "tebex");
+        registerCommands(dispatcher, "buycraft");
+    }
+
+    private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, String command) {
+        dispatcher.register(literal(command).executes(context -> {
+                    if (! checkPermission(context.getSource())) return 0;
+
+                    onBaseCommand(context);
                     return 1;
-                }).then(CommandManager.literal("secret").then(CommandManager.argument("token", StringArgumentType.string()).executes(context -> {
-                    if (checkPermission(context.getSource())) {
-                        onSecretCommand(context);
-                    }
+                }).then(literal("secret").then(argument("token", StringArgumentType.string()).executes(context -> {
+                    if (! checkPermission(context.getSource())) return 0;
+
+                    onSecretCommand(context);
                     return 1;
-                }))).then(CommandManager.literal("forcecheck").executes(context -> {
-                    if (checkPermission(context.getSource())) {
-                        onForceCheckCommand(context);
-                    }
+                }))).then(literal("forcecheck").executes(context -> {
+                    if (! checkPermission(context.getSource())) return 0;
+
+                    onForceCheckCommand(context);
                     return 1;
-                })).then(CommandManager.literal("info").executes(context -> {
-                    if (checkPermission(context.getSource())) {
-                        onInfoCommand(context);
-                    }
+                })).then(literal("info").executes(context -> {
+                    if (! checkPermission(context.getSource())) return 0;
+
+                    onInfoCommand(context);
+                    return 1;
+                })).then(literal("refresh").executes(context -> {
+                    if (! checkPermission(context.getSource())) return 0;
+
+                    onRefreshCommand(context);
+                    return 1;
+                })).then(literal("report").executes(context -> {
+                    if (! checkPermission(context.getSource())) return 0;
+
+                    onReportCommand(context);
                     return 1;
                 }))
         );
@@ -140,13 +166,59 @@ public class TebexCommand {
                 .formatted(Formatting.GREEN)
                 .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, webstoreURL)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(webstoreURL))));
 
-        LiteralText server = (LiteralText) new LiteralText(plugin.getServerInformation().getServer().getName())
-                .formatted(Formatting.GREEN);
+        LiteralText server = (LiteralText) new LiteralText(plugin.getServerInformation().getServer().getName()).formatted(Formatting.GREEN);
 
-        Arrays.asList(new LiteralText(plugin.getI18n().get("information_title") + " ").formatted(Formatting.GRAY),
+        Arrays.asList(
+                new LiteralText(plugin.getI18n().get("information_title") + " ").formatted(Formatting.GRAY),
                 new LiteralText(plugin.getI18n().get("information_sponge_server") + " ").formatted(Formatting.GRAY).append(server),
-                new LiteralText(plugin.getI18n().get("information_currency", plugin.getServerInformation().getAccount().getCurrency().getIso4217()))
-                        .formatted(Formatting.GRAY),
-                new LiteralText(plugin.getI18n().get("information_domain", "")).formatted(Formatting.GRAY).append(webstore)).forEach(item -> source.sendFeedback(item, false));
+                new LiteralText(plugin.getI18n().get("information_currency", plugin.getServerInformation().getAccount().getCurrency().getIso4217())).formatted(Formatting.GRAY),
+                new LiteralText(plugin.getI18n().get("information_domain", "")).formatted(Formatting.GRAY).append(webstore)
+        ).forEach(item -> source.sendFeedback(item, false));
+    }
+
+    private void onRefreshCommand(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+
+        if (plugin.getApiClient() == null) {
+            source.sendFeedback(new LiteralText(plugin.getI18n().get("need_secret_key")).formatted(Formatting.RED), false);
+            return;
+        }
+
+        plugin.getPlatform().executeAsync(plugin.getListingUpdateTask());
+        source.sendFeedback(new LiteralText(plugin.getI18n().get("refresh_queued")).formatted(Formatting.GREEN), false);
+    }
+
+    private void onReportCommand(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        source.sendFeedback(new LiteralText(plugin.getI18n().get("report_wait")).formatted(Formatting.RED), false);
+
+        plugin.getPlatform().executeAsync(() -> {
+            String serverIP = plugin.getServer().getServerIp();
+            int serverPort = plugin.getServer().getServerPort();
+
+            ReportBuilder builder = ReportBuilder.builder()
+                    .client(plugin.getHttpClient())
+                    .configuration(plugin.getConfiguration())
+                    .platform(plugin.getPlatform())
+                    .duePlayerFetcher(plugin.getDuePlayerFetcher())
+                    .ip(serverIP)
+                    .port(serverPort)
+                    .listingUpdateTask(plugin.getListingUpdateTask())
+                    .serverOnlineMode(plugin.getServer().isOnlineMode())
+                    .build();
+
+            SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+            String filename = "report-" + f.format(new Date()) + ".txt";
+            Path p = plugin.getBaseDirectory().resolve(filename);
+            String generated = builder.generate();
+
+            try (BufferedWriter w = Files.newBufferedWriter(p, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW)) {
+                w.write(generated);
+                source.sendFeedback(new LiteralText(plugin.getI18n().get("report_saved", p.toAbsolutePath().toString())).formatted(Formatting.YELLOW), false);
+            } catch (IOException e) {
+                source.sendFeedback(new LiteralText(plugin.getI18n().get("report_cant_save")).formatted(Formatting.RED), false);
+                plugin.getLogger().info(generated);
+            }
+        });
     }
 }
