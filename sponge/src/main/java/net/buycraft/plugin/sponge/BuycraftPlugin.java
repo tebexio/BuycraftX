@@ -105,8 +105,6 @@ public class BuycraftPlugin {
         // Check for latest version.
         String curVersion = getClass().getAnnotation(Plugin.class).version();
 
-        System.out.println("curVersion: " + curVersion);
-
         if (configuration.isCheckForUpdates()) {
             VersionCheck check = new VersionCheck(this, curVersion, configuration.getServerKey());
             try {

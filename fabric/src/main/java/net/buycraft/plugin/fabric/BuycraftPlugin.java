@@ -26,6 +26,7 @@ import net.buycraft.plugin.shared.config.signs.storage.BuyNowSignStorage;
 import net.buycraft.plugin.shared.config.signs.storage.RecentPurchaseSignStorage;
 import net.buycraft.plugin.shared.tasks.ListingUpdateTask;
 import net.buycraft.plugin.shared.tasks.PlayerJoinCheckTask;
+import net.buycraft.plugin.shared.util.AnalyticsSend;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -97,14 +98,13 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
             return;
         }
 
-        registerCommands();
-
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             this.server = server;
 
             i18n = configuration.createI18n();
             httpClient = Setup.okhttp(MOD_PATH.resolve("cache").toFile());
 
+            // Check for latest version.
             if (configuration.isCheckForUpdates()) {
                 VersionCheck check = new VersionCheck(this, MOD_VERSION, configuration.getServerKey());
                 try {
@@ -140,7 +140,6 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
             completedCommandsTask = new PostCompletedCommandsTask(platform);
             commandExecutor = new QueuedCommandExecutor(platform, completedCommandsTask);
 
-
             Multithreading.schedule((Runnable) commandExecutor, TICKS_PER_SECOND, TICKS_PER_SECOND, TimeUnit.MILLISECONDS);
             Multithreading.schedule(completedCommandsTask, TICKS_PER_SECOND*20, TICKS_PER_SECOND*20, TimeUnit.MILLISECONDS);
             playerJoinCheckTask = new PlayerJoinCheckTask(platform);
@@ -152,6 +151,7 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
                 getLogger().info("Fetching all server packages...");
                 listingUpdateTask.run();
             }
+            Multithreading.schedule(listingUpdateTask, 20, 20, TimeUnit.MINUTES);
 
             recentPurchaseSignStorage = new RecentPurchaseSignStorage();
             try {
@@ -191,6 +191,29 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
             } catch (IOException e) {
                 getLogger().error("Unable to load sign layouts", e);
             }
+
+            Multithreading.schedule(() -> {
+//                new SignUpdater(this);
+            }, 60*15, 1, TimeUnit.SECONDS);
+            Multithreading.schedule(() -> {
+//                new BuyNowSignUpdater(this);
+            }, 60*15, 1, TimeUnit.SECONDS);
+
+            if (serverInformation != null) {
+                Multithreading.schedule(() -> {
+                    try {
+                        AnalyticsSend.postServerInformation(httpClient, configuration.getServerKey(), platform, server.isOnlineMode());
+                    } catch (IOException e) {
+                        getLogger().warn("Can't send analytics", e);
+                    }
+                }, 1, 0, TimeUnit.DAYS);
+            }
+
+//            Sponge.getEventManager().registerListeners(this, new BuycraftListener(this));
+//            Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
+//            Sponge.getEventManager().registerListeners(this, new BuyNowSignListener(this));
+
+            CommandRegistrationCallback.EVENT.register(new TebexCommand(this)::register);
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
@@ -217,10 +240,6 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void registerCommands() {
-        CommandRegistrationCallback.EVENT.register(new TebexCommand(this)::register);
     }
 
 //    private CommandSpec buildCommands() {
