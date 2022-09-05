@@ -98,6 +98,7 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
             return;
         }
 
+        CommandRegistrationCallback.EVENT.register(new TebexCommand(this)::register);
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             this.server = server;
 
@@ -206,14 +207,13 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
                     } catch (IOException e) {
                         getLogger().warn("Can't send analytics", e);
                     }
-                }, 1, 0, TimeUnit.DAYS);
+                }, 1, 1, TimeUnit.DAYS);
             }
 
 //            Sponge.getEventManager().registerListeners(this, new BuycraftListener(this));
 //            Sponge.getEventManager().registerListeners(this, new RecentPurchaseSignListener(this));
 //            Sponge.getEventManager().registerListeners(this, new BuyNowSignListener(this));
 
-            CommandRegistrationCallback.EVENT.register(new TebexCommand(this)::register);
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {

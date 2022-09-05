@@ -8,19 +8,15 @@ import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.fabric.BuycraftPlugin;
 import net.buycraft.plugin.shared.util.ReportBuilder;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,6 +72,24 @@ public class TebexCommand {
                     onReportCommand(context);
                     return 1;
                 }))
+//                .then(literal("coupon")
+//                    // create a /tebex coupon create <code> and /tebex coupon delete <code> command
+//                    .then(literal("create").then(argument("code", StringArgumentType.string()).executes(context -> {
+//                        if (! checkPermission(context.getSource())) return 0;
+//
+//                        // send a message with the code
+//                        context.getSource().sendFeedback(new LiteralText("Create coupon code: " + context.getArgument("code", String.class)), false);
+//
+//                        return 0;
+//                    })))
+//                    .then(literal("delete").then(argument("code", StringArgumentType.string()).executes(context -> {
+//                        if (! checkPermission(context.getSource())) return 0;
+//
+//                        // send a message with the code
+//                        context.getSource().sendFeedback(new LiteralText("Delete coupon code: " + context.getArgument("code", String.class)), false);
+//                        return 0;
+//                    })))
+//                )
         );
     }
 
@@ -89,7 +103,21 @@ public class TebexCommand {
     }
 
     private void onBaseCommand(CommandContext<ServerCommandSource> context) {
-        context.getSource().sendFeedback(new LiteralText("Tebex - ").formatted(Formatting.AQUA).append(new LiteralText("TODO").formatted(Formatting.BOLD)), false);
+        String[][] commands = new String[][]{
+                new String[]{"/tebex forcecheck", "Forces a purchase check."},
+                new String[]{"/tebex secret <token>", "Sets the secret key to use for this server."},
+                new String[]{"/tebex info", "Retrieves public information about the webstore this server is associated with."},
+                new String[]{"/tebex refresh", "Refreshes the list of categories and packages."},
+                new String[]{"/tebex signupdate", "Forces an update to your recent purchase signs."},
+                new String[]{"/tebex report", "Generates a report with debugging information you can send to support."},
+                new String[]{"/tebex coupon", "Manage server coupons."},
+                new String[]{"/tebex sendlink", "Sends a package or category link to a player."},
+        };
+
+        context.getSource().sendFeedback(new LiteralText("Usage for the Tebex plugin:").formatted(Formatting.BLUE, Formatting.BOLD), false);
+        for (String[] command : commands) {
+            context.getSource().sendFeedback(new LiteralText(command[0]).formatted(Formatting.GREEN).append(new LiteralText(": " + command[1]).formatted(Formatting.GRAY)), false);
+        }
     }
 
     private void onSecretCommand(CommandContext<ServerCommandSource> context) {
