@@ -1,5 +1,6 @@
 package net.buycraft.plugin.fabric;
 
+import com.google.gson.JsonParseException;
 import com.sun.net.httpserver.HttpServer;
 import net.buycraft.plugin.BuyCraftAPI;
 import net.buycraft.plugin.IBuycraftPlatform;
@@ -37,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -150,9 +152,48 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
                 getLogger().info("Fetching all server packages...");
                 listingUpdateTask.run();
             }
+
+            recentPurchaseSignStorage = new RecentPurchaseSignStorage();
+            try {
+                recentPurchaseSignStorage.load(MOD_PATH.resolve("purchase_signs.json"));
+            } catch (IOException | JsonParseException e) {
+                LOGGER.warn("Can't load purchase signs, continuing anyway", e);
+            }
+
+            buyNowSignStorage = new BuyNowSignStorage();
+            try {
+                buyNowSignStorage.load(MOD_PATH.resolve("buy_now_signs.json"));
+            } catch (IOException | JsonParseException e) {
+                LOGGER.warn("Can't load purchase signs, continuing anyway", e);
+            }
+
+            try {
+                Path signLayoutDirectory = MOD_PATH.resolve("sign_layouts");
+                try {
+                    Files.createDirectory(signLayoutDirectory);
+                } catch (FileAlreadyExistsException ignored) {
+                }
+
+                Path rpPath = signLayoutDirectory.resolve("recentpurchase.txt");
+                Path bnPath = signLayoutDirectory.resolve("buynow.txt");
+
+                try {
+                    Files.copy(getClass().getClassLoader().getResourceAsStream("sign_layouts/recentpurchase.txt"), rpPath);
+                } catch (FileAlreadyExistsException ignored) {
+                }
+                try {
+                    Files.copy(getClass().getClassLoader().getResourceAsStream("sign_layouts/buynow.txt"), bnPath);
+                } catch (FileAlreadyExistsException ignored) {
+                }
+
+                recentPurchaseSignLayout = new RecentPurchaseSignLayout(Files.readAllLines(rpPath, StandardCharsets.UTF_8));
+                buyNowSignLayout = new BuyNowSignLayout(Files.readAllLines(bnPath, StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                getLogger().error("Unable to load sign layouts", e);
+            }
         });
 
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             try {
                 recentPurchaseSignStorage.save(MOD_PATH.resolve("purchase_signs.json"));
             } catch (IOException e) {
