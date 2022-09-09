@@ -1,12 +1,18 @@
 package net.buycraft.plugin.fabric.command;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.buycraft.plugin.BuyCraftAPI;
+import net.buycraft.plugin.data.Category;
+import net.buycraft.plugin.data.Package;
 import net.buycraft.plugin.data.responses.ServerInformation;
 import net.buycraft.plugin.fabric.BuycraftPlugin;
+import net.buycraft.plugin.fabric.tasks.SendCheckoutLinkTask;
+import net.buycraft.plugin.shared.util.Node;
 import net.buycraft.plugin.shared.util.ReportBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,6 +30,7 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -42,54 +49,46 @@ public class TebexCommand {
 
     private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, String command) {
         dispatcher.register(literal(command).executes(context -> {
-                    if (! checkPermission(context.getSource())) return 0;
+                    if (!checkPermission(context.getSource())) return 0;
 
                     onBaseCommand(context);
                     return 1;
                 }).then(literal("secret").then(argument("token", StringArgumentType.string()).executes(context -> {
-                    if (! checkPermission(context.getSource())) return 0;
+                    if (!checkPermission(context.getSource())) return 0;
 
                     onSecretCommand(context);
                     return 1;
                 }))).then(literal("forcecheck").executes(context -> {
-                    if (! checkPermission(context.getSource())) return 0;
+                    if (!checkPermission(context.getSource())) return 0;
 
                     onForceCheckCommand(context);
                     return 1;
                 })).then(literal("info").executes(context -> {
-                    if (! checkPermission(context.getSource())) return 0;
+                    if (!checkPermission(context.getSource())) return 0;
 
                     onInfoCommand(context);
                     return 1;
                 })).then(literal("refresh").executes(context -> {
-                    if (! checkPermission(context.getSource())) return 0;
+                    if (!checkPermission(context.getSource())) return 0;
 
                     onRefreshCommand(context);
                     return 1;
                 })).then(literal("report").executes(context -> {
-                    if (! checkPermission(context.getSource())) return 0;
+                    if (!checkPermission(context.getSource())) return 0;
 
                     onReportCommand(context);
                     return 1;
-                }))
-//                .then(literal("coupon")
-//                    // create a /tebex coupon create <code> and /tebex coupon delete <code> command
-//                    .then(literal("create").then(argument("code", StringArgumentType.string()).executes(context -> {
-//                        if (! checkPermission(context.getSource())) return 0;
-//
-//                        // send a message with the code
-//                        context.getSource().sendFeedback(new LiteralText("Create coupon code: " + context.getArgument("code", String.class)), false);
-//
-//                        return 0;
-//                    })))
-//                    .then(literal("delete").then(argument("code", StringArgumentType.string()).executes(context -> {
-//                        if (! checkPermission(context.getSource())) return 0;
-//
-//                        // send a message with the code
-//                        context.getSource().sendFeedback(new LiteralText("Delete coupon code: " + context.getArgument("code", String.class)), false);
-//                        return 0;
-//                    })))
-//                )
+                })).then(literal("packages").then(argument("package", IntegerArgumentType.integer()).executes(context -> {
+                    if (!checkPermission(context.getSource())) return 0;
+
+                    onPackagesCommand(context);
+                    return 1;
+                }))).then(literal("checkout").then(argument("package", IntegerArgumentType.integer()).executes(context -> {
+                    if (!checkPermission(context.getSource())) return 0;
+
+                    onCheckoutCommand(context);
+                    return 1;
+                })))
         );
     }
 
@@ -248,5 +247,27 @@ public class TebexCommand {
                 plugin.getLogger().info(generated);
             }
         });
+    }
+
+    private void onPackagesCommand(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        Integer packageId = context.getArgument("package", Integer.class);
+
+        Node categories = new Node(plugin.getListingUpdateTask().getListing().getCategories(), ImmutableList.of(), plugin.getI18n().get("categories"), null);
+        Optional<Category> category = categories.getSubcategories().stream().filter(categoryId -> categoryId.getId() == packageId).findFirst();
+
+        plugin.getBuyCommand().sendPaginatedMessage(categories.getChild(category.get()), source);
+    }
+
+    private void onCheckoutCommand(CommandContext<ServerCommandSource> context) {
+        ServerCommandSource source = context.getSource();
+        Integer packageId = context.getArgument("package", Integer.class);
+
+        try {
+            Package packageById = plugin.getListingUpdateTask().getPackageById(packageId);
+            plugin.getPlatform().executeAsync(new SendCheckoutLinkTask(plugin, packageById.getId(), source));
+        } catch (Exception e) {
+            source.sendFeedback(new LiteralText("Could not find package with id " + packageId).formatted(Formatting.RED), false);
+        }
     }
 }

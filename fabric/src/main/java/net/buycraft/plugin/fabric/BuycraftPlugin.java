@@ -13,6 +13,7 @@ import net.buycraft.plugin.execution.placeholder.UuidPlaceholder;
 import net.buycraft.plugin.execution.strategy.CommandExecutor;
 import net.buycraft.plugin.execution.strategy.PostCompletedCommandsTask;
 import net.buycraft.plugin.execution.strategy.QueuedCommandExecutor;
+import net.buycraft.plugin.fabric.command.BuyCommand;
 import net.buycraft.plugin.fabric.command.TebexCommand;
 import net.buycraft.plugin.fabric.httplistener.Handler;
 import net.buycraft.plugin.fabric.util.Multithreading;
@@ -69,6 +70,7 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
     private PostCompletedCommandsTask completedCommandsTask;
     private PlayerJoinCheckTask playerJoinCheckTask;
     private ServerEventSenderTask serverEventSenderTask;
+    private BuyCommand buyCommand;
 
     private final String MOD_VERSION = "1.0.0";
     private final int TICKS_PER_SECOND = 50;
@@ -99,6 +101,9 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
         }
 
         CommandRegistrationCallback.EVENT.register(new TebexCommand(this)::register);
+        buyCommand = new BuyCommand(this);
+        CommandRegistrationCallback.EVENT.register(buyCommand::register);
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             this.server = server;
 
@@ -395,5 +400,9 @@ public class BuycraftPlugin implements DedicatedServerModInitializer {
 
     public String getModVersion() {
         return MOD_VERSION;
+    }
+
+    public BuyCommand getBuyCommand() {
+        return buyCommand;
     }
 }
