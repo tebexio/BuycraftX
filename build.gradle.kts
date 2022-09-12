@@ -5,7 +5,7 @@ defaultTasks("shadowJar")
 plugins {
     `java-library`
     id("com.github.johnrengelman.shadow") version "7.1.0"
-    id("fabric-loom") version "0.13-SNAPSHOT" apply(false)
+    id("fabric-loom") version "1.0-SNAPSHOT" apply(false)
 }
 
 subprojects {
