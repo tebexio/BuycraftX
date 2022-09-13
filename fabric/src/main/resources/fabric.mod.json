@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "buycraft",
+  "version": "${pluginVersion}",
+  "name": "BuycraftX",
+  "description": "The Tebex adapter.",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "net.buycraft.plugin.fabric.BuycraftPlugin"
+    ]
+  },
+  "mixins": [
+    "buycraft.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "1.16.5",
+    "fabric-permissions-api-v0": "*"
+  }
+}
