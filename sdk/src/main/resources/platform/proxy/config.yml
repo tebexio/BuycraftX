@@ -1,0 +1,19 @@
+# Tebex v${version} - https://tebex.io
+# Check out https://tebex.io/docs if you need help.
+
+# Whether to check for updates or not.
+check-for-updates: true
+
+# Debug Mode
+verbose: false
+
+# These settings are exclusive to this server.
+# Do not share these credentials with anyone.
+server:
+  # Secret Key
+  # This is used to identify your server.
+  secret-key: ''
+
+# Configuration Version
+# !! Do not change this value !!
+config-version: 2

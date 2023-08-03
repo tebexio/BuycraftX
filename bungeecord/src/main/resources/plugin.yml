@@ -1,4 +1,0 @@
-name: BuycraftX
-main: net.buycraft.plugin.bungeecord.BuycraftPlugin
-version: ${project.version}
-author: Buycraft

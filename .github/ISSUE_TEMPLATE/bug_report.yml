@@ -1,0 +1,88 @@
+name: Oops! Found a Bug?
+description: Run into a weird glitch with our Tebex Minecraft Plugins? No worries! Just use this form, and we'll get it sorted.
+labels:
+  - "Category: Issue (Unconfirmed)"
+body:
+  - type: markdown
+    attributes:
+      value: |-
+        Hey there! Thanks a ton for letting us know about this bug.
+        We wanna fix it ASAP, so please take a sec to read everything here and fill in all the stuff we need.
+        Anything with a star symbol (`*`) is a must-fill, so don't skip it!
+        
+        Oh, and make sure to grab the latest version from our [Releases Page](https://github.com/tebexio/BuycraftX/releases). Your bug might already be squashed!
+  - type: checkboxes
+    attributes:
+      label: Quick Checks
+      description: Just confirm that you've gone through these steps, please.
+      options:
+        - label: I've looked, and my issue's not on the Issue tracker.
+          required: true
+        - label: This is totally about **Tebex** (Minecraft), not something else.
+          required: true
+        - label: Nope, it's not fixed in the latest release.
+          required: true
+  - type: dropdown
+    attributes:
+      label: "So, What's Wrong?"
+      description: |-
+        What's the bug all about?
+        
+        - `Plugin Bug`: Tebex is being weird and won't start right.
+        - `API Bug`: Something I tried isn't working like it should.
+        - `Plugin/Server Clash`: Tebex doesn't like my server or another plugin.
+      multiple: false
+      options:
+        - "Plugin Bug"
+        - "API Bug"
+        - "Plugin/Server Clash"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "What's Going On?"
+      description: "Tell us what's happening, and don't be shy with the details!"
+      placeholder: "So, Tebex does this weird thing when I do that..."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "What Should Have Happened?"
+      description: "What did you think Tebex was going to do?"
+      placeholder: "I thought Tebex would just..."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "How Can We See It Too?"
+      description: |-
+        Show us how to make the bug happen. If it's an `API Bug`, drop some code in the `Extra Stuff` section below.
+      placeholder: |-
+        1. Try this
+        2. ...
+        3. And bam! There it is!
+    validations:
+      required: true
+  - type: input
+    id: "console"
+    attributes:
+      label: "Got a Console Log?"
+      description: |-
+        Grab the latest from your `latest.log` file and toss it on https://mclo.gs/
+        Then, paste the link here. Thanks!
+      placeholder: "https://mclo.gs/latest.log"
+  - type: input
+    id: "error"
+    attributes:
+      label: "Any Errors?"
+      description: |-
+        If you've got errors, upload 'em to https://mclo.gs/ and share the link. We're on it!
+      placeholder: "https://mclo.gs/error.log"
+  - type: textarea
+    attributes:
+      label: "Extra Stuff"
+      description: |-
+        Anything else we should know? Like:
+        - For an `API Bug`, hit us with the code.
+        - For a `Plugin/Server Clash`, tell us more about your server or the other plugin.
+      placeholder: "Feel free to spill any extra details here..."

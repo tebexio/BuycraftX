@@ -1,6 +1,0 @@
-language: java
-sudo: false
-jdk:
-  - oraclejdk8
-script: ./travis-build.sh
-install: true

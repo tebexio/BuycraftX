@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "tebex",
+  "version": "${version}",
+  "name": "Tebex",
+  "description": "The Tebex adapter.",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "io.tebex.plugin.TebexPlugin"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "1.16.5"
+  }
+}

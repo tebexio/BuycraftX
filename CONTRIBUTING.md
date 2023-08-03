@@ -1,19 +1,66 @@
-# Contributing to BuycraftX
+[issue]: https://github.com/tebexio/BuycraftX/issues/new
 
-Contributions to the BuycraftX codebase must be made by using your own fork of our repository and then submitting pull requests.
+[code of conduct]: https://github.com/tebexio/BuycraftX/blob/master/CODE_OF_CONDUCT.md
 
-Contributions can take the form of new components/features, changes to existing features, tests, documentation, bug fixes or optimizations.
+[wiki]: https://docs.tebex.io/store
 
-The Buycraft team will review all contributions, and their decision is final. During the review process they may ask questions of your contributions, or request alterations or fixes. The Buycraft team reserve the right to close any pull request or issue for any reason.
+[master]: https://github.com/tebexio/BuycraftX/tree/master
 
-## Terms of Contributing
+[style]: https://github.com/tebexio/BuycraftX/tree/master/config/style
 
-By making a contribution, you agree to the terms below, which includes granting Tebex Ltd a royalty-free, perpetual and irrevocable license to use and relicense your contribution under any terms deemed fit to Tebex. You may only contribute software and materials originally created by you or your organisation and you must have the right to make such contributions.
+# Contributing Guidelines
 
-Subject to the terms and conditions of this Agreement, you grant to Tebex and all third party recipients of software, products, services, and information distributed by Tebex a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare derivative works of, publicly display, publicly perform, sublicense, and distribute the contributed code and such derivative works.  
+We welcome everyone to contribute towards the Tebex Project, but doing so will require you to follow specific rules to
+keep a consistent and welcoming way of contributing.
 
-By submitting code for including in the BuycraftX codebase, you represent that each code submission is of your own original creation and they you hold the copyright for such works, or are authorized to submit by the copyright holder.
+## Issues
 
-You agree to waive all other claims of any nature, including express contract, implied-in-fact contract, or quasi-contract, arising out of any submission of code to Tebex.
+Like any other project can you encounter bugs or a feature is missing for you in the plugin.  
+For that, you can open an [issue] to report a bug, or suggest a new feature to be added.
 
-The terms of contributing may be changed by us at any time, and such changes will be published in this file. Before each submission, you should review this file, and if you no longer agree to the terms, stop submitting code to us.
+When doing so, make sure you follow rules below:
+
+### Follow the template
+
+We have issue templates to help us get the required information more easily. Please follow the provided template when
+either filing a bug report or feature request.  
+Your issue may be closed without warning for not following the template.
+
+### Use the latest version
+
+When it comes to bug reports should you always check first, that you're using the latest release of Tebex.  
+Often the bug you've encountered, is fixed in a newer version.
+
+The same rules apply when making a feature request.
+
+### No duplicate issue
+
+Make sure that there aren't any existing issues relating to the problem, which are still open, or are closed with a
+solution/explanation.  
+Opening a separate issue for a bug report or feature request, that already exists on the issue tracker only slows down
+the process of fixing the bug or implementing the feature.
+
+If an issue with the bug or feature you want to report/suggest exists, comment on it with your info (bug reports) or
+give it a :thumbsup: (Feature Request) to show that this is important for you.
+
+## Pull requests
+
+As an open source project are we welcoming all contributions to improve Tebex, being it changes to its code, or
+contributions to its documentation such as the [Wiki] or the Javadocs.
+
+**When contributing, make sure to both base of and target the mentioned branch. Pull requests targeting the wrong branch
+may get closed without a warning.**
+
+### Code contributions
+
+> **Source and Target Branch:** [`master`][master]
+
+When contributing towards the code of Tebex, be it new features or just bug fixes, your changes should follow the
+general code styling used in the project.  
+You can find the necessary files in the [`config/style`][style] directory of this repository.
+
+## Code of Conduct
+
+We have a [Code of Conduct] to maintain a welcoming atmosphere in this project.  
+If your contributions go against the Code of Conduct, linked above, we reserve the right to deny or revert your
+contributions.
