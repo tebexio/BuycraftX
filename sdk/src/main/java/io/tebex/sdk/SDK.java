@@ -549,6 +549,24 @@ public class SDK {
         });
     }
 
+    public CompletableFuture<Boolean> sendEvents(List<ServerEvent> events) {
+        if (getSecretKey() == null) {
+            CompletableFuture<Boolean> future = new CompletableFuture<>();
+            future.completeExceptionally(new ServerNotSetupException());
+            return future;
+        }
+
+        return request("/events").withBody(GSON.toJson(events)).withSecretKey(secretKey).sendAsync().thenApply(response -> {
+            if (response.code() == 404) {
+                throw new CompletionException(new ServerNotFoundException());
+            } else if (response.code() != 204) {
+                throw new CompletionException(new IOException("Unexpected status code (" + response.code() + ")"));
+            }
+
+            return true;
+        });
+    }
+
     /**
      * Get a specific package.
      *
