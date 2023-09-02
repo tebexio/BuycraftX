@@ -1,5 +1,6 @@
 package io.tebex.plugin;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import io.tebex.plugin.command.BuyCommand;
@@ -10,6 +11,7 @@ import io.tebex.plugin.placeholder.BukkitNamePlaceholder;
 import io.tebex.sdk.SDK;
 import io.tebex.sdk.Tebex;
 import io.tebex.sdk.obj.Category;
+import io.tebex.sdk.obj.ServerEvent;
 import io.tebex.sdk.placeholder.PlaceholderManager;
 import io.tebex.sdk.placeholder.defaults.UuidPlaceholder;
 import io.tebex.sdk.platform.Platform;
@@ -23,7 +25,6 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -52,6 +53,7 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
 
     private ServerInformation storeInformation;
     private List<Category> storeCategories;
+    private List<ServerEvent> serverEvents;
     public BuyGUI buyGUI;
 
     /**
@@ -80,6 +82,7 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
         placeholderManager = new PlaceholderManager();
         queuedPlayers = Maps.newConcurrentMap();
         storeCategories = new ArrayList<>();
+        serverEvents = new ArrayList<>();
         buyGUI = new BuyGUI(this);
 
         placeholderManager.register(new BukkitNamePlaceholder(placeholderManager));
@@ -98,6 +101,21 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
             getSDK().getServerInformation().thenAccept(information -> storeInformation = information);
             getSDK().getListing().thenAccept(listing -> storeCategories = listing);
         }, 0, 20 * 60 * 5);
+
+        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+            List<ServerEvent> runEvents = Lists.newArrayList(serverEvents.subList(0, Math.min(serverEvents.size(), 750)));
+            if (runEvents.isEmpty()) return;
+
+            sdk.sendEvents(runEvents)
+                    .thenAccept(aVoid -> {
+                        serverEvents.removeAll(runEvents);
+                        debug("Successfully sent analytics.");
+                    })
+                    .exceptionally(throwable -> {
+                        warning("Failed to send analytics: " + throwable.getMessage());
+                        return null;
+                    });
+        }, 0, 20 * 60);
 
         // Register the custom /buy command
         try {
@@ -118,6 +136,10 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
 
     public ServerInformation getStoreInformation() {
         return storeInformation;
+    }
+
+    public List<ServerEvent> getServerEvents() {
+        return serverEvents;
     }
 
     public void migrateConfig() {

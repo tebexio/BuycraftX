@@ -1,14 +1,15 @@
 package io.tebex.plugin.event;
 
 import io.tebex.plugin.TebexPlugin;
-import io.tebex.sdk.obj.QueuedCommand;
 import io.tebex.sdk.obj.QueuedPlayer;
+import io.tebex.sdk.obj.ServerEvent;
+import io.tebex.sdk.obj.ServerEventType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.List;
+import java.util.Date;
 
 public class JoinListener implements Listener {
     private final TebexPlugin plugin;
@@ -21,6 +22,8 @@ public class JoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Object playerId = plugin.getPlayerId(player.getName(), player.getUniqueId());
+        plugin.getServerEvents().add(new ServerEvent(player.getUniqueId().toString(), player.getName(), player.getAddress().getAddress().getHostAddress(), ServerEventType.JOIN, new Date().toString()));
+
         if(! plugin.getQueuedPlayers().containsKey(playerId)) {
             return;
         }

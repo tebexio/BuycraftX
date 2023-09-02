@@ -1,5 +1,6 @@
 package io.tebex.plugin;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import io.tebex.plugin.event.JoinListener;
@@ -8,6 +9,7 @@ import io.tebex.plugin.util.Multithreading;
 import io.tebex.sdk.SDK;
 import io.tebex.sdk.Tebex;
 import io.tebex.sdk.obj.Category;
+import io.tebex.sdk.obj.ServerEvent;
 import io.tebex.sdk.placeholder.PlaceholderManager;
 import io.tebex.sdk.platform.Platform;
 import io.tebex.sdk.platform.PlatformTelemetry;
@@ -50,7 +52,7 @@ public class TebexPlugin implements Platform, DedicatedServerModInitializer {
 
     private ServerInformation storeInformation;
     private List<Category> storeCategories;
-//    public BuyGUI buyGUI;
+    private List<ServerEvent> serverEvents;
 
     /**
      * Starts the Fabric platform.
@@ -86,6 +88,7 @@ public class TebexPlugin implements Platform, DedicatedServerModInitializer {
         placeholderManager = new PlaceholderManager();
         queuedPlayers = Maps.newConcurrentMap();
         storeCategories = new ArrayList<>();
+        serverEvents = new ArrayList<>();
 
         placeholderManager.registerDefaults();
 
@@ -117,6 +120,21 @@ public class TebexPlugin implements Platform, DedicatedServerModInitializer {
             getSDK().getServerInformation().thenAccept(information -> storeInformation = information);
             getSDK().getListing().thenAccept(listing -> storeCategories = listing);
         }, 0, 30, TimeUnit.MINUTES);
+
+        Multithreading.executeAsync(() -> {
+            List<ServerEvent> runEvents = Lists.newArrayList(serverEvents.subList(0, Math.min(serverEvents.size(), 750)));
+            if (runEvents.isEmpty()) return;
+
+            sdk.sendEvents(runEvents)
+                    .thenAccept(aVoid -> {
+                        serverEvents.removeAll(runEvents);
+                        debug("Successfully sent analytics.");
+                    })
+                    .exceptionally(throwable -> {
+                        warning("Failed to send analytics: " + throwable.getMessage());
+                        return null;
+                    });
+        }, 0, 1, TimeUnit.MINUTES);
     }
 
     @Override
@@ -155,6 +173,10 @@ public class TebexPlugin implements Platform, DedicatedServerModInitializer {
 
     public ServerInformation getStoreInformation() {
         return storeInformation;
+    }
+
+    public List<ServerEvent> getServerEvents() {
+        return serverEvents;
     }
 
     @Override
