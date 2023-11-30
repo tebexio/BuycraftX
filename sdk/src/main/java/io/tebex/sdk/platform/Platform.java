@@ -138,7 +138,7 @@ public interface Platform {
     default void performCheck(boolean runAfter) {
         if(! isSetup()) return;
 
-        info("Checking for due players..");
+        debug("Checking for due players..");
         getQueuedPlayers().clear();
 
         getSDK().getDuePlayers().thenAccept(duePlayersResponse -> {
