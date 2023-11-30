@@ -18,6 +18,8 @@ public class ServerPlatformConfig implements IPlatformConfig {
     private boolean proxyMode;
     private String secretKey;
 
+    private boolean autoReportEnabled;
+
     /**
      * Creates a PlatformConfig instance with the provided configuration version.
      *
@@ -55,6 +57,8 @@ public class ServerPlatformConfig implements IPlatformConfig {
     public void setProxyMode(boolean proxyMode) {
         this.proxyMode = proxyMode;
     }
+
+    public void setAutoReportEnabled(boolean autoReportEnabled) { this.autoReportEnabled = autoReportEnabled; }
 
     /**
      * Sets the YAML document for this configuration.
@@ -106,6 +110,8 @@ public class ServerPlatformConfig implements IPlatformConfig {
         return proxyMode;
     }
 
+    public boolean isAutoReportEnabled() { return autoReportEnabled; }
+
     /**
      * Returns the YAML document for this configuration.
      *
@@ -127,6 +133,7 @@ public class ServerPlatformConfig implements IPlatformConfig {
                 ", verbose=" + verbose +
                 ", proxyMode=" + proxyMode +
                 ", secretKey='" + secretKey + '\'' +
+                ", autoReportEnabled=" + autoReportEnabled +
                 '}';
     }
 }

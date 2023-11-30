@@ -86,6 +86,7 @@ public class SDK {
                         new ServerInformation.Server(server.get("id").getAsInt(), server.get("name").getAsString())
                 );
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -123,6 +124,7 @@ public class SDK {
 
                 return new DuePlayersResponse(meta.get("execute_offline").getAsBoolean(), meta.get("next_check").getAsInt(), meta.get("more").getAsBoolean(), players);
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -170,6 +172,7 @@ public class SDK {
 
                 return new OfflineCommandsResponse(meta.get("limited").getAsBoolean(), offlineCommands);
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -217,6 +220,7 @@ public class SDK {
 
                 return queuedCommands;
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -275,6 +279,7 @@ public class SDK {
                 JsonArray jsonObject = GSON.fromJson(response.body().string(), JsonArray.class);
                 return jsonObject.asList().stream().map(item -> CommunityGoal.fromJsonObject(item.getAsJsonObject())).collect(Collectors.toList());
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -304,6 +309,7 @@ public class SDK {
                 JsonObject jsonObject = GSON.fromJson(response.body().string(), JsonObject.class);
                 return CommunityGoal.fromJsonObject(jsonObject);
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -337,6 +343,7 @@ public class SDK {
             try {
                 return GSON.fromJson(response.body().string(), CheckoutUrl.class);
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -369,6 +376,7 @@ public class SDK {
                         jsonObject.getAsJsonArray("data").asList().stream().map(item -> Coupon.fromJsonObject(item.getAsJsonObject())).collect(Collectors.toList())
                 );
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -398,6 +406,7 @@ public class SDK {
                 JsonObject jsonObject = GSON.fromJson(response.body().string(), JsonObject.class);
                 return Coupon.fromJsonObject(jsonObject.get("data").getAsJsonObject());
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -476,6 +485,7 @@ public class SDK {
                 JsonObject jsonObject = GSON.fromJson(response.body().string(), JsonObject.class);
                 return Coupon.fromJsonObject(jsonObject.getAsJsonObject("data"));
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
 
@@ -520,6 +530,7 @@ public class SDK {
                         .map(category -> Category.fromJsonObject(category.getAsJsonObject()))
                         .collect(Collectors.toList());
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -590,6 +601,7 @@ public class SDK {
             try {
                 return Package.fromJsonObject(GSON.fromJson(response.body().string(), JsonObject.class));
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -618,6 +630,7 @@ public class SDK {
                 JsonArray jsonObject = GSON.fromJson(response.body().string(), JsonArray.class);
                 return jsonObject.asList().stream().map(item -> Package.fromJsonObject(item.getAsJsonObject())).collect(Collectors.toList());
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -662,6 +675,7 @@ public class SDK {
                 JsonObject jsonObject = GSON.fromJson(response.body().string(), JsonObject.class);
                 return jsonObject.get("success").getAsBoolean();
             } catch (IOException e) {
+                platform.sendTriageEvent(e);
                 throw new CompletionException(new IOException("Unexpected response"));
             }
         });
@@ -698,8 +712,8 @@ public class SDK {
     /**
      * Create a new TebexRequest with the specified URL.
      *
-     * @param baseUrl The base URL to send the request to
-     * @param url The URL to send the request to
+     * @param url The base URL to send the request to
+     * @param useBaseUrl Whether we prefix with the plugin API base
      * @return An TebexRequest instance
      */
     public TebexRequest request(String url, boolean useBaseUrl) {

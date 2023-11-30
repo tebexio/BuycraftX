@@ -102,6 +102,7 @@ public class BuyGUI {
             }).exceptionally(ex -> {
                 player.sendMessage(ChatColor.RED + "Failed to create checkout URL. Please contact an administrator.");
                 ex.printStackTrace();
+                platform.sendTriageEvent(ex);
                 return null;
             });
         })));

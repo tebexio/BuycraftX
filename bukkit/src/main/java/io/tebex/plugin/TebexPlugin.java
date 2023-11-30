@@ -112,7 +112,7 @@ public final class TebexPlugin extends JavaPlugin implements Platform {
                         debug("Successfully sent analytics.");
                     })
                     .exceptionally(throwable -> {
-                        warning("Failed to send analytics: " + throwable.getMessage());
+                        debug("Failed to send analytics: " + throwable.getMessage());
                         return null;
                     });
         }, 0, 20 * 60);

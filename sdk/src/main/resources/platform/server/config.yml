@@ -10,6 +10,9 @@ buy-command:
 # Whether to check for updates or not.
 check-for-updates: true
 
+# Automatic reporting of exceptions to Tebex
+auto-report-enabled: true
+
 # Debug Mode
 verbose: false
 

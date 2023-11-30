@@ -10,11 +10,14 @@ import io.tebex.sdk.platform.config.IPlatformConfig;
 import io.tebex.sdk.platform.config.ProxyPlatformConfig;
 import io.tebex.sdk.platform.config.ServerPlatformConfig;
 import io.tebex.sdk.request.response.ServerInformation;
+import io.tebex.sdk.triage.TriageEvent;
 import io.tebex.sdk.util.StringUtil;
 import io.tebex.sdk.util.UUIDUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -155,8 +158,22 @@ public interface Platform {
         }).exceptionally(ex -> {
             warning("Failed to perform check: " + ex.getMessage());
             ex.printStackTrace();
+            sendTriageEvent(ex);
             return null;
         });
+    }
+
+    default void sendTriageEvent(String errorMessage) {
+        TriageEvent.fromPlatform(this).withErrorMessage(errorMessage).send();
+    }
+
+    default void sendTriageEvent(Throwable exception) {
+        StringWriter traceWriter = new StringWriter();
+        exception.printStackTrace(new PrintWriter(traceWriter));
+
+        TriageEvent.fromPlatform(this)
+                .withErrorMessage(exception.getMessage())
+                .withTrace(traceWriter.toString()).send();
     }
 
     default void handleOnlineCommands(QueuedPlayer player) {
@@ -183,6 +200,7 @@ public interface Platform {
         }).exceptionally(ex -> {
             warning("Failed to get online commands: " + ex.getMessage());
             ex.printStackTrace();
+            sendTriageEvent(ex);
             return null;
         });
     }
@@ -266,17 +284,19 @@ public interface Platform {
         }).exceptionally(ex -> {
             warning("Failed to get offline commands: " + ex.getMessage());
             ex.printStackTrace();
+            sendTriageEvent(ex);
             return null;
         });
     }
 
     default void deleteCompletedCommands(List<Integer> completedCommands) {
-        getSDK().deleteCommands(completedCommands).exceptionally(ex -> {
+        getSDK().deleteCommands(completedCommands).thenRun(completedCommands::clear).exceptionally(ex -> {
             warning("Failed to delete commands: " + ex.getMessage());
             ex.printStackTrace();
+            sendTriageEvent(ex);
             return null;
         });
-        completedCommands.clear();
+
     }
 
     /**
@@ -358,6 +378,7 @@ public interface Platform {
         config.setVerbose(configFile.getBoolean("verbose", false));
 
         config.setProxyMode(configFile.getBoolean("server.proxy", false));
+        config.setAutoReportEnabled(configFile.getBoolean("auto-report-enabled", true));
 
         return config;
     }
