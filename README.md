@@ -1,35 +1,16 @@
-# BuycraftX
+![Logo](https://www.tebex.io/assets/img/logos/tebex.svg#gh-light-mode-only)
 
-BuycraftX is the official plugin for the [Buycraft](https://www.buycraft.net) webstore solution for Minecraft servers.
+## Information
 
-## The major differences
+This repository is for the [Tebex](https://tebex.io) Minecraft plugins, currently supporting the following versions:
 
-* A total rewrite of the plugin based on modern coding standards. The new plugin is geared towards reliability and performance.
-* Supports multiple platforms:
-  * Spigot 1.7.10 or above (1.8.3+ recommended)
-  * BungeeCord (recent versions)
-  * Sponge 5.x
-* Custom item IDs are not supported, as it is not portable to other platforms and is deprecated.
+- Spigot/Paper 1.8 - 1.20
+- Fabric 1.16.5
+- BungeeCord/Waterfall
+- Velocity
 
-## Translations
+## Quick Links
 
-Help us translate the BuycraftX project by participating in our Crowdin project located at https://crowdin.com/project/buycraftx-plugin.
-
-## Standalone API
-
-BuycraftX includes the `buycraftx-common` module, which contains an API client, and shared code across all platforms.
-
-## Standalone executor
-
-BuycraftX can be integrated into your own custom applications to handle command execution. Most applications will
-find `StandaloneBuycraftRunnerBuilder` to be the easiest method for integration, but you can also implement the whole
-BuycraftX stack if desired.
-
-## Support
-
-Please don't raise support issues on this repo. For support with the plugin or any Buycraft issues, please [contact support](http://help.buycraft.net)
-
-## Contributing
-
-We welcome contributions from the community. Please refer to the CONTRIBUTING.md file for more details. By submitting code to us, you agree to the 
-terms set out in the CONTRIBUTING.md file
+- 🎮 [Website](https://tebex.io/) - Learn more about Tebex.
+- 🎮 [Issue Tracker](https://github.com/tebexio/BuycraftX) - Report a bug.
+- 🎮 [Suggestions Tracker](https://suggestions.tebex.io) - Suggest a feature or improvement.
