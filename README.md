@@ -1,4 +1,9 @@
-# BuycraftX
+## Deprecation Notice
+This plugin and its repository are deprecated as of **January 2, 2024**. Please see the repository for our new Minecraft plugin here: https://github.com/tebexio/Tebex-Minecraft
+
+Any issues or pull requests submitted to this repository will be closed automatically.
+
+# BuycraftX (deprecated)
 
 BuycraftX is the official plugin for the [Buycraft](https://www.buycraft.net) webstore solution for Minecraft servers.
 
