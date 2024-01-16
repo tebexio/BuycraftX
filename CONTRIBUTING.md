@@ -17,3 +17,7 @@ By submitting code for including in the BuycraftX codebase, you represent that e
 You agree to waive all other claims of any nature, including express contract, implied-in-fact contract, or quasi-contract, arising out of any submission of code to Tebex.
 
 The terms of contributing may be changed by us at any time, and such changes will be published in this file. Before each submission, you should review this file, and if you no longer agree to the terms, stop submitting code to us.
+
+## Building
+
+To build the plugin from src run the command mvn package. The jars will be in their respective folders.
