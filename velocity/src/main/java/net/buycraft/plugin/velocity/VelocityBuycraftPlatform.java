@@ -45,7 +45,7 @@ public class VelocityBuycraftPlatform implements IBuycraftPlatform {
 
     @Override
     public void dispatchCommand(String command) {
-        plugin.getServer().getCommandManager().execute(plugin.getServer().getConsoleCommandSource(), command);
+        plugin.getServer().getCommandManager().executeAsync(plugin.getServer().getConsoleCommandSource(), command);
     }
 
     @Override
