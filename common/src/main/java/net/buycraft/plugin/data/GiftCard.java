@@ -3,6 +3,7 @@ package net.buycraft.plugin.data;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public final class GiftCard {
 
@@ -12,6 +13,10 @@ public final class GiftCard {
     private final String note;
     @SerializedName("void")
     private final boolean isVoid = false;
+    @SerializedName("created_at")
+    private final Date createdDate = null;
+    @SerializedName("expires_at")
+    private final Date expiresDate = null;
 
     GiftCard(BigDecimal amount, String note) {
         this.balance = new Balance(amount);
@@ -41,6 +46,10 @@ public final class GiftCard {
     public boolean isVoid() {
         return isVoid;
     }
+
+    public Date getCreatedDate() { return createdDate; }
+
+    public Date getExpiresDate() { return expiresDate; }
 
     public static final class Balance {
 
