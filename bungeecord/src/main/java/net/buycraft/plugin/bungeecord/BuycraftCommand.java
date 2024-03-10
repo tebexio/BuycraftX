@@ -14,13 +14,13 @@ public class BuycraftCommand extends Command {
     private final BuycraftPlugin plugin;
 
     public BuycraftCommand(BuycraftPlugin plugin) {
-        super("tebex", null, "buycraft");
+        super("tebex", "buycraft.admin", "buycraft");
         this.plugin = plugin;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("buycraft.admin")) {
+        if (!sender.hasPermission(this.getPermission())) {
             sender.sendMessage(ChatColor.RED + plugin.getI18n().get("no_permission"));
             return;
         }
